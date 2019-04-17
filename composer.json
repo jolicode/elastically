@@ -1,0 +1,21 @@
+{
+    "require": {
+        "ruflin/elastica": "^6.1",
+        "symfony/yaml": "^4.2",
+        "symfony/serializer": "^4.2",
+        "symfony/property-access": "^4.2",
+        "symfony/property-info": "^4.2",
+        "jane-php/json-schema-runtime": "^4.2",
+        "ext-json": "*"
+    },
+  "autoload": {
+    "psr-4": {
+      "JoliCode\\Elastically\\": "./src",
+      "Elasticsearch\\": "./generated"
+    }
+  },
+    "require-dev": {
+        "jane-php/json-schema": "^4.0",
+        "friendsofphp/php-cs-fixer": "^2.7.3"
+    }
+}
