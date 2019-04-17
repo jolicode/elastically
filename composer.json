@@ -1,0 +1,40 @@
+{
+    "name": "jolicode/elastically",
+    "description": "Opinionated Elastica based framework to bootstrap PHP and Elasticsearch implementations.",
+    "keywords": [
+        "Elasticsearch",
+        "Elastica",
+        "Symfony",
+        "Search"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Damien Alexandre",
+            "homepage": "https://jolicode.com/"
+        }
+    ],
+    "require": {
+        "ruflin/elastica": "^6.1",
+        "symfony/yaml": "^4.2",
+        "symfony/serializer": "^4.2",
+        "symfony/property-access": "^4.2",
+        "symfony/property-info": "^4.2",
+        "ext-json": "*",
+        "php": "^7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "JoliCode\\Elastically\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JoliCode\\Elastically\\Tests\\": "./tests"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "phpunit/phpunit": "^8"
+    }
+}

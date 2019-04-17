@@ -1,0 +1,5 @@
+analyzers:
+    beer_name:
+        tokenizer: standard
+        filter:
+            - asciifolding
