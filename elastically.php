@@ -60,7 +60,7 @@ var_dump($results->getResults()[0]->getDocument());
 
 $search = $index->createSearch($query, null, new \JoliCode\Elastically\ResultSetBuilder($serializer));
 
-var_dump($search->search());
+dump($search->search());
 
 // Et pour get 1 seul doc ?
 
