@@ -23,16 +23,14 @@ class IndexBuilder
     public function createIndex($indexName): Index
     {
         $mappingFilePath = $this->configurationDirectory.DIRECTORY_SEPARATOR.$indexName.'_mapping.yaml';
-        $analyzerFilePath = $this->configurationDirectory.'/analyzers.yaml';
-
-        if (!file_exists($mappingFilePath)) {
-            throw new InvalidException(sprintf('Mapping file %s not found.', $mappingFilePath));
+        if (!is_file($mappingFilePath)) {
+            throw new InvalidException(sprintf('Mapping file "%s" not found.', $mappingFilePath));
         }
+        $mapping = Yaml::parseFile($mappingFilePath);
 
-        $mapping = Yaml::parse(file_get_contents($this->configurationDirectory.DIRECTORY_SEPARATOR.$indexName.'_mapping.yaml'));
-
-        if ($mapping && file_exists($analyzerFilePath)) {
-            $analyzer = Yaml::parse(file_get_contents($analyzerFilePath));
+        $analyzerFilePath = $this->configurationDirectory.'/analyzers.yaml';
+        if ($mapping && is_file($analyzerFilePath)) {
+            $analyzer = Yaml::parseFile($analyzerFilePath);
             $mapping['settings']['analysis'] = array_merge_recursive($mapping['settings']['analysis'] ?? [], $analyzer);
         }
 
@@ -40,7 +38,7 @@ class IndexBuilder
         $index = $this->client->getIndex($realName);
 
         if ($index->exists()) {
-            throw new RuntimeException(sprintf('Index %s is already created, something is wrong.', $index->getName()));
+            throw new RuntimeException(sprintf('Index "%s" is already created, something is wrong.', $index->getName()));
         }
 
         $index->create($mapping ?? []);

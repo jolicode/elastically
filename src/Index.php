@@ -4,10 +4,11 @@ namespace JoliCode\Elastically;
 
 use Elastica\Index as ElasticaIndex;
 use Elastica\ResultSet\BuilderInterface;
+use Elastica\Search;
 
 class Index extends ElasticaIndex
 {
-    protected $builder;
+    private $builder;
 
     /*
      * Compatibility shortcut, types are no longer needed.
@@ -24,7 +25,7 @@ class Index extends ElasticaIndex
         return $this->getBuilder()->buildModelFromIndexAndData($document->getIndex(), $document->getData());
     }
 
-    public function createSearch($query = '', $options = null, BuilderInterface $builder = null)
+    public function createSearch($query = '', $options = null, BuilderInterface $builder = null): Search
     {
         $builder = $builder ?? $this->getBuilder();
 

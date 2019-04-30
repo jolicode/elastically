@@ -16,8 +16,8 @@ class ResultSet extends ElasticaResultSet
 
         if (is_array($data['hits']['total'])) {
             return (int) ($data['hits']['total']['value'] ?? 0);
-        } else {
-            return (int) ($data['hits']['total'] ?? 0);
         }
+
+        return (int) ($data['hits']['total'] ?? 0);
     }
 }

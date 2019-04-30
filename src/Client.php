@@ -17,7 +17,7 @@ class Client extends ElasticaClient
     const CONFIG_SERIALIZER = 'elastically_serializer';
     const CONFIG_BULK_SIZE = 'elastically_bulk_size';
 
-    protected $indexer;
+    private $indexer;
 
     public function getIndexBuilder(): IndexBuilder
     {
@@ -40,12 +40,12 @@ class Client extends ElasticaClient
 
     public function getSerializer(): SerializerInterface
     {
-        $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER, null);
+        $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER);
         if ($configSerializer) {
             return $configSerializer;
         }
 
-        // Default
+        // Use a minimal default serializer
         return new Serializer([
             new ArrayDenormalizer(),
             new ObjectNormalizer(),

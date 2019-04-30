@@ -11,27 +11,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class Indexer
 {
-    /**
-     * @var Client
-     */
-    protected $client;
-
-    /**
-     * @var Bulk|null
-     */
-    protected $currentBulk = null;
-
-    /**
-     * @var int
-     */
+    private $client;
     private $bulkMaxSize;
-
-    /**
-     * @var SerializerInterface
-     */
     private $serializer;
+    /** @var Bulk|null  */
+    private $currentBulk = null;
 
-    public function __construct(Client $client, SerializerInterface $serializer, $bulkMaxSize = 100)
+    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100)
     {
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 

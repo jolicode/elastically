@@ -7,10 +7,10 @@ use Elastica\Result as ElasticaResult;
 
 class Result extends ElasticaResult
 {
-    protected $model;
+    private $model;
 
     /**
-     * @return \stdClass
+     * @return object
      */
     public function getModel()
     {
@@ -18,19 +18,14 @@ class Result extends ElasticaResult
     }
 
     /**
-     * @param \stdClass $model
+     * @param object $model
      */
     public function setModel($model)
     {
         $this->model = $model;
     }
 
-    /**
-     * Returns Document.
-     *
-     * @return Document
-     */
-    public function getDocument()
+    public function getDocument(): Document
     {
         $doc = parent::getDocument();
         $doc->setData($this->getModel());
