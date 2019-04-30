@@ -9,9 +9,6 @@ use Elastica\ResultSet\BuilderInterface;
 
 class ResultSetBuilder implements BuilderInterface
 {
-    /**
-     * @var Client
-     */
     private $client;
 
     public function __construct(Client $client)
@@ -19,15 +16,14 @@ class ResultSetBuilder implements BuilderInterface
         $this->client = $client;
     }
 
-    public function buildResultSet(Response $response, Query $query)
+    public function buildResultSet(Response $response, Query $query): ResultSet
     {
         $results = $this->buildResults($response);
-        $resultSet = new ResultSet($response, $query, $results);
 
-        return $resultSet;
+        return new ResultSet($response, $query, $results);
     }
 
-    private function buildResults(Response $response)
+    private function buildResults(Response $response): array
     {
         $data = $response->getData();
         $results = [];
@@ -62,7 +58,7 @@ class ResultSetBuilder implements BuilderInterface
         $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
 
         if (!isset($indexToClass[$pureIndexName])) {
-            throw new RuntimeException(sprintf('Unknown class for index %s, did you forgot to configure %s?', $pureIndexName, Client::CONFIG_INDEX_CLASS_MAPPING));
+            throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $pureIndexName, Client::CONFIG_INDEX_CLASS_MAPPING));
         }
 
         return $this->client->getSerializer()->denormalize($data, $indexToClass[$pureIndexName]);
