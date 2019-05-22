@@ -142,7 +142,6 @@ To write.
 
 - some "todo" in the code
 - optional Doctrine connector
-- check Symfony 3.4 compatibility
 - optional Symfony integration (DIC)
 - scripts / commands for common tasks:
   - auto-reindex when the mapping change, handle the aliases and everything
