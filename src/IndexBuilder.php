@@ -56,17 +56,17 @@ class IndexBuilder
         return $this->client->request('_aliases', Request::POST, $data);
     }
 
-    public function slowDownRefresh(Index $index)
+    public function slowDownRefresh(Index $index): void
     {
         $index->getSettings()->setRefreshInterval('60s');
     }
 
-    public function speedUpRefresh(Index $index)
+    public function speedUpRefresh(Index $index): void
     {
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public static function getPureIndexName($indexName)
+    public static function getPureIndexName($indexName): string
     {
         if (1 === preg_match('/(.+)_\d{4}-\d{2}-\d{2}-\d+/i', $indexName, $matches)) {
             return $matches[1];
@@ -75,12 +75,13 @@ class IndexBuilder
         return $indexName;
     }
 
-    // TODO
-    public function migrate()
+    public function migrate(Index $current, Index $new)
     {
+        // @todo Waiting for https://github.com/ruflin/Elastica/pull/1494 to be completed
+        // This method should use the TASK API, because we do not want to WAIT for the reindex (HTTP Timeout issues).
     }
 
-    public function purgeOldIndices($indexName)
+    public function purgeOldIndices($indexName): array
     {
         $aliases = $this->client->requestEndpoint(new \Elasticsearch\Endpoints\Indices\Alias\Get());
 
