@@ -84,6 +84,15 @@ $results->getResults()[0];
 
 // Get the DTO 🎉 (new!)
 $results->getResults()[0]->getModel();
+
+// Create a new version of the Index "beers"
+$index = $indexBuilder->createIndex('beers');
+
+// Set the proper aliases
+$indexBuilder->markAsLive($index, 'beers');
+
+// Clean the old indices (close the previous one and delete the older)
+$indexBuilder->purgeOldIndices('beers');
 ```
 
 *configs/beers.yaml*

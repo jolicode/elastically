@@ -14,7 +14,7 @@ class Indexer
     private $client;
     private $bulkMaxSize;
     private $serializer;
-    /** @var Bulk|null  */
+    /** @var Bulk|null */
     private $currentBulk = null;
 
     public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100)

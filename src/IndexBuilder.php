@@ -80,41 +80,52 @@ class IndexBuilder
     {
     }
 
-    // TODO: WIP + add tests
-    public function purgeOldIndices($index)
+    public function purgeOldIndices($indexName)
     {
-        //$indexes = $this->client->requestEndpoint(new Get());
-        $indexes = $indexes->getData();
-        foreach ($indexes as $indexName => &$data) {
-            if (0 !== strpos($indexName, $index)) {
-                unset($indexes[$indexName]);
+        $aliases = $this->client->requestEndpoint(new \Elasticsearch\Endpoints\Indices\Alias\Get());
+
+        $indexes = $aliases->getData();
+
+        foreach ($indexes as $realIndexName => &$data) {
+            if (0 !== strpos($realIndexName, $indexName)) {
+                unset($indexes[$realIndexName]);
                 continue;
             }
-            $date = \DateTime::createFromFormat('Y-m-d-His', str_replace($index.'_', '', $indexName));
+
+            $date = \DateTime::createFromFormat('Y-m-d-His', str_replace($indexName.'_', '', $realIndexName));
             $data['date'] = $date;
-            $data['is_live'] = isset($data['aliases'][$this->getLiveSearchIndexName()]);
+            $data['is_live'] = isset($data['aliases'][$indexName]);
         }
+
         // Newest first
         uasort($indexes, function ($a, $b) {
             return $a['date'] < $b['date'];
         });
+
         $afterLiveCounter = 0;
         $livePassed = false;
-        $deleted = [];
-        foreach ($indexes as $indexName => $indexData) {
+        $operations = [];
+
+        foreach ($indexes as $realIndexName => $indexData) {
             if ($livePassed) {
                 ++$afterLiveCounter;
             }
+
             if ($indexData['is_live']) {
                 $livePassed = true;
             }
-            if ($livePassed && $afterLiveCounter > 2) {
-                // Remove!
-                $this->client->getIndex($indexName)->delete();
-                $deleted[] = $indexName;
+
+            if ($livePassed && $afterLiveCounter > 1) {
+                // Remove
+                $this->client->getIndex($realIndexName)->delete();
+                $operations[] = sprintf('%s deleted.', $realIndexName);
+            } elseif ($livePassed && 1 === $afterLiveCounter) {
+                // Close
+                $this->client->getIndex($realIndexName)->close();
+                $operations[] = sprintf('%s closed.', $realIndexName);
             }
         }
 
-        return $deleted;
+        return $operations;
     }
 }

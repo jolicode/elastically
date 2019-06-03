@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
+use Elastica\Exception\InvalidException;
+use Elastica\Exception\ResponseException;
+use Elastica\Index;
+use Elastica\Index\Settings;
 use JoliCode\Elastically\IndexBuilder;
 
 final class IndexBuilderTest extends BaseTestCase
@@ -17,7 +21,7 @@ final class IndexBuilderTest extends BaseTestCase
     {
         $indexBuilder = $this->getIndexBuilder();
 
-        $this->expectException(\Elastica\Exception\InvalidException::class);
+        $this->expectException(InvalidException::class);
         $indexBuilder->createIndex('wrongname');
     }
 
@@ -26,7 +30,7 @@ final class IndexBuilderTest extends BaseTestCase
         $indexBuilder = $this->getIndexBuilder();
 
         $index = $indexBuilder->createIndex('empty');
-        $this->assertInstanceOf(\Elastica\Index::class, $index);
+        $this->assertInstanceOf(Index::class, $index);
 
         $mapping = $index->getMapping();
         $this->assertEmpty($mapping);
@@ -37,7 +41,7 @@ final class IndexBuilderTest extends BaseTestCase
         $indexBuilder = $this->getIndexBuilder();
 
         $index = $indexBuilder->createIndex('beers');
-        $this->assertInstanceOf(\Elastica\Index::class, $index);
+        $this->assertInstanceOf(Index::class, $index);
 
         $mapping = $index->getMapping();
 
@@ -49,7 +53,7 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertEmpty($aliases);
 
         $settings = $index->getSettings();
-        $this->assertInstanceOf(\Elastica\Index\Settings::class, $settings);
+        $this->assertInstanceOf(Settings::class, $settings);
         $this->assertEmpty($settings->get('analysis'));
     }
 
@@ -58,10 +62,10 @@ final class IndexBuilderTest extends BaseTestCase
         $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
 
         $index = $indexBuilder->createIndex('hop');
-        $this->assertInstanceOf(\Elastica\Index::class, $index);
+        $this->assertInstanceOf(Index::class, $index);
 
         $settings = $index->getSettings();
-        $this->assertInstanceOf(\Elastica\Index\Settings::class, $settings);
+        $this->assertInstanceOf(Settings::class, $settings);
 
         $this->assertIsArray($settings->get('analysis'));
         $this->assertNotEmpty($settings->get('analysis'));
@@ -72,9 +76,49 @@ final class IndexBuilderTest extends BaseTestCase
         $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
 
         $index = $indexBuilder->createIndex('hop');
-        $this->assertInstanceOf(\Elastica\Index::class, $index);
+        $this->assertInstanceOf(Index::class, $index);
 
         $this->assertNotEquals('hop', $index->getName());
         $this->assertEquals('hop', IndexBuilder::getPureIndexName($index->getName()));
+    }
+
+    public function testPurgeAndCloseOldIndices(): void
+    {
+        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
+
+        $index1 = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index1);
+
+        usleep(1200000); // 1,2 second
+
+        $index2 = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index2);
+
+        usleep(1200000); // 1,2 second
+
+        $index3 = $indexBuilder->createIndex('hop');
+        $indexBuilder->markAsLive($index3, 'hop');
+        $this->assertInstanceOf(Index::class, $index3);
+
+        usleep(1200000); // 1,2 second
+
+        $index4 = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index4);
+
+        $operations = $indexBuilder->purgeOldIndices('hop');
+
+        $this->assertCount(2, $operations);
+
+        $this->assertFalse($index1->exists());
+        $this->assertTrue($index2->exists());
+        $this->assertTrue($index3->exists());
+        $this->assertTrue($index4->exists()); // Do not delete indexes in the future of the current one
+
+        try {
+            $index2->search();
+            $this->assertFalse(true, 'Search should throw a "closed index" exception.');
+        } catch (ResponseException $e) {
+            $this->assertStringContainsStringIgnoringCase('closed', $e->getMessage());
+        }
     }
 }
