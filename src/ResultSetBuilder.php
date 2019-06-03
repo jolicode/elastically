@@ -56,11 +56,12 @@ class ResultSetBuilder implements BuilderInterface
     {
         $pureIndexName = IndexBuilder::getPureIndexName($indexName);
         $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
-
         if (!isset($indexToClass[$pureIndexName])) {
             throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $pureIndexName, Client::CONFIG_INDEX_CLASS_MAPPING));
         }
 
-        return $this->client->getSerializer()->denormalize($data, $indexToClass[$pureIndexName]);
+        $context = $this->client->getSerializerContext($indexToClass[$pureIndexName]);
+
+        return $this->client->getSerializer()->denormalize($data, $indexToClass[$pureIndexName], null, $context);
     }
 }

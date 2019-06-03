@@ -3,7 +3,6 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Bulk;
-use Elastica\Client;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Index;
@@ -29,8 +28,9 @@ class Indexer
     public function scheduleIndex($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (!is_string($document->getData())) {
-            $document->setData($this->serializer->serialize($document->getData(), 'json'));
+        if (is_object($document->getData())) {
+            $context = $this->client->getSerializerContext(get_class($document->getData()));
+            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_INDEX);
@@ -54,8 +54,9 @@ class Indexer
     public function scheduleUpdate($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (!is_string($document->getData())) {
-            $document->setData($this->serializer->serialize($document->getData(), 'json'));
+        if (is_object($document->getData())) {
+            $context = $this->client->getSerializerContext(get_class($document->getData()));
+            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_UPDATE);
@@ -68,8 +69,9 @@ class Indexer
     public function scheduleCreate($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (!is_string($document->getData())) {
-            $document->setData($this->serializer->serialize($document->getData(), 'json'));
+        if (is_object($document->getData())) {
+            $context = $this->client->getSerializerContext(get_class($document->getData()));
+            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_CREATE);

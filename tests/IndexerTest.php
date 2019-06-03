@@ -33,10 +33,36 @@ final class IndexerTest extends BaseTestCase
         $indexer->refresh($indexName);
 
         $client = $this->getClient();
-        $document = $client->getIndex($indexName)->getDocument('f'); // @todo Document DATA is not the DTO here, call getModel?
+        $document = $client->getIndex($indexName)->getDocument('f');
 
         $this->assertInstanceOf(Document::class, $document);
         $this->assertEquals('f', $document->getId());
+    }
+
+    public function testIndexOneDocumentWithMapping(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+        $client = $this->getClient();
+        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
+            $indexName => TestDTO::class,
+        ]);
+
+        $dto = new TestDTO();
+        $dto->bar = 'I like unicorns.';
+        $dto->foo = 'Why is the sky blue?';
+
+        $indexer = $client->getIndexer();
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $indexer->flush();
+
+        $indexer->refresh($indexName);
+
+        $model = $client->getIndex($indexName)->getModel('f');
+
+        $this->assertInstanceOf(TestDTO::class, $model);
+        $this->assertEquals($dto->bar, $model->bar);
+        $this->assertEquals($dto->foo, $model->foo);
     }
 
     public function testIndexMultipleDocuments(): void
@@ -128,6 +154,46 @@ final class IndexerTest extends BaseTestCase
 
         $this->assertInstanceOf(ResponseSet::class, $response);
         $this->assertFalse($response->hasError());
+    }
+
+    public function testCustomSerializerContext(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+
+        $client = $this->getClient();
+        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
+            $indexName => TestDTO::class,
+        ]);
+        $client->setConfigValue(Client::CONFIG_SERIALIZER_CONTEXT_PER_CLASS, [
+            TestDTO::class => ['attributes' => ['foo']],
+        ]);
+
+        $dto = new TestDTO();
+        $dto->bar = 'I like unicorns.';
+        $dto->foo = 'Why is the sky blue?';
+
+        $indexer = $client->getIndexer();
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $indexer->flush();
+
+        $indexer->refresh($indexName);
+
+        $model = $client->getIndex($indexName)->getModel('f');
+
+        $this->assertInstanceOf(TestDTO::class, $model);
+        $this->assertEquals($dto->foo, $model->foo);
+        $this->assertEmpty($model->bar);
+
+        // Also work on read
+        $client->setConfigValue(Client::CONFIG_SERIALIZER_CONTEXT_PER_CLASS, [
+            TestDTO::class => ['attributes' => ['yolo']],
+        ]);
+
+        $model = $client->getIndex($indexName)->getModel('f');
+
+        $this->assertInstanceOf(TestDTO::class, $model);
+        $this->assertEmpty($model->foo);
+        $this->assertEmpty($model->bar);
     }
 }
 
