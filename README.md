@@ -145,13 +145,31 @@ When running indexation of lots of documents, this setting allow you to fine-tun
 
 ## Using Jane for DTO and fast Normalizers
 
-To write.
+Install [JanePHP](https://jane.readthedocs.io/) and the model generator to build your own DTO and Normalizers. Then create your Serializer like this:
+
+```php
+$normalizers = \Elasticsearch\Normalizer\NormalizerFactory::create();
+$encoders = [
+    new JsonEncoder(
+       new JsonEncode([JsonEncode::OPTIONS => \JSON_UNESCAPED_SLASHES]),
+       new JsonDecode([JsonDecode::ASSOCIATIVE => false])
+    )
+];
+
+$serializer = new Serializer($normalizers, $encoders);
+
+$client = new Client([
+    Client::CONFIG_SERIALIZER => $serializer,
+]);
+```
 
 ## To be done
 
 - some "todo" in the code
+- serializer options (by index?!)
 - optional Doctrine connector
 - better logger
+- travis-ci setup
 - optional Symfony integration (DIC)
   - web debug toolbar!
 - scripts / commands for common tasks:
