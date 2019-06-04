@@ -4,6 +4,8 @@
 
 ![Under Construction](https://jolicode.com/media/original/2019/construction.gif "Optional title")
 
+[![Build Status](https://travis-ci.org/jolicode/elastically.svg?branch=master)](https://travis-ci.org/jolicode/elastically)
+
 **Feedback welcome!**
 
 Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch implementations.
