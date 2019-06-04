@@ -77,7 +77,7 @@ class IndexBuilder
 
     public function migrate(Index $current, Index $new)
     {
-        // @todo Waiting for https://github.com/ruflin/Elastica/pull/1494 to be completed
+        // @todo Waiting for https://github.com/ruflin/Elastica/pull/1637 to be merged
         // This method should use the TASK API, because we do not want to WAIT for the reindex (HTTP Timeout issues).
     }
 

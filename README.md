@@ -180,7 +180,7 @@ $client = new Client([
 
 - some "todo" in the code
 - optional Doctrine connector
-- better logger
+- better logger - maybe via a processor? extending _log is supposed to be deprecated :(
 - travis-ci setup
 - optional Symfony integration (DIC)
   - web debug toolbar!
