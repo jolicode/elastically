@@ -2,9 +2,12 @@ test: ## Run test suite
 	./vendor/bin/phpunit --bootstrap vendor/autoload.php --testdox --colors=always tests
 
 start: ## Start testing tools (Elasticsearch)
-	docker run -p 9200:9200 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch-oss:7.1.1
+	docker run -d --name "elastically_es" -p 9200:9200 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch-oss:7.1.1
 
-kibana: ## Start debug tools
+stop: ## Stop testing tools (Elasticsearch)
+	docker stop "elastically_es"
+
+kibana: ## Start debug tools (Kibana)
 	docker run -e "ELASTICSEARCH_HOSTS=http://127.0.0.1:9200/" --network host docker.elastic.co/kibana/kibana-oss:7.1.1
 
 cs: ## Fix PHP CS
