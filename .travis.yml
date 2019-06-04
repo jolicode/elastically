@@ -1,0 +1,23 @@
+language: php
+
+services:
+    - docker
+
+cache:
+    directories:
+        - $HOME/.composer/cache/files
+
+matrix:
+    fast_finish: true
+    include:
+        - php: 7.2
+          env: TARGET=test
+        - php: 7.2
+          env: TARGET=test COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER=weak
+
+install:
+    - make start
+    - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
+
+script:
+    - make $TARGET
