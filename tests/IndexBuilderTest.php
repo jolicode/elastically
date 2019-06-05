@@ -8,6 +8,7 @@ use Elastica\Exception\InvalidException;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Index\Settings;
+use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 
 final class IndexBuilderTest extends BaseTestCase
@@ -71,6 +72,17 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertNotEmpty($settings->get('analysis'));
     }
 
+    public function testPrefixedIndexName(): void
+    {
+        $client = $this->getClient(__DIR__.'/configs_analysis');
+        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip_');
+        $indexBuilder = $client->getIndexBuilder();
+
+        $index = $indexBuilder->createIndex('hop');
+
+        $this->assertStringStartsWith('hip_hop', $index->getName());
+    }
+
     public function testGetBackThePureIndexName(): void
     {
         $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
@@ -79,7 +91,20 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertInstanceOf(Index::class, $index);
 
         $this->assertNotEquals('hop', $index->getName());
-        $this->assertEquals('hop', IndexBuilder::getPureIndexName($index->getName()));
+        $this->assertEquals('hop', $indexBuilder->getPureIndexName($index->getName()));
+    }
+
+    public function testGetBackThePureIndexNamePrefixed(): void
+    {
+        $client = $this->getClient(__DIR__.'/configs_analysis');
+        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip_');
+        $indexBuilder = $client->getIndexBuilder();
+
+        $index = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index);
+
+        $this->assertNotEquals('hop', $index->getName());
+        $this->assertEquals('hop', $indexBuilder->getPureIndexName($index->getName()));
     }
 
     public function testPurgeAndCloseOldIndices(): void

@@ -49,6 +49,8 @@ class IndexBuilder
 
     public function markAsLive(Index $index, $indexName): Response
     {
+        $indexName = $this->client->getConfigValue(Client::CONFIG_INDEX_PREFIX).$indexName;
+
         $data = ['actions' => []];
 
         $data['actions'][] = ['remove' => ['index' => '*', 'alias' => $indexName]];
@@ -67,9 +69,11 @@ class IndexBuilder
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public static function getPureIndexName($indexName): string
+    public function getPureIndexName($indexName): string
     {
-        if (1 === preg_match('/(.+)_\d{4}-\d{2}-\d{2}-\d+/i', $indexName, $matches)) {
+        $prefix = $this->client->getConfigValue(Client::CONFIG_INDEX_PREFIX);
+        $pattern = sprintf('/%s(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($prefix, '/'));
+        if (1 === preg_match($pattern, $indexName, $matches)) {
             return $matches[1];
         }
 
@@ -84,6 +88,8 @@ class IndexBuilder
 
     public function purgeOldIndices($indexName): array
     {
+        $indexName = $this->client->getConfigValue(Client::CONFIG_INDEX_PREFIX).$indexName;
+
         $stateRequest = new State();
         $stateRequest->setParams([
             'filter_path' => 'metadata.indices.*.state,metadata.indices.*.aliases',
