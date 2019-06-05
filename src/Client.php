@@ -14,6 +14,7 @@ class Client extends ElasticaClient
     /* Elastically config keys */
     const CONFIG_MAPPINGS_DIRECTORY = 'elastically_mappings_directory';
     const CONFIG_INDEX_CLASS_MAPPING = 'elastically_index_class_mapping';
+    const CONFIG_INDEX_PREFIX = 'elastically_index_prefix';
     const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = 'elastically_serializer_context_per_class';
     const CONFIG_SERIALIZER = 'elastically_serializer';
     const CONFIG_BULK_SIZE = 'elastically_bulk_size';
@@ -36,6 +37,8 @@ class Client extends ElasticaClient
 
     public function getIndex($name): Index
     {
+        $name = $this->getConfigValue(self::CONFIG_INDEX_PREFIX).$name;
+
         return new Index($this, $name);
     }
 
