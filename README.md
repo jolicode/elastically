@@ -95,7 +95,7 @@ $indexBuilder->markAsLive($index, 'beers');
 $indexBuilder->purgeOldIndices('beers');
 ```
 
-*configs/beers.yaml*
+*configs/beers_mapping.yaml*
 
 ```yaml
 # Anything you want, no validation
@@ -178,12 +178,27 @@ $client = new Client([
 ]);
 ```
 
+## Usage in Symfony
+
+Just declare the proper service in `services.yaml`:
+
+```yaml
+JoliCode\Elastically\Client:
+    arguments:
+        $config:
+            log: '%kernel.debug%'
+            host: '%env(ELASTICSEARCH_HOST)%'
+            elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
+            elastically_index_class_mapping:
+                my_index_name: \App\Model\MyModel
+            elastically_bulk_size: 100
+```
+
 ## To be done
 
 - some "todo" in the code
 - optional Doctrine connector
 - better logger - maybe via a processor? extending _log is supposed to be deprecated :(
-- travis-ci setup
 - optional Symfony integration (DIC)
   - web debug toolbar!
 - scripts / commands for common tasks:
