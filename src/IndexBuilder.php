@@ -7,6 +7,7 @@ use Elastica\Exception\RuntimeException;
 use Elastica\Index;
 use Elastica\Request;
 use Elastica\Response;
+use Elasticsearch\Endpoints\Cluster\State;
 use Symfony\Component\Yaml\Yaml;
 
 class IndexBuilder
@@ -83,9 +84,14 @@ class IndexBuilder
 
     public function purgeOldIndices($indexName): array
     {
-        $aliases = $this->client->requestEndpoint(new \Elasticsearch\Endpoints\Indices\Alias\Get());
+        $stateRequest = new State();
+        $stateRequest->setParams([
+            'filter_path' => 'metadata.indices.*.state,metadata.indices.*.aliases',
+        ]);
 
-        $indexes = $aliases->getData();
+        $indexes = $this->client->requestEndpoint($stateRequest);
+        $indexes = $indexes->getData();
+        $indexes = $indexes['metadata']['indices'];
 
         foreach ($indexes as $realIndexName => &$data) {
             if (0 !== strpos($realIndexName, $indexName)) {
@@ -95,7 +101,7 @@ class IndexBuilder
 
             $date = \DateTime::createFromFormat('Y-m-d-His', str_replace($indexName.'_', '', $realIndexName));
             $data['date'] = $date;
-            $data['is_live'] = isset($data['aliases'][$indexName]);
+            $data['is_live'] = false !== array_search($indexName, $data['aliases']);
         }
 
         // Newest first
