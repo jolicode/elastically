@@ -1,4 +1,4 @@
-analyzers:
+analyzer:
     beer_name:
         tokenizer: standard
         filter:
