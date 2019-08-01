@@ -5,6 +5,7 @@ namespace JoliCode\Elastically;
 use Elastica\Client as ElasticaClient;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -49,6 +50,7 @@ class Client extends ElasticaClient
         // Use a minimal default serializer
         return new Serializer([
             new ArrayDenormalizer(),
+            new DateTimeNormalizer(),
             new ObjectNormalizer(),
         ], [
             new JsonEncoder(),
