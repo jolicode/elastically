@@ -3,6 +3,7 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Client as ElasticaClient;
+use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -51,7 +52,7 @@ class Client extends ElasticaClient
         return new Serializer([
             new ArrayDenormalizer(),
             new DateTimeNormalizer(),
-            new ObjectNormalizer(),
+            new ObjectNormalizer(null, null, null, new PhpDocExtractor()),
         ], [
             new JsonEncoder(),
         ]);
