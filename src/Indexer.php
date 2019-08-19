@@ -42,7 +42,7 @@ class Indexer
 
     public function scheduleDelete($index, $id)
     {
-        $document = new Document($id);
+        $document = new Document($id, '', '_doc');
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         $this->getCurrentBulk()->addAction(new Bulk\Action\DeleteDocument($document));
 
