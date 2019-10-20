@@ -49,7 +49,7 @@ class IndexBuilder
 
     public function markAsLive(Index $index, $indexName): Response
     {
-        $indexName = $this->client->getConfigValue(Client::CONFIG_INDEX_PREFIX).$indexName;
+        $indexName = $this->client->getPrefixedIndex($indexName);
 
         $data = ['actions' => []];
 
@@ -59,6 +59,9 @@ class IndexBuilder
         return $this->client->request('_aliases', Request::POST, $data);
     }
 
+    /**
+     * @todo add tests
+     */
     public function slowDownRefresh(Index $index): void
     {
         $index->getSettings()->setRefreshInterval('60s');
@@ -69,17 +72,6 @@ class IndexBuilder
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public function getPureIndexName($indexName): string
-    {
-        $prefix = $this->client->getConfigValue(Client::CONFIG_INDEX_PREFIX);
-        $pattern = sprintf('/%s(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($prefix, '/'));
-        if (1 === preg_match($pattern, $indexName, $matches)) {
-            return $matches[1];
-        }
-
-        return $indexName;
-    }
-
     public function migrate(Index $current, Index $new)
     {
         // @todo Waiting for https://github.com/ruflin/Elastica/pull/1637 to be merged
@@ -88,7 +80,7 @@ class IndexBuilder
 
     public function purgeOldIndices($indexName): array
     {
-        $indexName = $this->client->getConfigValue(Client::CONFIG_INDEX_PREFIX).$indexName;
+        $indexName = $this->client->getPrefixedIndex($indexName);
 
         $stateRequest = new State();
         $stateRequest->setParams([

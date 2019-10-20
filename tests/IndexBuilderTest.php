@@ -75,7 +75,7 @@ final class IndexBuilderTest extends BaseTestCase
     public function testPrefixedIndexName(): void
     {
         $client = $this->getClient(__DIR__.'/configs_analysis');
-        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip_');
+        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
         $indexBuilder = $client->getIndexBuilder();
 
         $index = $indexBuilder->createIndex('hop');
@@ -83,28 +83,51 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertStringStartsWith('hip_hop', $index->getName());
     }
 
-    public function testGetBackThePureIndexName(): void
+    public function testCohabitationOfPrefixedIndexName(): void
     {
-        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
+        $client1 = $this->getClient(__DIR__.'/configs_analysis');
+        $client1->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
 
-        $index = $indexBuilder->createIndex('hop');
-        $this->assertInstanceOf(Index::class, $index);
+        $indexBuilder = $client1->getIndexBuilder();
+        $index1 = $indexBuilder->createIndex('hop');
 
-        $this->assertNotEquals('hop', $index->getName());
-        $this->assertEquals('hop', $indexBuilder->getPureIndexName($index->getName()));
+        $this->assertStringStartsWith('hip_hop', $index1->getName());
+
+        $client2 = $this->getClient(__DIR__.'/configs_analysis');
+        $client2->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'testing');
+
+        $indexBuilder = $client2->getIndexBuilder();
+        $index2 = $indexBuilder->createIndex('hop');
+
+        $this->assertStringStartsWith('testing_hop', $index2->getName());
+
+        $this->assertTrue($index1->exists());
+        $this->assertTrue($index2->exists());
     }
 
-    public function testGetBackThePureIndexNamePrefixed(): void
+    public function testGetBackThePureIndexName(): void
     {
         $client = $this->getClient(__DIR__.'/configs_analysis');
-        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip_');
         $indexBuilder = $client->getIndexBuilder();
 
         $index = $indexBuilder->createIndex('hop');
         $this->assertInstanceOf(Index::class, $index);
 
         $this->assertNotEquals('hop', $index->getName());
-        $this->assertEquals('hop', $indexBuilder->getPureIndexName($index->getName()));
+        $this->assertEquals('hop', $client->getPureIndexName($index->getName()));
+    }
+
+    public function testGetBackThePureIndexNamePrefixed(): void
+    {
+        $client = $this->getClient(__DIR__.'/configs_analysis');
+        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
+        $indexBuilder = $client->getIndexBuilder();
+
+        $index = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index);
+
+        $this->assertNotEquals('hop', $index->getName());
+        $this->assertEquals('hop', $client->getPureIndexName($index->getName()));
     }
 
     public function testPurgeAndCloseOldIndices(): void

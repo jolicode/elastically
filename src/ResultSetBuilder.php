@@ -54,7 +54,7 @@ class ResultSetBuilder implements BuilderInterface
 
     public function buildModelFromIndexAndData($indexName, $data)
     {
-        $pureIndexName = $this->client->getIndexBuilder()->getPureIndexName($indexName);
+        $pureIndexName = $this->client->getPureIndexName($indexName);
         $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
         if (!isset($indexToClass[$pureIndexName])) {
             throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $pureIndexName, Client::CONFIG_INDEX_CLASS_MAPPING));

@@ -22,10 +22,15 @@ class Client extends ElasticaClient
     const CONFIG_BULK_SIZE = 'elastically_bulk_size';
 
     private $indexer;
+    private $indexBuilder;
 
     public function getIndexBuilder(): IndexBuilder
     {
-        return new IndexBuilder($this, $this->getConfig(self::CONFIG_MAPPINGS_DIRECTORY));
+        if (!$this->indexBuilder) {
+            $this->indexBuilder = new IndexBuilder($this, $this->getConfig(self::CONFIG_MAPPINGS_DIRECTORY));
+        }
+
+        return $this->indexBuilder;
     }
 
     public function getIndexer(): Indexer
@@ -39,9 +44,37 @@ class Client extends ElasticaClient
 
     public function getIndex($name): Index
     {
-        $name = $this->getConfigValue(self::CONFIG_INDEX_PREFIX).$name;
+        $name = $this->getPrefixedIndex($name);
 
         return new Index($this, $name);
+    }
+
+    public function getPrefixedIndex($pureName): string
+    {
+        $prefix = $this->getConfigValue(self::CONFIG_INDEX_PREFIX);
+
+        if ($prefix) {
+            return sprintf('%s_%s', $prefix, $pureName);
+        } else {
+            return $pureName;
+        }
+    }
+
+    public function getPureIndexName($indexName): string
+    {
+        $prefix = $this->getConfigValue(Client::CONFIG_INDEX_PREFIX);
+
+        if ($prefix) {
+            $pattern = sprintf('/%s_(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($prefix, '/'));
+        } else {
+            $pattern = '/(.+)_\d{4}-\d{2}-\d{2}-\d+/i';
+        }
+
+        if (1 === preg_match($pattern, $indexName, $matches)) {
+            return $matches[1];
+        }
+
+        return $indexName;
     }
 
     public function getSerializer(): SerializerInterface
