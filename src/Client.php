@@ -49,18 +49,17 @@ class Client extends ElasticaClient
         return new Index($this, $name);
     }
 
-    public function getPrefixedIndex($pureName): string
+    public function getPrefixedIndex(string $name): string
     {
         $prefix = $this->getConfigValue(self::CONFIG_INDEX_PREFIX);
-
         if ($prefix) {
-            return sprintf('%s_%s', $prefix, $pureName);
-        } else {
-            return $pureName;
+            return sprintf('%s_%s', $prefix, $name);
         }
+
+        return $name;
     }
 
-    public function getPureIndexName($indexName): string
+    public function getPureIndexName(string $fullIndexName): string
     {
         $prefix = $this->getConfigValue(Client::CONFIG_INDEX_PREFIX);
 
@@ -70,11 +69,11 @@ class Client extends ElasticaClient
             $pattern = '/(.+)_\d{4}-\d{2}-\d{2}-\d+/i';
         }
 
-        if (1 === preg_match($pattern, $indexName, $matches)) {
+        if (1 === preg_match($pattern, $fullIndexName, $matches)) {
             return $matches[1];
         }
 
-        return $indexName;
+        return $fullIndexName;
     }
 
     public function getSerializer(): SerializerInterface

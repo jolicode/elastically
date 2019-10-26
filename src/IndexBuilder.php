@@ -78,7 +78,7 @@ class IndexBuilder
         // This method should use the TASK API, because we do not want to WAIT for the reindex (HTTP Timeout issues).
     }
 
-    public function purgeOldIndices($indexName): array
+    public function purgeOldIndices(string $indexName): array
     {
         $indexName = $this->client->getPrefixedIndex($indexName);
 
