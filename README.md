@@ -166,6 +166,12 @@ When running indexation of lots of documents, this setting allow you to fine-tun
 
 _Default to 100._
 
+### Client::CONFIG_INDEX_PREFIX (optional)
+    
+Add a prefix to all indexes and aliases created via Elastically.
+
+_Default to `null`._
+
 ## Using Jane for DTO and fast Normalizers
 
 Install [JanePHP](https://jane.readthedocs.io/) and the model generator to build your own DTO and Normalizers. Then create your Serializer like this:
