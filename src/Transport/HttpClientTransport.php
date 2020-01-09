@@ -13,17 +13,18 @@ use Elastica\Util;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Implement Symfony HttpClient as an Elastica Transport
+ * Implement Symfony HttpClient as an Elastica Transport.
  */
 class HttpClientTransport extends AbstractTransport
 {
     private $client;
 
     /**
-     * Elastica Connection does not have this option
+     * Elastica Connection does not have this option.
      */
     private $scheme;
 
@@ -49,7 +50,6 @@ class HttpClientTransport extends AbstractTransport
             'json' => $request->getData(),
         ];
 
-
         if ($connection->getTimeout()) {
             $options['timeout'] = $connection->getTimeout();
         }
@@ -62,14 +62,13 @@ class HttpClientTransport extends AbstractTransport
         try {
             $response = $this->client->request($request->getMethod(), $this->_getUri($request, $connection), $options);
             $elasticaResponse = new Response($response->getContent(), $response->getStatusCode());
-        } catch (ClientException $e) {
-            $elasticaResponse = new Response($response->getContent(false), $response->getStatusCode());
-            throw new ResponseException($request, $elasticaResponse);
-        } catch (ServerException $e) {
+        } catch (ClientException | ServerException $e) {
             $elasticaResponse = new Response($response->getContent(false), $response->getStatusCode());
             throw new ResponseException($request, $elasticaResponse);
         } catch (HttpExceptionInterface $e) {
             throw new HttpException($e->getCode(), $request);
+        } catch (TransportExceptionInterface $e) {
+            throw new HttpException($e->getMessage(), $request);
         }
 
         if ($connection->hasConfig('bigintConversion')) {
