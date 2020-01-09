@@ -16,6 +16,7 @@ Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bo
 - Analysis is separated from mappings;
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
 - Designed for Elasticsearch 7+ (no types), compatible with both ES 6 and ES 7;
+- Symfony Messenger Handler support;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
 ## Demo
@@ -207,6 +208,8 @@ JoliCode\Elastically\Client:
                 my_index_name: \App\Model\MyModel
             elastically_bulk_size: 100
 ```
+
+> todo, document the Messenger Handler usage.
 
 ## To be done
 
