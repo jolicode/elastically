@@ -10,12 +10,12 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 abstract class IndexationRequestHandler implements MessageHandlerInterface
 {
-    const OP_INDEX = 'index';
-    const OP_DELETE = 'delete';
-    const OP_UPDATE = 'update';
-    const OP_CREATE = 'create';
+    public const OP_INDEX = 'index';
+    public const OP_DELETE = 'delete';
+    public const OP_UPDATE = 'update';
+    public const OP_CREATE = 'create';
 
-    const OPS = [
+    public const OPERATIONS = [
         self::OP_INDEX,
         self::OP_DELETE,
         self::OP_UPDATE,
@@ -42,7 +42,7 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
             throw new UnrecoverableMessageHandlingException(sprintf('The given type (%s) does not exist!', $message->getType()));
         }
 
-        if (self::OP_DELETE === $message->getOp()) {
+        if (self::OP_DELETE === $message->getOperation()) {
             $indexer->scheduleDelete($indexName, $message->getId());
             $indexer->flush();
 
@@ -59,7 +59,7 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
             return;
         }
 
-        switch ($message->getOp()) {
+        switch ($message->getOperation()) {
             case self::OP_INDEX:
                 $indexer->scheduleIndex($indexName, new Document($message->getId(), $model, '_doc'));
                 break;
