@@ -56,7 +56,7 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
         $indexName = array_search($indexationRequest->getClassName(), $indexToClass, true);
 
         if (!$indexName) {
-            throw new UnrecoverableMessageHandlingException(sprintf('The given type (%s) does not exist!', $indexationRequest->getClassName()));
+            throw new UnrecoverableMessageHandlingException(sprintf('The given type (%s) does not exist.', $indexationRequest->getClassName()));
         }
 
         if (self::OP_DELETE === $indexationRequest->getOperation()) {
