@@ -17,6 +17,7 @@ Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bo
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
 - Designed for Elasticsearch 7+ (no types), compatible with both ES 6 and ES 7;
 - Symfony Messenger Handler support (with or without spool);
+- Symfony HttpClient compatible transport;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
 ## Demo
@@ -189,6 +190,21 @@ JoliCode\Elastically\Client:
             elastically_index_class_mapping:
                 my_index_name: \App\Model\MyModel
             elastically_bulk_size: 100
+```
+
+### Using HttpClient as Transport
+
+You can also use the Symfony HttpClient for all Elastica communications:
+
+```yaml
+JoliCode\Elastically\Transport\HttpClientTransport: ~
+
+JoliCode\Elastically\Client:
+    arguments:
+        $config:
+            host: '%env(ELASTICSEARCH_HOST)%'
+            transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
+            ...
 ```
 
 ### Using Messenger for async indexing
