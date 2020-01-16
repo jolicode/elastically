@@ -209,6 +209,8 @@ JoliCode\Elastically\Client:
             elastically_bulk_size: 100
 ```
 
+### Using HttpClient as Transport
+
 You can also use the Symfony HttpClient for all Elastica communications:
 
 ```yaml
