@@ -2,19 +2,19 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-final class IndexationRequest
+final class IndexationRequest implements IndexationRequestInterface
 {
     private $operation;
-    private $type;
+    private $className;
     private $id;
 
-    public function __construct(string $type, string $id, string $operation = IndexationRequestHandler::OP_INDEX)
+    public function __construct(string $className, string $id, string $operation = IndexationRequestHandler::OP_INDEX)
     {
         if (!in_array($operation, IndexationRequestHandler::OPERATIONS, true)) {
             throw new \InvalidArgumentException(sprintf('Not supported operation "%s" given.', $operation));
         }
 
-        $this->type = $type;
+        $this->className = $className;
         $this->id = $id;
         $this->operation = $operation;
     }
@@ -24,9 +24,9 @@ final class IndexationRequest
         return $this->operation;
     }
 
-    public function getType(): string
+    public function getClassName(): string
     {
-        return $this->type;
+        return $this->className;
     }
 
     public function getId(): string

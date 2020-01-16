@@ -7,8 +7,13 @@ namespace JoliCode\Elastically\Tests\Messenger;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\IndexationRequestHandler;
+use JoliCode\Elastically\Messenger\IndexationRequestInterface;
+use JoliCode\Elastically\Messenger\MultipleIndexationRequest;
 use JoliCode\Elastically\ResultSet;
 use JoliCode\Elastically\Tests\BaseTestCase;
+use Symfony\Component\Messenger\Handler\HandlersLocator;
+use Symfony\Component\Messenger\MessageBus;
+use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 
 final class IndexationRequestHandlerTest extends BaseTestCase
 {
@@ -40,6 +45,31 @@ final class IndexationRequestHandlerTest extends BaseTestCase
         $this->assertInstanceOf(TestDTO::class, $index->getModel('ref7777'));
         $this->assertInstanceOf(TestDTO::class, $index->getModel('ref8888'));
     }
+
+    public function testGroupedMessagesAreHandled(): void
+    {
+        $handler = $this->getMockBuilder(TestHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $handler
+            ->expects($this->exactly(2))
+            ->method('__invoke')
+        ;
+
+        $bus = new MessageBus([
+            new HandleMessageMiddleware(new HandlersLocator([
+                IndexationRequestInterface::class => [$handler],
+            ])),
+        ]);
+
+        $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567890'));
+        $bus->dispatch(new MultipleIndexationRequest([
+            new IndexationRequest(TestDTO::class, '1234567892'),
+            new IndexationRequest(TestDTO::class, '1234567894'),
+        ]));
+    }
 }
 
 class TestDTO
@@ -50,7 +80,7 @@ class TestDTO
 
 class TestHandler extends IndexationRequestHandler
 {
-    public function fetchModel(string $type, string $id)
+    public function fetchModel(string $className, string $id)
     {
         $dto = new TestDTO();
         $dto->bar = 'todo';

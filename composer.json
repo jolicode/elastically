@@ -26,7 +26,9 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
         "phpunit/phpunit": "^8",
-        "symfony/messenger": "^4.3|^5.0"
+        "symfony/messenger": "^4.3|^5.0",
+        "symfony/framework-bundle": "^4.3|^5.0",
+        "symfony/http-foundation": "^4.3|^5.0"
     },
     "autoload": {
         "psr-4": {

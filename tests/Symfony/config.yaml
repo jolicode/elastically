@@ -1,0 +1,53 @@
+# Old style, all the config in one place.
+
+framework:
+    secret: 'Bloubigoulba'
+    php_errors:
+        log: true
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            async: 'in-memory:///' # Should be a real async transport. For testing we cheat.
+            queuing: 'in-memory:///'
+
+        routing:
+            'JoliCode\Elastically\Messenger\MultipleIndexationRequest': async
+            'JoliCode\Elastically\Messenger\IndexationRequest': queuing
+
+services:
+    _defaults:
+        public: true
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    messenger.transport.queuing.test:
+        public: true
+        alias: messenger.transport.queuing
+
+    messenger.transport.async.test:
+        public: true
+        alias: messenger.transport.async
+
+    dummy:
+        class: \stdClass
+        arguments:
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+
+    JoliCode\Elastically\Client:
+        arguments:
+            $config:
+                log: '%kernel.debug%'
+                host: 'localhost'
+                elastically_mappings_directory: '%kernel.project_dir%/configs_analysis'
+                elastically_index_class_mapping:
+                    hop: \JoliCode\Elastically\Tests\Messenger\TestDTO
+                elastically_bulk_size: 100
+
+    JoliCode\Elastically\Messenger\IndexationRequestSpoolSubscriber:
+        arguments:
+            - '@messenger.transport.queuing'
+            - '@messenger.default_bus'
+        tags:
+            - { name: kernel.event_subscriber }

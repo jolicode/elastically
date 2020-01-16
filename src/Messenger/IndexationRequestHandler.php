@@ -4,6 +4,7 @@ namespace JoliCode\Elastically\Messenger;
 
 use Elastica\Document;
 use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Indexer;
 use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -32,50 +33,62 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
         $this->client->setLogger(new NullLogger());
     }
 
-    public function __invoke(IndexationRequest $message)
+    public function __invoke(IndexationRequestInterface $message)
     {
         $indexer = $this->client->getIndexer();
-        $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
-        $indexName = array_search($message->getType(), $indexToClass, true);
 
-        if (!$indexName) {
-            throw new UnrecoverableMessageHandlingException(sprintf('The given type (%s) does not exist!', $message->getType()));
+        if ($message instanceof MultipleIndexationRequest) {
+            foreach ($message->getOperations() as $operation) {
+                $this->schedule($indexer, $operation);
+            }
         }
 
-        if (self::OP_DELETE === $message->getOperation()) {
-            $indexer->scheduleDelete($indexName, $message->getId());
-            $indexer->flush();
-
-            return;
-        }
-
-        $model = $this->fetchModel($message->getType(), $message->getId());
-
-        if (!$model) {
-            // ID does not exists, delete
-            $indexer->scheduleDelete($indexName, $message->getId());
-            $indexer->flush();
-
-            return;
-        }
-
-        switch ($message->getOperation()) {
-            case self::OP_INDEX:
-                $indexer->scheduleIndex($indexName, new Document($message->getId(), $model, '_doc'));
-                break;
-            case self::OP_CREATE:
-                $indexer->scheduleCreate($indexName, new Document($message->getId(), $model, '_doc'));
-                break;
-            case self::OP_UPDATE:
-                $indexer->scheduleUpdate($indexName, new Document($message->getId(), $model, '_doc'));
-                break;
+        if ($message instanceof IndexationRequest) {
+            $this->schedule($indexer, $message);
         }
 
         $indexer->flush();
     }
 
+    private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
+    {
+        $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
+        $indexName = array_search($indexationRequest->getClassName(), $indexToClass, true);
+
+        if (!$indexName) {
+            throw new UnrecoverableMessageHandlingException(sprintf('The given type (%s) does not exist!', $indexationRequest->getClassName()));
+        }
+
+        if (self::OP_DELETE === $indexationRequest->getOperation()) {
+            $indexer->scheduleDelete($indexName, $indexationRequest->getId());
+
+            return;
+        }
+
+        $model = $this->fetchModel($indexationRequest->getClassName(), $indexationRequest->getId());
+
+        if (!$model) {
+            // ID does not exists, delete
+            $indexer->scheduleDelete($indexName, $indexationRequest->getId());
+
+            return;
+        }
+
+        switch ($indexationRequest->getOperation()) {
+            case self::OP_INDEX:
+                $indexer->scheduleIndex($indexName, new Document($indexationRequest->getId(), $model, '_doc'));
+                break;
+            case self::OP_CREATE:
+                $indexer->scheduleCreate($indexName, new Document($indexationRequest->getId(), $model, '_doc'));
+                break;
+            case self::OP_UPDATE:
+                $indexer->scheduleUpdate($indexName, new Document($indexationRequest->getId(), $model, '_doc'));
+                break;
+        }
+    }
+
     /**
      * Return a model (DTO) to send for indexation.
      */
-    abstract public function fetchModel(string $type, string $id);
+    abstract public function fetchModel(string $className, string $id);
 }
