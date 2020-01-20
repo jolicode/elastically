@@ -36,6 +36,10 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface
 
     public function onTerminate()
     {
+        if ($this->wasExceptionThrown) {
+            return;
+        }
+
         $operations = [];
 
         foreach ($this->singleTransport->get() as $envelope) {
