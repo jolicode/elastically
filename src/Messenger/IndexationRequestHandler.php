@@ -3,6 +3,7 @@
 namespace JoliCode\Elastically\Messenger;
 
 use Elastica\Document;
+use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
 use Psr\Log\NullLogger;
@@ -52,11 +53,10 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
 
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
     {
-        $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
-        $indexName = array_search($indexationRequest->getClassName(), $indexToClass, true);
-
-        if (!$indexName) {
-            throw new UnrecoverableMessageHandlingException(sprintf('The given type (%s) does not exist.', $indexationRequest->getClassName()));
+        try {
+            $indexName = $this->client->getIndexNameFromClass($indexationRequest->getClassName());
+        } catch (RuntimeException $e) {
+            throw new UnrecoverableMessageHandlingException('Cannot guess the Index for this request. Dropping the message.', 0, $e);
         }
 
         if (self::OP_DELETE === $indexationRequest->getOperation()) {

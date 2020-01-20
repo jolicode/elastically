@@ -188,7 +188,7 @@ JoliCode\Elastically\Client:
             host: '%env(ELASTICSEARCH_HOST)%'
             elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
             elastically_index_class_mapping:
-                my_index_name: \App\Model\MyModel
+                my_index_name: App\Model\MyModel
             elastically_bulk_size: 100
 ```
 
