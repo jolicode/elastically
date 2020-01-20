@@ -42,7 +42,7 @@ services:
                 host: 'localhost'
                 elastically_mappings_directory: '%kernel.project_dir%/configs_analysis'
                 elastically_index_class_mapping:
-                    hop: \JoliCode\Elastically\Tests\Messenger\TestDTO
+                    hop: JoliCode\Elastically\Tests\Messenger\TestDTO
                 elastically_bulk_size: 100
 
     JoliCode\Elastically\Messenger\IndexationRequestSpoolSubscriber:
