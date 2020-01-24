@@ -209,7 +209,7 @@ JoliCode\Elastically\Client:
 
 ### Using Messenger for async indexing
 
-Elastically ship a default Message and Handler for Symfony Messenger.
+Elastically ships with a default Message and Handler for Symfony Messenger.
 
 Register the message in your configuration:
 
