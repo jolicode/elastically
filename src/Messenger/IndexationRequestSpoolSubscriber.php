@@ -5,6 +5,7 @@ namespace JoliCode\Elastically\Messenger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
@@ -56,11 +57,20 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface
         $this->bus->dispatch($message);
     }
 
+    public function onResponse(ResponseEvent $event)
+    {
+        if (!$event->isMasterRequest()) {
+            return;
+        }
+
+        $this->onTerminate();
+    }
+
     public static function getSubscribedEvents()
     {
         $listeners = [
             KernelEvents::EXCEPTION => 'onException',
-            KernelEvents::TERMINATE => 'onTerminate',
+            KernelEvents::RESPONSE => 'onReponse',
             ConsoleEvents::ERROR => 'onException',
             ConsoleEvents::TERMINATE => 'onTerminate',
         ];

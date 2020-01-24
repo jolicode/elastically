@@ -11,7 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBus;
@@ -52,8 +53,11 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
         /* @var EventDispatcher $dispatcher */
         $dispatcher = self::$container->get('event_dispatcher');
 
-        // Simulate Kernel Terminate
-        $dispatcher->dispatch(new TerminateEvent(static::$kernel, new Request(), new Response()), KernelEvents::TERMINATE);
+        // Simulate Kernel Response
+        $dispatcher->dispatch(
+            new ResponseEvent(static::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
+            KernelEvents::RESPONSE
+        );
 
         $this->assertCount(3, $transport->getAcknowledged());
         $this->assertEmpty($transport->getRejected());
@@ -88,8 +92,11 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
         /* @var EventDispatcher $dispatcher */
         $dispatcher = self::$container->get('event_dispatcher');
 
-        // Simulate Kernel Terminate
-        $dispatcher->dispatch(new TerminateEvent(static::$kernel, new Request(), new Response()), KernelEvents::TERMINATE);
+        // Simulate Kernel Response
+        $dispatcher->dispatch(
+            new ResponseEvent(static::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
+            KernelEvents::RESPONSE
+        );
 
         $this->assertCount(0, $transport->getAcknowledged());
 
