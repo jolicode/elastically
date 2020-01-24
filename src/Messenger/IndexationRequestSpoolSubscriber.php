@@ -9,11 +9,12 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Same idea as https://github.com/symfony/swiftmailer-bundle/blob/master/EventListener/EmailSenderListener.php.
  */
-class IndexationRequestSpoolSubscriber implements EventSubscriberInterface
+class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, ResetInterface
 {
     private $logger;
 

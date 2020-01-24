@@ -6,7 +6,7 @@ final class MultipleIndexationRequest implements IndexationRequestInterface
 {
     private $operations = [];
 
-    public function __construct($operations)
+    public function __construct(array $operations)
     {
         $this->operations = $operations;
     }

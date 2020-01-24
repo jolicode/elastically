@@ -42,9 +42,7 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
             foreach ($message->getOperations() as $operation) {
                 $this->schedule($indexer, $operation);
             }
-        }
-
-        if ($message instanceof IndexationRequest) {
+        } elseif ($message instanceof IndexationRequest) {
             $this->schedule($indexer, $message);
         }
 

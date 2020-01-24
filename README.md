@@ -249,9 +249,9 @@ $ php bin/console messenger:consume async
 
 ### Grouping IndexationRequest in a spool
 
-Sending multiple `IndexationRequest` during the same Symfony Request is not always appropriate, it will trigger multiple Bulk operations. Elastically provides a Kernel terminate listener to group all the `IndexationRequest` in a single `MultipleIndexationRequest` message.
+Sending multiple `IndexationRequest` during the same Symfony Request is not always appropriate, it will trigger multiple Bulk operations. Elastically provides a Kernel listener to group all the `IndexationRequest` in a single `MultipleIndexationRequest` message.
 
-To use this mechanism, we send the simple `IndexationRequest` in a memory transport to be consumed and grouped in a really async transport:
+To use this mechanism, we send the `IndexationRequest` in a memory transport to be consumed and grouped in a really async transport:
 
 ```yaml
 messenger:
@@ -264,7 +264,7 @@ messenger:
         'JoliCode\Elastically\Messenger\IndexationRequest': queuing
 ```
 
-You also need to register the event:
+You also need to register the subscriber:
 
 ```yaml
 services:
