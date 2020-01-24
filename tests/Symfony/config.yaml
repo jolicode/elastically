@@ -1,6 +1,7 @@
 # Old style, all the config in one place.
 
 framework:
+    test: true
     secret: 'Bloubigoulba'
     php_errors:
         log: true

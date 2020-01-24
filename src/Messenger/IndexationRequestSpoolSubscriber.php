@@ -70,7 +70,7 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface
     {
         $listeners = [
             KernelEvents::EXCEPTION => 'onException',
-            KernelEvents::RESPONSE => 'onResponse',
+            KernelEvents::RESPONSE => ['onResponse', -10],
             ConsoleEvents::ERROR => 'onException',
             ConsoleEvents::TERMINATE => 'onTerminate',
         ];

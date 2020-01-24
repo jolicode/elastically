@@ -6,7 +6,6 @@ namespace JoliCode\Elastically\Tests\Messenger;
 
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\MultipleIndexationRequest;
-use JoliCode\Elastically\Tests\Symfony\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,8 +21,6 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 {
     public function testFrameworkQueue(): void
     {
-        $_SERVER['KERNEL_CLASS'] = TestKernel::class;
-
         static::bootKernel(['debug' => false]);
 
         /* @var InMemoryTransport $transport */
@@ -33,8 +30,6 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
     public function testFrameworkKernelTerminateResend(): void
     {
-        $_SERVER['KERNEL_CLASS'] = TestKernel::class;
-
         static::bootKernel(['debug' => false]);
 
         /* @var MessageBus $bus */
@@ -78,8 +73,6 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
     public function testFrameworkKernelTerminateWithNoMessage(): void
     {
-        $_SERVER['KERNEL_CLASS'] = TestKernel::class;
-
         static::bootKernel(['debug' => false]);
 
         /* @var MessageBus $bus */
