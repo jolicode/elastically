@@ -137,4 +137,9 @@ class Indexer
             $this->flush();
         }
     }
+
+    public function getBulkMaxSize(): int
+    {
+        return $this->bulkMaxSize;
+    }
 }

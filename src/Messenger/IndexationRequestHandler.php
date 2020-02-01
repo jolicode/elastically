@@ -3,12 +3,14 @@
 namespace JoliCode\Elastically\Messenger;
 
 use Elastica\Document;
+use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
 use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class IndexationRequestHandler implements MessageHandlerInterface
 {
@@ -26,9 +28,12 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
 
     private $client;
 
-    public function __construct(Client $client)
+    private $bus;
+
+    public function __construct(Client $client, MessageBusInterface $bus)
     {
         $this->client = $client;
+        $this->bus = $bus;
 
         // Disable the logs for memory concerns
         $this->client->setLogger(new NullLogger());
@@ -36,17 +41,45 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
 
     public function __invoke(IndexationRequestInterface $message)
     {
-        $indexer = $this->client->getIndexer();
-
+        $messages = [];
         if ($message instanceof MultipleIndexationRequest) {
-            foreach ($message->getOperations() as $operation) {
-                $this->schedule($indexer, $operation);
-            }
+            $messages = $message->getOperations();
         } elseif ($message instanceof IndexationRequest) {
-            $this->schedule($indexer, $message);
+            $messages = [$message];
         }
 
-        $indexer->flush();
+        $indexer = $this->client->getIndexer();
+        $originalBulkMaxSize = $indexer->getBulkMaxSize();
+        $initialQueueSize = $indexer->getQueueSize();
+
+        try {
+            $indexer->setBulkMaxSize($initialQueueSize + count($messages));
+
+            foreach ($messages as $erroneousMessage) {
+                $this->schedule($indexer, $erroneousMessage);
+            }
+
+            $indexer->flush();
+        } catch (ResponseException $exception) {
+            $erroneousMessages = [];
+            $allResponses = $exception->getResponseSet()->getBulkResponses();
+            $responses = array_slice($allResponses, $initialQueueSize);
+            foreach ($responses as $key => $response) {
+                if (!$response->isOk()) {
+                    $erroneousMessages[] = $messages[$key];
+                }
+            }
+
+            if (count($erroneousMessages) === count($messages)) {
+                throw $exception;
+            }
+
+            foreach ($erroneousMessages as $erroneousMessage) {
+                $this->bus->dispatch($erroneousMessage);
+            }
+        } finally {
+            $indexer->setBulkMaxSize($originalBulkMaxSize);
+        }
     }
 
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
