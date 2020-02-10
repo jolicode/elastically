@@ -55,7 +55,7 @@ class HttpClientTransport extends AbstractTransport
         }
 
         $proxy = $connection->getProxy();
-        if (!\is_null($proxy)) {
+        if (null !== $proxy) {
             $options['proxy'] = $proxy;
         }
 
@@ -68,7 +68,7 @@ class HttpClientTransport extends AbstractTransport
         } catch (HttpExceptionInterface $e) {
             throw new HttpException($e->getCode(), $request);
         } catch (TransportExceptionInterface $e) {
-            throw new HttpException($e->getMessage(), $request);
+            throw new HttpException($e->getCode(), $request);
         }
 
         if ($connection->hasConfig('bigintConversion')) {

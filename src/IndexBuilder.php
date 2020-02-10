@@ -5,6 +5,7 @@ namespace JoliCode\Elastically;
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\RuntimeException;
 use Elastica\Index;
+use Elastica\Reindex;
 use Elastica\Request;
 use Elastica\Response;
 use Elasticsearch\Endpoints\Cluster\State;
@@ -59,9 +60,6 @@ class IndexBuilder
         return $this->client->request('_aliases', Request::POST, $data);
     }
 
-    /**
-     * @todo add tests
-     */
     public function slowDownRefresh(Index $index): void
     {
         $index->getSettings()->setRefreshInterval('60s');
@@ -74,8 +72,10 @@ class IndexBuilder
 
     public function migrate(Index $current, Index $new)
     {
-        // @todo Waiting for https://github.com/ruflin/Elastica/pull/1637 to be merged
-        // This method should use the TASK API, because we do not want to WAIT for the reindex (HTTP Timeout issues).
+        $reindex = new Reindex($current, $new);
+        $reindex->setWaitForCompletion(Reindex::WAIT_FOR_COMPLETION_FALSE);
+
+        return $reindex->run();
     }
 
     public function purgeOldIndices(string $indexName): array
@@ -99,7 +99,7 @@ class IndexBuilder
 
             $date = \DateTime::createFromFormat('Y-m-d-His', str_replace($indexName.'_', '', $realIndexName));
             $data['date'] = $date;
-            $data['is_live'] = false !== array_search($indexName, $data['aliases']);
+            $data['is_live'] = in_array($indexName, $data['aliases'], false);
         }
 
         // Newest first

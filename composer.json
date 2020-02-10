@@ -17,7 +17,7 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
-        "ruflin/elastica": "^6.1",
+        "ruflin/elastica": "^7.0@beta",
         "symfony/yaml": "^3.4|^4.0|^5.0",
         "symfony/serializer": "^3.4|^4.0|^5.0",
         "symfony/property-access": "^3.4|^4.0|^5.0",

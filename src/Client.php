@@ -3,6 +3,7 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Client as ElasticaClient;
+use Elastica\Index as ElasticaIndex;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -42,7 +43,11 @@ class Client extends ElasticaClient
         return $this->indexer;
     }
 
-    public function getIndex($name): Index
+    /**
+     * @param string $name
+     * @return ElasticaIndex|Index
+     */
+    public function getIndex($name): ElasticaIndex
     {
         $name = $this->getPrefixedIndex($name);
 

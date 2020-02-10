@@ -6,7 +6,7 @@ namespace JoliCode\Elastically\Tests\Transport;
 
 use Elastica\Exception\ExceptionInterface;
 use JoliCode\Elastically\Client;
-use JoliCode\Elastically\ResultSet;
+use Elastica\ResultSet;
 use JoliCode\Elastically\Tests\BaseTestCase;
 use JoliCode\Elastically\Transport\HttpClientTransport;
 use Symfony\Component\HttpClient\HttpClient;
