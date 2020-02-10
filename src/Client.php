@@ -46,7 +46,6 @@ class Client extends ElasticaClient
     /**
      * The type hint here is wrong on purpose, to allow PHP 7.2.
      *
-     * @param string $name
      * @return Index
      */
     public function getIndex(string $name): \Elastica\Index
