@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
+use Elastica\Document;
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
@@ -186,4 +187,54 @@ final class IndexBuilderTest extends BaseTestCase
 
         $this->assertCount(0, $operations);
     }
+
+    public function testSlowDownRefresh(): void
+    {
+        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
+        $index = $indexBuilder->createIndex('hop');
+        $indexBuilder->slowDownRefresh($index);
+        $this->assertEquals('60s', $index->getSettings()->getRefreshInterval());
+    }
+
+    public function testSpeedUpRefresh(): void
+    {
+        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
+        $index = $indexBuilder->createIndex('hop');
+        $indexBuilder->speedUpRefresh($index);
+        $this->assertEquals('1s', $index->getSettings()->getRefreshInterval());
+    }
+
+    public function testMigrate(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+
+        $dto = new MigrateDTO();
+        $dto->bar = 'I like unicorns.';
+        $dto->foo = 'Why is the sky blue?';
+
+        $indexer = $this->getClient()->getIndexer();
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $indexer->flush();
+        $indexer->refresh($indexName);
+
+        $client = $this->getClient();
+        $document = $client->getIndex($indexName)->getDocument('f');
+        $this->assertInstanceOf(Document::class, $document);
+
+        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs');
+        $newIndex = $indexBuilder->createIndex('empty');
+
+        $indexBuilder->migrate($client->getIndex($indexName), $newIndex);
+        $indexer->refresh($newIndex);
+
+        $document = $newIndex->getDocument('f');
+        $this->assertInstanceOf(Document::class, $document);
+    }
+}
+
+class MigrateDTO
+{
+    public $foo;
+    public $bar;
 }
