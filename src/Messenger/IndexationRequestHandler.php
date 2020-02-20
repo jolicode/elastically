@@ -49,22 +49,31 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
         }
 
         $indexer = $this->client->getIndexer();
-        $initialQueueSize = $indexer->getQueueSize();
+
+        $messageOffset = 0;
+        $responseOffset = $indexer->getQueueSize();
 
         try {
             foreach ($messages as $indexationRequest) {
+                ++$messageOffset;
                 $this->schedule($indexer, $indexationRequest);
+
+                if (0 === $indexer->getQueueSize()) {
+                    $responseOffset = 0;
+                }
             }
 
             $indexer->flush();
         } catch (ResponseException $exception) {
             // Extracts failed operations from the bulk
+            // Responses are checked in reverse mode because we have only requests from the last bulk
             $failedMessages = [];
             $allResponses = $exception->getResponseSet()->getBulkResponses();
-            $concernedResponses = array_slice($allResponses, $initialQueueSize);
+            $concernedResponses = array_reverse(array_slice($allResponses, $responseOffset));
+            $executedMessages = array_reverse(array_slice($messages, 0, $messageOffset));
             foreach ($concernedResponses as $key => $response) {
                 if (!$response->isOk()) {
-                    $failedMessages[] = $messages[$key];
+                    array_unshift($failedMessages, $executedMessages[$key]);
                 }
             }
 
@@ -74,7 +83,7 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
             }
 
             // Redispatch failed or non-executed messages
-            $nonExecutedMessages = array_slice($messages, count($concernedResponses));
+            $nonExecutedMessages = array_slice($messages, $messageOffset);
             $toRedispatch = array_merge($failedMessages, $nonExecutedMessages);
             foreach ($toRedispatch as $indexationRequest) {
                 $this->bus->dispatch($indexationRequest);
