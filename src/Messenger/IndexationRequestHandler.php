@@ -49,36 +49,36 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
         }
 
         $indexer = $this->client->getIndexer();
-        $originalBulkMaxSize = $indexer->getBulkMaxSize();
         $initialQueueSize = $indexer->getQueueSize();
 
         try {
-            $indexer->setBulkMaxSize($initialQueueSize + count($messages));
-
-            foreach ($messages as $erroneousMessage) {
-                $this->schedule($indexer, $erroneousMessage);
+            foreach ($messages as $indexationRequest) {
+                $this->schedule($indexer, $indexationRequest);
             }
 
             $indexer->flush();
         } catch (ResponseException $exception) {
-            $erroneousMessages = [];
+            // Extracts failed operations from the bulk
+            $failedMessages = [];
             $allResponses = $exception->getResponseSet()->getBulkResponses();
-            $responses = array_slice($allResponses, $initialQueueSize);
-            foreach ($responses as $key => $response) {
+            $concernedResponses = array_slice($allResponses, $initialQueueSize);
+            foreach ($concernedResponses as $key => $response) {
                 if (!$response->isOk()) {
-                    $erroneousMessages[] = $messages[$key];
+                    $failedMessages[] = $messages[$key];
                 }
             }
 
-            if (count($erroneousMessages) === count($messages)) {
+            // Throws exception as-is if all operations have failed
+            if (count($failedMessages) === count($messages)) {
                 throw $exception;
             }
 
-            foreach ($erroneousMessages as $erroneousMessage) {
-                $this->bus->dispatch($erroneousMessage);
+            // Redispatch failed or non-executed messages
+            $nonExecutedMessages = array_slice($messages, count($concernedResponses));
+            $toRedispatch = array_merge($failedMessages, $nonExecutedMessages);
+            foreach ($toRedispatch as $indexationRequest) {
+                $this->bus->dispatch($indexationRequest);
             }
-        } finally {
-            $indexer->setBulkMaxSize($originalBulkMaxSize);
         }
     }
 
