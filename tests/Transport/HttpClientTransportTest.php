@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Transport;
 
+use Elastica\Document;
 use Elastica\Exception\ExceptionInterface;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\ResultSet;
@@ -15,6 +16,29 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 final class HttpClientTransportTest extends BaseTestCase
 {
+    public function testBulkPayload(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+
+        $dto = new TestDTO();
+        $dto->bar = 'Roses are red';
+        $dto->foo = 'Violets are blue';
+
+        $client = new Client([
+            'transport' => new HttpClientTransport(HttpClient::create()),
+        ]);
+
+        $indexer = $client->getIndexer();
+
+        $indexer->scheduleIndex($indexName, new Document(1, $dto));
+        $indexer->scheduleIndex($indexName, new Document(2, $dto));
+        $indexer->scheduleIndex($indexName, new Document(3, $dto));
+
+        $responseSet = $indexer->flush();
+
+        $this->assertTrue($responseSet->isOk());
+    }
+
     public function testHttpClientIsCalledOnSearch()
     {
         $responses = [
@@ -115,4 +139,10 @@ JSON
         $this->assertInstanceOf(ExceptionInterface::class, $httpClientException);
         $this->assertSame(get_class($httpClientException), get_class($nativeException));
     }
+}
+
+class TestDTO
+{
+    public $foo;
+    public $bar;
 }
