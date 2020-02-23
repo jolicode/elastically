@@ -82,8 +82,11 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
                 throw $exception;
             }
 
-            // Redispatch failed or non-executed messages
+            // Redispatch failed and non-executed messages
             $nonExecutedMessages = array_slice($messages, $messageOffset);
+            if (count($nonExecutedMessages) > 1) {
+                $nonExecutedMessages = [new MultipleIndexationRequest($nonExecutedMessages)];
+            }
             $toRedispatch = array_merge($failedMessages, $nonExecutedMessages);
             foreach ($toRedispatch as $indexationRequest) {
                 $this->bus->dispatch($indexationRequest);
