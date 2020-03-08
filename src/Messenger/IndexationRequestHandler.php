@@ -63,24 +63,27 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
             return;
         }
 
-        $model = $this->fetchModel($indexationRequest->getClassName(), $indexationRequest->getId());
+        $document = $this->fetchDocument($indexationRequest->getClassName(), $indexationRequest->getId());
 
-        if (!$model) {
+        if (!$document) {
             // ID does not exists, delete
             $indexer->scheduleDelete($indexName, $indexationRequest->getId());
 
             return;
         }
 
+        $document->setType('_doc');
+        $document->setId($indexationRequest->getId());
+
         switch ($indexationRequest->getOperation()) {
             case self::OP_INDEX:
-                $indexer->scheduleIndex($indexName, new Document($indexationRequest->getId(), $model, '_doc'));
+                $indexer->scheduleIndex($indexName, $document);
                 break;
             case self::OP_CREATE:
-                $indexer->scheduleCreate($indexName, new Document($indexationRequest->getId(), $model, '_doc'));
+                $indexer->scheduleCreate($indexName, $document);
                 break;
             case self::OP_UPDATE:
-                $indexer->scheduleUpdate($indexName, new Document($indexationRequest->getId(), $model, '_doc'));
+                $indexer->scheduleUpdate($indexName, $document);
                 break;
         }
     }
@@ -88,5 +91,5 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
     /**
      * Return a model (DTO) to send for indexation.
      */
-    abstract public function fetchModel(string $className, string $id);
+    abstract public function fetchDocument(string $className, string $id): Document;
 }

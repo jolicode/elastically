@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Messenger;
 
+use Elastica\Document;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\IndexationRequestHandler;
@@ -80,12 +81,12 @@ class TestDTO
 
 class TestHandler extends IndexationRequestHandler
 {
-    public function fetchModel(string $className, string $id)
+    public function fetchDocument(string $className, string $id): Document
     {
         $dto = new TestDTO();
         $dto->bar = 'todo';
         $dto->foo = $id;
 
-        return $dto;
+        return new Document($id, $dto);
     }
 }
