@@ -6,7 +6,9 @@ use Elastica\Connection;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
+use Elastica\JSON;
 use Elastica\Request;
+use Elastica\Request as ElasticaRequest;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
 use Elastica\Util;
@@ -47,8 +49,21 @@ class HttpClientTransport extends AbstractTransport
 
         $options = [
             'headers' => $headers,
-            'json' => $request->getData(),
         ];
+
+        $data = $request->getData();
+        $method = $request->getMethod();
+        if (!empty($data) || '0' === $data) {
+            if (ElasticaRequest::GET == $method) {
+                $method = ElasticaRequest::POST;
+            }
+
+            if (is_array($data)) {
+                $options['body'] = JSON::stringify($data, JSON_UNESCAPED_UNICODE);
+            } else {
+                $options['body'] = $data;
+            }
+        }
 
         if ($connection->getTimeout()) {
             $options['timeout'] = $connection->getTimeout();
@@ -60,7 +75,7 @@ class HttpClientTransport extends AbstractTransport
         }
 
         try {
-            $response = $this->client->request($request->getMethod(), $this->_getUri($request, $connection), $options);
+            $response = $this->client->request($method, $this->_getUri($request, $connection), $options);
             $elasticaResponse = new Response($response->getContent(), $response->getStatusCode());
         } catch (ClientException | ServerException $e) {
             $elasticaResponse = new Response($response->getContent(false), $response->getStatusCode());
