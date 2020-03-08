@@ -16,6 +16,7 @@ Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bo
 - Analysis is separated from mappings;
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
 - Designed for Elasticsearch 7+ (no types), compatible with both ES 6 and ES 7;
+- Symfony Messenger Handler support (with or without spool);
 - Symfony HttpClient compatible transport;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
@@ -173,7 +174,111 @@ Add a prefix to all indexes and aliases created via Elastically.
 
 _Default to `null`._
 
+## Usage in Symfony
+
+### Client as a service
+
+Just declare the proper service in `services.yaml`:
+
+```yaml
+JoliCode\Elastically\Client:
+    arguments:
+        $config:
+            log: '%kernel.debug%'
+            host: '%env(ELASTICSEARCH_HOST)%'
+            elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
+            elastically_index_class_mapping:
+                my_index_name: App\Model\MyModel
+            elastically_bulk_size: 100
+```
+
+### Using HttpClient as Transport
+
+You can also use the Symfony HttpClient for all Elastica communications:
+
+```yaml
+JoliCode\Elastically\Transport\HttpClientTransport: ~
+
+JoliCode\Elastically\Client:
+    arguments:
+        $config:
+            host: '%env(ELASTICSEARCH_HOST)%'
+            transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
+            ...
+```
+
+### Using Messenger for async indexing
+
+Elastically ships with a default Message and Handler for Symfony Messenger.
+
+Register the message in your configuration:
+
+```yaml
+framework:
+    messenger:
+        transports:
+            async: "%env(MESSENGER_TRANSPORT_DSN)%"
+
+        routing:
+            # async is whatever name you gave your transport above
+            'JoliCode\Elastically\Messenger\IndexationRequest':  async
+
+services:
+    App\Messenger\IndexationRequestHandler: ~
+```
+
+You have to implement `App\Messenger\IndexationRequestHandler` by extending the core `\JoliCode\Elastically\Messenger\IndexationRequestHandler` so you can plug your database or any other source of truth.
+
+Then from your code you have to call:
+
+```php
+use JoliCode\Elastically\Messenger\IndexationRequest;
+use JoliCode\Elastically\Messenger\IndexationRequestHandler;
+
+$bus->dispatch(new IndexationRequest(Product::class, '1234567890'));
+
+// Third argument is the operation, so for a delete:
+// new IndexationRequest(Product::class, 'ref9999', IndexationRequestHandler::OP_DELETE);
+```
+
+And then consume the messages:
+
+```sh
+$ php bin/console messenger:consume async
+```
+
+### Grouping IndexationRequest in a spool
+
+Sending multiple `IndexationRequest` during the same Symfony Request is not always appropriate, it will trigger multiple Bulk operations. Elastically provides a Kernel listener to group all the `IndexationRequest` in a single `MultipleIndexationRequest` message.
+
+To use this mechanism, we send the `IndexationRequest` in a memory transport to be consumed and grouped in a really async transport:
+
+```yaml
+messenger:
+    transports:
+        async: "%env(MESSENGER_TRANSPORT_DSN)%"
+        queuing: 'in-memory:///'
+
+    routing:
+        'JoliCode\Elastically\Messenger\MultipleIndexationRequest': async
+        'JoliCode\Elastically\Messenger\IndexationRequest': queuing
+```
+
+You also need to register the subscriber:
+
+```yaml
+services:
+    JoliCode\Elastically\Messenger\IndexationRequestSpoolSubscriber:
+        arguments:
+            - '@messenger.transport.queuing' # should be the name of the memory transport
+            - '@messenger.default_bus'
+        tags:
+            - { name: kernel.event_subscriber }
+```
+
 ## Using Jane for DTO and fast Normalizers
+
+:warning: See https://github.com/jolicode/elastically/issues/12 before.
 
 Install [JanePHP](https://jane.readthedocs.io/) and the model generator to build your own DTO and Normalizers. Then create your Serializer like this:
 
@@ -191,37 +296,6 @@ $serializer = new Serializer($normalizers, $encoders);
 $client = new Client([
     Client::CONFIG_SERIALIZER => $serializer,
 ]);
-```
-
-## Usage in Symfony
-
-Just declare the proper service in `services.yaml`:
-
-```yaml
-JoliCode\Elastically\Client:
-    arguments:
-        $config:
-            log: '%kernel.debug%'
-            host: '%env(ELASTICSEARCH_HOST)%'
-            elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
-            elastically_index_class_mapping:
-                my_index_name: \App\Model\MyModel
-            elastically_bulk_size: 100
-```
-
-### Using HttpClient as Transport
-
-You can also use the Symfony HttpClient for all Elastica communications:
-
-```yaml
-JoliCode\Elastically\Transport\HttpClientTransport: ~
-
-JoliCode\Elastically\Client:
-    arguments:
-        $config:
-            host: '%env(ELASTICSEARCH_HOST)%'
-            transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
-            ...
 ```
 
 ## To be done

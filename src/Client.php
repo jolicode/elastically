@@ -3,6 +3,7 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Client as ElasticaClient;
+use Elastica\Exception\RuntimeException;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -57,6 +58,18 @@ class Client extends ElasticaClient
         }
 
         return $name;
+    }
+
+    public function getIndexNameFromClass(string $className): string
+    {
+        $indexToClass = $this->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
+        $indexName = array_search($className, $indexToClass, true);
+
+        if (!$indexName) {
+            throw new RuntimeException(sprintf('The given type (%s) does not exist in the configuration.', $className));
+        }
+
+        return $indexName;
     }
 
     public function getPureIndexName(string $fullIndexName): string
