@@ -3,12 +3,14 @@
 namespace JoliCode\Elastically\Messenger;
 
 use Elastica\Document;
+use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
 use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class IndexationRequestHandler implements MessageHandlerInterface
 {
@@ -26,9 +28,12 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
 
     private $client;
 
-    public function __construct(Client $client)
+    private $bus;
+
+    public function __construct(Client $client, MessageBusInterface $bus)
     {
         $this->client = $client;
+        $this->bus = $bus;
 
         // Disable the logs for memory concerns
         $this->client->setLogger(new NullLogger());
@@ -36,17 +41,57 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
 
     public function __invoke(IndexationRequestInterface $message)
     {
-        $indexer = $this->client->getIndexer();
-
+        $messages = [];
         if ($message instanceof MultipleIndexationRequest) {
-            foreach ($message->getOperations() as $operation) {
-                $this->schedule($indexer, $operation);
-            }
+            $messages = $message->getOperations();
         } elseif ($message instanceof IndexationRequest) {
-            $this->schedule($indexer, $message);
+            $messages = [$message];
         }
 
-        $indexer->flush();
+        $indexer = $this->client->getIndexer();
+
+        $messageOffset = 0;
+        $responseOffset = $indexer->getQueueSize();
+
+        try {
+            foreach ($messages as $indexationRequest) {
+                ++$messageOffset;
+                $this->schedule($indexer, $indexationRequest);
+
+                if (0 === $indexer->getQueueSize()) {
+                    $responseOffset = 0;
+                }
+            }
+
+            $indexer->flush();
+        } catch (ResponseException $exception) {
+            // Extracts failed operations from the bulk
+            // Responses are checked in reverse mode because we have only requests from the last bulk
+            $failedMessages = [];
+            $allResponses = $exception->getResponseSet()->getBulkResponses();
+            $concernedResponses = array_reverse(array_slice($allResponses, $responseOffset));
+            $executedMessages = array_reverse(array_slice($messages, 0, $messageOffset));
+            foreach ($concernedResponses as $key => $response) {
+                if (!$response->isOk()) {
+                    array_unshift($failedMessages, $executedMessages[$key]);
+                }
+            }
+
+            // Throws exception as-is if all operations have failed
+            if (count($failedMessages) === count($messages)) {
+                throw $exception;
+            }
+
+            // Redispatch failed and non-executed messages
+            $nonExecutedMessages = array_slice($messages, $messageOffset);
+            if (count($nonExecutedMessages) > 1) {
+                $nonExecutedMessages = [new MultipleIndexationRequest($nonExecutedMessages)];
+            }
+            $toRedispatch = array_merge($failedMessages, $nonExecutedMessages);
+            foreach ($toRedispatch as $indexationRequest) {
+                $this->bus->dispatch($indexationRequest);
+            }
+        }
     }
 
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
