@@ -97,7 +97,14 @@ class IndexBuilder
                 continue;
             }
 
-            $date = \DateTime::createFromFormat('Y-m-d-His', str_replace($indexName.'_', '', $realIndexName));
+            // Check suffix (it must contains a valid date)
+            $indexSuffixName = substr($realIndexName, strlen($indexName) + 1);
+            $date = \DateTime::createFromFormat('Y-m-d-His', $indexSuffixName);
+            if (!$date) {
+                unset($indexes[$realIndexName]);
+                continue;
+            }
+
             $data['date'] = $date;
             $data['is_live'] = false !== array_search($indexName, $data['aliases']);
         }
