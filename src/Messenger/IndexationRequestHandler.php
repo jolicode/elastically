@@ -2,7 +2,6 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
@@ -12,7 +11,7 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-abstract class IndexationRequestHandler implements MessageHandlerInterface
+class IndexationRequestHandler implements MessageHandlerInterface
 {
     public const OP_INDEX = 'index';
     public const OP_DELETE = 'delete';
@@ -30,10 +29,13 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
 
     private $bus;
 
-    public function __construct(Client $client, MessageBusInterface $bus)
+    private $exchanger;
+
+    public function __construct(Client $client, MessageBusInterface $bus, DocumentExchangerInterface $exchanger)
     {
         $this->client = $client;
         $this->bus = $bus;
+        $this->exchanger = $exchanger;
 
         // Disable the logs for memory concerns
         $this->client->setLogger(new NullLogger());
@@ -108,7 +110,7 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
             return;
         }
 
-        $document = $this->fetchDocument($indexationRequest->getClassName(), $indexationRequest->getId());
+        $document = $this->exchanger->fetchDocument($indexationRequest->getClassName(), $indexationRequest->getId());
 
         if (!$document) {
             // ID does not exists, delete
@@ -132,9 +134,4 @@ abstract class IndexationRequestHandler implements MessageHandlerInterface
                 break;
         }
     }
-
-    /**
-     * Return a model (DTO) to send for indexation.
-     */
-    abstract public function fetchDocument(string $className, string $id): Document;
 }
