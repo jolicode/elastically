@@ -7,6 +7,7 @@ namespace JoliCode\Elastically\Tests\Messenger;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Messenger\DocumentExchangerInterface;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\IndexationRequestHandler;
 use JoliCode\Elastically\Messenger\IndexationRequestInterface;
@@ -29,7 +30,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
             $indexName => TestDTO::class,
         ]);
 
-        $handler = new TestHandler($client, new MessageBus());
+        $handler = new IndexationRequestHandler($client, new MessageBus(), new TestDocumentExchanger());
         $handler(new IndexationRequest(TestDTO::class, '1234567890'));
         $handler(new IndexationRequest(TestDTO::class, '1234567890', IndexationRequestHandler::OP_UPDATE));
         $handler(new IndexationRequest(TestDTO::class, 'ref7777', IndexationRequestHandler::OP_CREATE));
@@ -51,7 +52,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
     public function testGroupedMessagesAreHandled(): void
     {
-        $handler = $this->getMockBuilder(TestHandler::class)
+        $handler = $this->getMockBuilder(IndexationRequestHandler::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -91,7 +92,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new FooBarHandler($client, $traceableBus);
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
 
         $goodRequest = new IndexationRequest(FooDTO::class, '1234567892');
         $badRequest = new IndexationRequest(BarDTO::class, '1234567892');
@@ -120,7 +121,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new FooBarHandler($client, $traceableBus);
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
 
         $badRequest1 = new IndexationRequest(BarDTO::class, '1234567892');
         $badRequest2 = new IndexationRequest(BarDTO::class, '1234567892');
@@ -146,7 +147,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new FooBarHandler($client, $traceableBus);
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
 
         $badRequest = new IndexationRequest(BarDTO::class, '1234567892');
 
@@ -173,7 +174,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new FooBarHandler($client, $traceableBus);
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
 
         // bulk 1
         $request1 = new IndexationRequest(FooDTO::class, 'bulk-1-message-1');
@@ -223,7 +224,7 @@ class TestDTO
     public $bar;
 }
 
-class TestHandler extends IndexationRequestHandler
+class TestDocumentExchanger implements DocumentExchangerInterface
 {
     public function fetchDocument(string $className, string $id): Document
     {
@@ -245,7 +246,7 @@ class BarDTO
     public $bar;
 }
 
-class FooBarHandler extends IndexationRequestHandler
+class FooBarDocumentExchanger implements DocumentExchangerInterface
 {
     public function fetchDocument(string $className, string $id): Document
     {

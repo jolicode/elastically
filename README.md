@@ -224,10 +224,10 @@ framework:
             'JoliCode\Elastically\Messenger\IndexationRequest':  async
 
 services:
-    App\Messenger\IndexationRequestHandler: ~
+    JoliCode\Elastically\Messenger\IndexationRequestHandler: ~
 ```
 
-You have to implement `App\Messenger\IndexationRequestHandler` by extending the core `\JoliCode\Elastically\Messenger\IndexationRequestHandler` so you can plug your database or any other source of truth.
+The `IndexationRequestHandler` service depends on an implementation of `JoliCode\Elastically\Messenger\DocumentExchangerInterface`, which isn't provided by this library. You must provide a service that implements this interface, so you can plug your database or any other source of truth.
 
 Then from your code you have to call:
 

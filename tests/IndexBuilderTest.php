@@ -169,4 +169,21 @@ final class IndexBuilderTest extends BaseTestCase
             $this->assertStringContainsStringIgnoringCase('closed', $e->getMessage());
         }
     }
+
+    public function testPurgerDistinguishesIndicesWithTheSamePrefix(): void
+    {
+        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
+
+        $indexFooBar = $indexBuilder->createIndex('foo_bar');
+        $indexBuilder->markAsLive($indexFooBar, 'foo_bar');
+
+        usleep(1200000); // 1,2 second
+
+        $indexFoo = $indexBuilder->createIndex('foo');
+        $indexBuilder->markAsLive($indexFoo, 'foo');
+
+        $operations = $indexBuilder->purgeOldIndices('foo');
+
+        $this->assertCount(0, $operations);
+    }
 }
