@@ -1,3 +1,6 @@
 /.phpunit.result.cache
 /composer.lock
 /vendor/
+/tests/Jane/generated/*
+!/tests/Jane/generated/.gitkeep
+.php_cs.cache
