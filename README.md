@@ -101,7 +101,7 @@ $indexBuilder->markAsLive($index, 'beers');
 $indexBuilder->purgeOldIndices('beers');
 ```
 
-*configs/beers_mapping.yaml*
+*mappings/beers_mapping.yaml*
 
 ```yaml
 # Anything you want, no validation
