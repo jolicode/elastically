@@ -189,6 +189,7 @@ JoliCode\Elastically\Client:
             elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
             elastically_index_class_mapping:
                 my_index_name: App\Model\MyModel
+            elastically_serializer: '@serializer'
             elastically_bulk_size: 100
 ```
 
