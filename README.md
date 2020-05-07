@@ -39,7 +39,7 @@ use Elastica\Document;
 // New Client object with new options
 $client = new Client([
     // Where to find the mappings
-    Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/configs',
+    Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/mappings',
     // What object to find in each index
     Client::CONFIG_INDEX_CLASS_MAPPING => [
         'beers' => Beer::class,    
@@ -101,7 +101,7 @@ $indexBuilder->markAsLive($index, 'beers');
 $indexBuilder->purgeOldIndices('beers');
 ```
 
-*configs/beers_mapping.yaml*
+*mappings/beers_mapping.yaml*
 
 ```yaml
 # Anything you want, no validation
@@ -276,27 +276,17 @@ services:
             - { name: kernel.event_subscriber }
 ```
 
-## Using Jane for DTO and fast Normalizers
+## Using Jane to build PHP DTO and fast Normalizers
 
-:warning: See https://github.com/jolicode/elastically/issues/12 before.
-
-Install [JanePHP](https://jane.readthedocs.io/) and the model generator to build your own DTO and Normalizers. Then create your Serializer like this:
+Install [JanePHP](https://jane.readthedocs.io/) json-schema tools to build your own DTO and Normalizers. All you have to do is setting the Jane-completed Serializer on the Client:
 
 ```php
-$normalizers = \Elasticsearch\Normalizer\NormalizerFactory::create();
-$encoders = [
-    new JsonEncoder(
-       new JsonEncode([JsonEncode::OPTIONS => \JSON_UNESCAPED_SLASHES]),
-       new JsonDecode([JsonDecode::ASSOCIATIVE => false])
-    )
-];
-
-$serializer = new Serializer($normalizers, $encoders);
-
 $client = new Client([
     Client::CONFIG_SERIALIZER => $serializer,
 ]);
 ```
+
+_[Not compatible with Jane < 6](https://github.com/jolicode/elastically/issues/12)._
 
 ## To be done
 
