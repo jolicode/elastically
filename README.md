@@ -17,7 +17,7 @@ Main features:
 - Tested with Symfony 3.4 to 5;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
-**Require PHP 7.4+ and Elasticsearch 7+**.
+**Require PHP 7.2+ and Elasticsearch 7+**.
 
 ## Demo
 
