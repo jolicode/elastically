@@ -98,6 +98,11 @@ $indexBuilder->markAsLive($index, 'beers');
 
 // Clean the old indices (close the previous one and delete the older)
 $indexBuilder->purgeOldIndices('beers');
+
+// Mapping change? Just call migrate and enjoy a full reindex (use the Task API internally to avoid timeout)
+$newIndex = $indexBuilder->migrate($index);
+$indexBuilder->speedUpRefresh($newIndex);
+$indexBuilder->markAsLive($newIndex, 'beers');
 ```
 
 *mappings/beers_mapping.yaml*

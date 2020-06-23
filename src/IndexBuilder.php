@@ -4,10 +4,10 @@ namespace JoliCode\Elastically;
 
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\RuntimeException;
-use Elastica\Index;
 use Elastica\Reindex;
 use Elastica\Request;
 use Elastica\Response;
+use Elastica\Task;
 use Elasticsearch\Endpoints\Cluster\State;
 use Symfony\Component\Yaml\Yaml;
 
@@ -70,13 +70,30 @@ class IndexBuilder
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public function migrate(Index $current, Index $new)
+    public function migrate(Index $currentIndex, array $params = [])
     {
-        $reindex = new Reindex($current, $new);
+        $pureIndexName = $this->client->getPureIndexName($currentIndex->getName());
+        $newIndex = $this->createIndex($pureIndexName);
+
+        $reindex = new Reindex($currentIndex, $newIndex, $params);
         $reindex->setWaitForCompletion(Reindex::WAIT_FOR_COMPLETION_FALSE);
 
-        // @todo implement the wait
-        return $reindex->run();
+        $response = $reindex->run();
+
+        if ($response->isOk()) {
+            $taskId = $response->getData()['task'];
+
+            $task = new Task($this->client, $taskId);
+
+            while (false === $task->isCompleted()) {
+                sleep(1); // Migrate of an index is not a production critical operation, sleep is ok.
+                $task->refresh();
+            }
+
+            return $newIndex;
+        } else {
+            throw new RuntimeException(sprintf('Reindex call failed. %s', $response->getError()));
+        }
     }
 
     public function purgeOldIndices(string $indexName): array
