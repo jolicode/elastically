@@ -13,7 +13,7 @@ matrix:
         - php: 7.4
           env: TARGET=test
         - php: 7.4
-          env: TARGET=test COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER=weak
+          env: TARGET=test COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 
 install:
     - make start
