@@ -78,7 +78,7 @@ final class IndexerTest extends BaseTestCase
         $indexer = $client->getIndexer();
 
         for ($i = 1; $i <= 31; ++$i) {
-            $indexer->scheduleIndex($indexName, new Document($i, $dto));
+            $indexer->scheduleIndex($indexName, new Document((string) $i, $dto));
         }
 
         // 3 bulks should have been sent, leaving only one document
@@ -101,10 +101,10 @@ final class IndexerTest extends BaseTestCase
         $client->setConfigValue(Client::CONFIG_BULK_SIZE, 10);
         $indexer = $client->getIndexer();
 
-        $indexer->scheduleCreate($indexName, new Document(1, $dto));
-        $indexer->scheduleUpdate($indexName, new Document(1, $dto));
-        $indexer->scheduleIndex($indexName, new Document(1, $dto));
-        $indexer->scheduleDelete($indexName, 1);
+        $indexer->scheduleCreate($indexName, new Document('1', $dto));
+        $indexer->scheduleUpdate($indexName, new Document('1', $dto));
+        $indexer->scheduleIndex($indexName, new Document('1', $dto));
+        $indexer->scheduleDelete($indexName, '1');
 
         $response = $indexer->flush();
 
@@ -125,10 +125,10 @@ final class IndexerTest extends BaseTestCase
         $indexer = $client->getIndexer();
 
         try {
-            $indexer->scheduleCreate($indexName, new Document(1, $dto));
-            $indexer->scheduleCreate($indexName, new Document(1, $dto));
-            $indexer->scheduleCreate($indexName, new Document(1, $dto));
-            $indexer->scheduleCreate($indexName, new Document(1, $dto));
+            $indexer->scheduleCreate($indexName, new Document('1', $dto));
+            $indexer->scheduleCreate($indexName, new Document('1', $dto));
+            $indexer->scheduleCreate($indexName, new Document('1', $dto));
+            $indexer->scheduleCreate($indexName, new Document('1', $dto));
 
             $this->assertFalse(true, 'Exception should have been thrown.');
         } catch (ResponseException $exception) {

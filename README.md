@@ -1,24 +1,22 @@
 # Elastically, **Elastica** based framework
 
-*This project is a work in progress.*
-
-![Under Construction](https://jolicode.com/media/original/2019/construction.gif)
-
 [![Build Status](https://travis-ci.org/jolicode/elastically.svg?branch=master)](https://travis-ci.org/jolicode/elastically)
-
-**Feedback welcome!**
 
 Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch implementations.
 
-- DTO are first class citizen, you send object for documents, and get objects back, **like an ODM**;
-- All indexes are versioned / aliased;
-- Mappings are done in YAML;
-- Analysis is separated from mappings;
+Main features:
+
+- <abbr title="Data Transfer Object">DTO</abbr> are **first class citizen**, you send PHP object as documents, and get objects back on search results, **like an ODM**;
+- All indexes are versioned / aliased automatically;
+- Mappings is done in YAML;
+- Analysis is separated from mappings to ease reuse;
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
-- Designed for Elasticsearch 7+ (no types), compatible with both ES 6 and ES 7;
+- Designed for Elasticsearch 7+;
 - Symfony Messenger Handler support (with or without spool);
 - Symfony HttpClient compatible transport;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
+
+**Require PHP 7.4+**.
 
 ## Demo
 
@@ -184,7 +182,6 @@ Just declare the proper service in `services.yaml`:
 JoliCode\Elastically\Client:
     arguments:
         $config:
-            log: '%kernel.debug%'
             host: '%env(ELASTICSEARCH_HOST)%'
             elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
             elastically_index_class_mapping:
@@ -192,6 +189,8 @@ JoliCode\Elastically\Client:
             elastically_serializer: '@serializer'
             elastically_bulk_size: 100
 ```
+todo add logger
+setTrackTotalHits
 
 ### Using HttpClient as Transport
 

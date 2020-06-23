@@ -43,7 +43,7 @@ class Client extends ElasticaClient
         return $this->indexer;
     }
 
-    public function getIndex($name): Index
+    public function getIndex(string $name): Index
     {
         $name = $this->getPrefixedIndex($name);
 

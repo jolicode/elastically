@@ -10,14 +10,6 @@ class Index extends ElasticaIndex
 {
     private $builder;
 
-    /*
-     * Compatibility shortcut, types are no longer needed.
-     */
-    public function getDocument($id)
-    {
-        return $this->getType('_doc')->getDocument($id);
-    }
-
     public function getModel($id)
     {
         $document = $this->getDocument($id);
