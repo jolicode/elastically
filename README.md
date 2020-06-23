@@ -14,6 +14,7 @@ Main features:
 - Designed for Elasticsearch 7+;
 - Symfony Messenger Handler support (with or without spool);
 - Symfony HttpClient compatible transport;
+- Tested with Symfony 3.4 to 5;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
 **Require PHP 7.4+ and Elasticsearch 7+**.
