@@ -16,7 +16,7 @@ Main features:
 - Symfony HttpClient compatible transport;
 - Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
-**Require PHP 7.4+**.
+**Require PHP 7.4+ and Elasticsearch 7+**.
 
 ## Demo
 
@@ -188,9 +188,8 @@ JoliCode\Elastically\Client:
                 my_index_name: App\Model\MyModel
             elastically_serializer: '@serializer'
             elastically_bulk_size: 100
+        $logger: '@logger'
 ```
-todo add logger
-setTrackTotalHits
 
 ### Using HttpClient as Transport
 
