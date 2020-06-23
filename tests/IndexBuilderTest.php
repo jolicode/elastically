@@ -206,7 +206,7 @@ final class IndexBuilderTest extends BaseTestCase
 
     public function testMigrate(): void
     {
-        $indexName = mb_strtolower(__FUNCTION__);
+        $indexName = 'empty';
 
         $dto = new MigrateDTO();
         $dto->bar = 'I like unicorns.';
@@ -223,9 +223,8 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertInstanceOf(Document::class, $document);
 
         $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs');
-        $newIndex = $indexBuilder->createIndex('empty');
 
-        $indexBuilder->migrate($client->getIndex($indexName), $newIndex);
+        $newIndex = $indexBuilder->migrate($client->getIndex($indexName));
         $indexer->refresh($newIndex);
 
         $document = $newIndex->getDocument('f');
