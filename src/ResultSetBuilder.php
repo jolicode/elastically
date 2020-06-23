@@ -5,6 +5,7 @@ namespace JoliCode\Elastically;
 use Elastica\Exception\RuntimeException;
 use Elastica\Query;
 use Elastica\Response;
+use Elastica\ResultSet;
 use Elastica\ResultSet\BuilderInterface;
 
 class ResultSetBuilder implements BuilderInterface

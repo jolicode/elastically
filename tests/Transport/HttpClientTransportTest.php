@@ -6,8 +6,8 @@ namespace JoliCode\Elastically\Tests\Transport;
 
 use Elastica\Document;
 use Elastica\Exception\ExceptionInterface;
+use Elastica\ResultSet;
 use JoliCode\Elastically\Client;
-use JoliCode\Elastically\ResultSet;
 use JoliCode\Elastically\Tests\BaseTestCase;
 use JoliCode\Elastically\Transport\HttpClientTransport;
 use Symfony\Component\HttpClient\HttpClient;
@@ -30,9 +30,9 @@ final class HttpClientTransportTest extends BaseTestCase
 
         $indexer = $client->getIndexer();
 
-        $indexer->scheduleIndex($indexName, new Document(1, $dto));
-        $indexer->scheduleIndex($indexName, new Document(2, $dto));
-        $indexer->scheduleIndex($indexName, new Document(3, $dto));
+        $indexer->scheduleIndex($indexName, new Document('1', $dto));
+        $indexer->scheduleIndex($indexName, new Document('2', $dto));
+        $indexer->scheduleIndex($indexName, new Document('3', $dto));
 
         $responseSet = $indexer->flush();
 
@@ -137,7 +137,7 @@ JSON
 
         $this->assertInstanceOf(ExceptionInterface::class, $nativeException);
         $this->assertInstanceOf(ExceptionInterface::class, $httpClientException);
-        $this->assertSame(get_class($httpClientException), get_class($nativeException));
+        $this->assertInstanceOf(get_class($httpClientException), $nativeException);
     }
 }
 

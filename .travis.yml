@@ -10,10 +10,10 @@ cache:
 matrix:
     fast_finish: true
     include:
-        - php: 7.2
+        - php: 7.4
           env: TARGET=test
         - php: 7.2
-          env: TARGET=test COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER=weak
+          env: TARGET=test COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 
 install:
     - make start

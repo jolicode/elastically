@@ -119,7 +119,6 @@ class IndexationRequestHandler implements MessageHandlerInterface
             return;
         }
 
-        $document->setType('_doc');
         $document->setId($indexationRequest->getId());
 
         switch ($indexationRequest->getOperation()) {

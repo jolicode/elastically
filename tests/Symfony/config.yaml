@@ -39,12 +39,12 @@ services:
     JoliCode\Elastically\Client:
         arguments:
             $config:
-                log: '%kernel.debug%'
                 host: 'localhost'
                 elastically_mappings_directory: '%kernel.project_dir%/configs_analysis'
                 elastically_index_class_mapping:
                     hop: JoliCode\Elastically\Tests\Messenger\TestDTO
                 elastically_bulk_size: 100
+            $logger: '@logger'
 
     JoliCode\Elastically\Messenger\IndexationRequestSpoolSubscriber:
         arguments:

@@ -4,6 +4,7 @@ namespace JoliCode\Elastically\Transport;
 
 use Elastica\Connection;
 use Elastica\Exception\Connection\HttpException;
+use Elastica\Exception\ConnectionException;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use Elastica\JSON;
@@ -79,11 +80,12 @@ class HttpClientTransport extends AbstractTransport
             $elasticaResponse = new Response($response->getContent(), $response->getStatusCode());
         } catch (ClientException | ServerException $e) {
             $elasticaResponse = new Response($response->getContent(false), $response->getStatusCode());
+
             throw new ResponseException($request, $elasticaResponse);
         } catch (HttpExceptionInterface $e) {
             throw new HttpException($e->getCode(), $request);
         } catch (TransportExceptionInterface $e) {
-            throw new HttpException($e->getMessage(), $request);
+            throw new ConnectionException($e->getMessage(), $request);
         }
 
         if ($connection->hasConfig('bigintConversion')) {

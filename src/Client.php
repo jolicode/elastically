@@ -43,7 +43,13 @@ class Client extends ElasticaClient
         return $this->indexer;
     }
 
-    public function getIndex($name): Index
+    /**
+     * The type hint here is wrong on purpose, to allow PHP 7.2.
+     *
+     * @param string $name
+     * @return Index
+     */
+    public function getIndex(string $name): \Elastica\Index
     {
         $name = $this->getPrefixedIndex($name);
 
