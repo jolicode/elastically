@@ -39,6 +39,22 @@ final class HttpClientTransportTest extends BaseTestCase
         $this->assertTrue($responseSet->isOk());
     }
 
+    public function testCreateIndex(): void
+    {
+        $client = new Client([
+            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/../configs',
+            'log' => false,
+            'transport' => new HttpClientTransport(HttpClient::create()),
+        ]);
+
+        $indexBuilder = $client->getIndexBuilder();
+
+        $index = $indexBuilder->createIndex('beers');
+        $response = $indexBuilder->markAsLive($index, 'beers');
+
+        $this->assertTrue($response->isOk());
+    }
+
     public function testHttpClientIsCalledOnSearch()
     {
         $responses = [
