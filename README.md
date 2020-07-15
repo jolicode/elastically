@@ -195,7 +195,7 @@ JoliCode\Elastically\Client:
     arguments:
         $config:
             host: '%env(ELASTICSEARCH_HOST)%'
-            elastically_mappings_directory: '%kernel.root_dir%/Elasticsearch/mappings'
+            elastically_mappings_directory: '%kernel.project_dir%/Elasticsearch/mappings'
             elastically_index_class_mapping:
                 my_index_name: App\Model\MyModel
             elastically_serializer: '@serializer'
