@@ -19,6 +19,12 @@ Main features:
 
 **Require PHP 7.2+ and Elasticsearch 7+**.
 
+## Installation
+
+```
+composer require jolicode/elastically
+```
+
 ## Demo
 
 Quick example of what the library do on top of Elastica:
