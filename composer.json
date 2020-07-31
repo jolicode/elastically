@@ -17,6 +17,7 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
+        "phpdocumentor/reflection-docblock": "^3.0|^4.0|^5.0",
         "ruflin/elastica": "^7.0",
         "symfony/property-access": "^3.4|^4.0|^5.0",
         "symfony/property-info": "^3.4|^4.0|^5.0",
@@ -27,7 +28,6 @@
         "friendsofphp/php-cs-fixer": "^2.14",
         "jane-php/json-schema": "^6.0",
         "jane-php/json-schema-runtime": "^6.0",
-        "phpdocumentor/reflection-docblock": "^4.3",
         "symfony/browser-kit": "^4.3|^5.0",
         "symfony/framework-bundle": "^4.3|^5.0",
         "symfony/http-client": "^4.3|^5.0",
