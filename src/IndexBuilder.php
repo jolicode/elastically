@@ -145,13 +145,15 @@ class IndexBuilder
                 $livePassed = true;
             }
 
-            if ($livePassed && $afterLiveCounter > 1) {
+             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $this->client->getIndex($realIndexName)->delete();
+                $realIndexName = str_replace($this->client->getPrefixedIndex(''),'',$realIndexName);
+                $this->client->getIndex($this->client->getPureIndexName($realIndexName))->delete();
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $this->client->getIndex($realIndexName)->close();
+                $realIndexName = str_replace($this->client->getPrefixedIndex(''),'',$realIndexName);
+                $this->client->getIndex($this->client->getPureIndexName($realIndexName))->close();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }
         }
