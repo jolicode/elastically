@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.2] - 2020-07-31
 
-### Fix
+### Fixed
 
 - Fix a missing dependency when using the built-in Serializer.
 
@@ -25,13 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add a method to migrate an Index (when the mapping change).
 
-### Removed
-
-- Remove the "WIP" status in the documentation.
-
 ### Changed
 
 - Switch to Elastica 7.0.
+
+### Removed
+
+- Remove the "WIP" status in the documentation.
 
 ## [0.1-beta.2] - 2020-06-23
 
