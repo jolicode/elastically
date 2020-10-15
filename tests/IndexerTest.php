@@ -39,6 +39,30 @@ final class IndexerTest extends BaseTestCase
         $this->assertEquals('f', $document->getId());
     }
 
+    public function testIndexDocumentsWithoutFlushingThrowError(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+        $dto = new TestDTO();
+        $dto->bar = 'Oops I forgot the flush.';
+
+        $indexer = $this->getIndexer();
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $this->assertEquals(1, $indexer->getQueueSize());
+        $indexer->clear();
+        $this->assertEquals(0, $indexer->getQueueSize());
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        try {
+            $indexer->__destruct();
+            $this->assertFalse(true, 'This code should not be accessible.');
+        } catch (\RuntimeException $exception) {
+            $this->assertStringContainsString('queue is not empty', $exception->getMessage());
+        }
+
+        $indexer->clear(); // avoid fatal error when the test ends
+    }
+
     public function testIndexOneDocumentWithMapping(): void
     {
         $indexName = mb_strtolower(__FUNCTION__);
