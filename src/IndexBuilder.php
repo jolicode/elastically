@@ -147,13 +147,13 @@ class IndexBuilder
 
             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $realIndexName = str_replace($this->client->getPrefixedIndex(''), '', $realIndexName);
-                $this->client->getIndex($this->client->getPureIndexName($realIndexName))->delete();
+                $index = new Index($this->client, $realIndexName);
+                $index->delete();
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $realIndexName = str_replace($this->client->getPrefixedIndex(''), '', $realIndexName);
-                $this->client->getIndex($this->client->getPureIndexName($realIndexName))->close();
+                $index = new Index($this->client, $realIndexName);
+                $index->delete();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }
         }
