@@ -147,11 +147,13 @@ class IndexBuilder
 
             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $this->client->getIndex($realIndexName)->delete();
+                $index = new Index($this->client, $realIndexName);
+                $index->delete();
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $this->client->getIndex($realIndexName)->close();
+                $index = new Index($this->client, $realIndexName);
+                $index->close();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }
         }
