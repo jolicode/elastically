@@ -153,7 +153,7 @@ class IndexBuilder
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
                 $index = new Index($this->client, $realIndexName);
-                $index->delete();
+                $index->close();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }
         }
