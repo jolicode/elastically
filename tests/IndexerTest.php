@@ -169,7 +169,7 @@ final class IndexerTest extends BaseTestCase
         $indexer->scheduleIndex($indexName, new Document('1', $dto));
 
         $this->expectException(ResponseException::class);
-        $this->expectExceptionMessageMatches('/pipeline with id \[covfefe\] does not exist/');
+        $this->expectExceptionMessageRegExp('/pipeline with id \[covfefe\] does not exist/');
 
         $indexer->flush();
     }
