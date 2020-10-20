@@ -71,6 +71,12 @@ $dto->foo = 'Hops from Alsace, France';
 $indexer->scheduleIndex('beers', new Document('123', $dto));
 $indexer->flush();
 
+// Set parameters on the Bulk
+$indexer->setBulkRequestParams([
+    'pipeline' => 'covfefe',
+    'refresh' => 'wait_for'
+]);
+
 // Force index refresh if needed
 $indexer->refresh('beers');
 

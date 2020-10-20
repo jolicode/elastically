@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New `setBulkRequestParams` on the Indexer allowing all the Bulk query params.
 - This changelog file.
 
 ## [1.0.2] - 2020-07-31

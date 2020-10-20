@@ -15,14 +15,16 @@ class Indexer
     private $serializer;
     /** @var Bulk|null */
     private $currentBulk = null;
+    private $bulkRequestParams = [];
 
-    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100)
+    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [])
     {
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 
         $this->client = $client;
         $this->bulkMaxSize = $bulkMaxSize ?? 100;
         $this->serializer = $serializer;
+        $this->bulkRequestParams = $bulkRequestParams;
     }
 
     public function scheduleIndex($index, Document $document)
@@ -124,6 +126,7 @@ class Indexer
     {
         if (!($this->currentBulk instanceof Bulk)) {
             $this->currentBulk = new Bulk($this->client);
+            $this->refreshBulkRequestParams();
         }
 
         return $this->currentBulk;
@@ -135,6 +138,28 @@ class Indexer
 
         if ($this->getQueueSize() > $bulkMaxSize) {
             $this->flush();
+        }
+    }
+
+    public function getBulkRequestParams(): array
+    {
+        return $this->bulkRequestParams;
+    }
+
+    public function setBulkRequestParams(array $bulkRequestParams): void
+    {
+        $this->bulkRequestParams = $bulkRequestParams;
+        $this->refreshBulkRequestParams();
+    }
+
+    private function refreshBulkRequestParams()
+    {
+        if (!$this->currentBulk) {
+            return;
+        }
+
+        foreach ($this->bulkRequestParams as $key => $value) {
+            $this->currentBulk->setRequestParam($key, $value);
         }
     }
 }
