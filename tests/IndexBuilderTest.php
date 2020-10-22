@@ -131,10 +131,11 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertEquals('hop', $client->getPureIndexName($index->getName()));
     }
 
-    public function testPurgeAndCloseOldIndices(): void
+    /**
+     * @dataProvider purgeIndexBuilderProvider
+     */
+    public function testPurgeAndCloseOldIndices(IndexBuilder $indexBuilder): void
     {
-        $indexBuilder = $this->getIndexBuilder(__DIR__.'/configs_analysis');
-
         $index1 = $indexBuilder->createIndex('hop');
         $this->assertInstanceOf(Index::class, $index1);
 
@@ -169,6 +170,20 @@ final class IndexBuilderTest extends BaseTestCase
         } catch (ResponseException $e) {
             $this->assertStringContainsStringIgnoringCase('closed', $e->getMessage());
         }
+    }
+
+    public function purgeIndexBuilderProvider()
+    {
+        $client = $this->getClient(__DIR__.'/configs_analysis');
+        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
+        $indexBuilderWithPrefix = $client->getIndexBuilder();
+
+        $client = $this->getClient(__DIR__.'/configs_analysis');
+
+        return [
+            'simple config' => [$client->getIndexBuilder()],
+            'with prefixed indices' => [$indexBuilderWithPrefix],
+        ];
     }
 
     public function testPurgerDistinguishesIndicesWithTheSamePrefix(): void
