@@ -24,8 +24,8 @@ class IndexBuilder
 
     public function createIndex($indexName, $fileName = null): Index
     {
-        $fileName = $fileName ?? $indexName;
-        $mappingFilePath = $this->configurationDirectory.DIRECTORY_SEPARATOR.$fileName.'_mapping.yaml';
+        $fileName = $fileName ?? ($indexName.'_mapping.yaml');
+        $mappingFilePath = $this->configurationDirectory.DIRECTORY_SEPARATOR.$fileName;
         if (!is_file($mappingFilePath)) {
             throw new InvalidException(sprintf('Mapping file "%s" not found.', $mappingFilePath));
         }
