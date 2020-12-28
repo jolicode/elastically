@@ -140,6 +140,40 @@ final class IndexerTest extends BaseTestCase
         $this->assertEquals(0, $indexer->getQueueSize());
     }
 
+    public function testRequestParameters(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+        $dto = new TestDTO();
+        $dto->bar = 'I like unicorns.';
+        $dto->foo = 'Why is the sky blue?';
+
+        $client = $this->getClient();
+        $client->setConfigValue(Client::CONFIG_BULK_SIZE, 3);
+        $indexer = $client->getIndexer();
+        $indexer->setBulkRequestParams([
+            'refresh' => 'wait_for',
+        ]);
+
+        $indexer->scheduleIndex($indexName, new Document('1', $dto));
+        $response = $indexer->flush();
+
+        $this->assertInstanceOf(ResponseSet::class, $response);
+        $transferInfo = $response->getTransferInfo();
+        $this->assertStringContainsString('_bulk?refresh=wait_for', $transferInfo['url']);
+
+        // Test the same with an invalid pipeline
+        $indexer->setBulkRequestParams([
+            'pipeline' => 'covfefe',
+        ]);
+
+        $indexer->scheduleIndex($indexName, new Document('1', $dto));
+
+        $this->expectException(ResponseException::class);
+        $this->expectExceptionMessageRegExp('/pipeline with id \[covfefe\] does not exist/');
+
+        $indexer->flush();
+    }
+
     public function testIndexJsonString(): void
     {
         $indexName = mb_strtolower(__FUNCTION__);
