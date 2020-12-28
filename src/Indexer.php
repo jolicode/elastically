@@ -37,9 +37,7 @@ class Indexer
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_INDEX);
 
-        if ($this->getQueueSize() >= $this->bulkMaxSize) {
-            $this->flush();
-        }
+        $this->flushIfNeeded();
     }
 
     public function scheduleDelete($index, string $id)
@@ -48,9 +46,7 @@ class Indexer
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         $this->getCurrentBulk()->addAction(new Bulk\Action\DeleteDocument($document));
 
-        if ($this->getQueueSize() >= $this->bulkMaxSize) {
-            $this->flush();
-        }
+        $this->flushIfNeeded();
     }
 
     public function scheduleUpdate($index, Document $document)
@@ -63,9 +59,7 @@ class Indexer
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_UPDATE);
 
-        if ($this->getQueueSize() >= $this->bulkMaxSize) {
-            $this->flush();
-        }
+        $this->flushIfNeeded();
     }
 
     public function scheduleCreate($index, Document $document)
@@ -78,9 +72,7 @@ class Indexer
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_CREATE);
 
-        if ($this->getQueueSize() >= $this->bulkMaxSize) {
-            $this->flush();
-        }
+        $this->flushIfNeeded();
     }
 
     public function flush(): ?Bulk\ResponseSet
@@ -141,6 +133,14 @@ class Indexer
         }
     }
 
+    protected function flushIfNeeded(): void
+    {
+        if ($this->getQueueSize() >= $this->bulkMaxSize) {
+            $this->flush();
+
+        }
+    }
+  
     public function getBulkRequestParams(): array
     {
         return $this->bulkRequestParams;
