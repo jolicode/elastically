@@ -144,7 +144,7 @@ This library add custom configurations on top of Elastica's:
 
 The directory Elastically is going to look for YAML.
 
-When creating a `foobar` index, a `foobar.yaml` file is expected.
+When creating a `foobar` index, a `foobar_mapping.yaml` file is expected.
 
 If an `analyzers.yaml` file is present, **all** the indices will get it.
 
