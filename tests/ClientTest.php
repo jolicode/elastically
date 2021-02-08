@@ -37,7 +37,6 @@ final class ClientTest extends BaseTestCase
 
     public function testIndexNameFromClassWithConfigIndexPrefix(): void
     {
-
         $client = new Client([
             Client::CONFIG_INDEX_CLASS_MAPPING => [
                 'todo' => TestDTO::class,
