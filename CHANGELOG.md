@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.1.1] - 2021-02-09
+
+### Fixed
+
+- Improve Travis-ci tests robustness.
+- Fix `getIndexNameFromClass` when index prefix is configured.
+
 ## [1.1.0] - 2020-12-28
 
 ### Fixed
@@ -75,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to set Serializer Context for input/output.
 
 [Unreleased]: https://github.com/jolicode/elastically/compare/v1.1.0...HEAD
+[1.1.1]: https://github.com/jolicode/elastically/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jolicode/elastically/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/jolicode/elastically/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/jolicode/elastically/compare/v1.0.0...v1.0.1
