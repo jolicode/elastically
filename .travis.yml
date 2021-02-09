@@ -17,6 +17,11 @@ matrix:
 
 install:
     - make start
+    - |
+      while ! curl -s -X GET http://127.0.0.1:9200/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
+      do
+        echo "==> Waiting for cluster green status" && sleep 2
+      done
     - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 
 script:
