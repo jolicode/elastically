@@ -74,7 +74,7 @@ class Client extends ElasticaClient
             throw new RuntimeException(sprintf('The given type (%s) does not exist in the configuration.', $className));
         }
 
-        return $indexName;
+        return $this->getPrefixedIndex($indexName);
     }
 
     public function getPureIndexName(string $fullIndexName): string
