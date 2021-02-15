@@ -10,6 +10,8 @@ cache:
 matrix:
     fast_finish: true
     include:
+        - php: 8.0
+          env: TARGET=test
         - php: 7.4
           env: TARGET=test
         - php: 7.2

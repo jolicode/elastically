@@ -137,10 +137,9 @@ class Indexer
     {
         if ($this->getQueueSize() >= $this->bulkMaxSize) {
             $this->flush();
-
         }
     }
-  
+
     public function getBulkRequestParams(): array
     {
         return $this->bulkRequestParams;
