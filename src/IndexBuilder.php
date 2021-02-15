@@ -130,7 +130,7 @@ class IndexBuilder
 
         // Newest first
         uasort($indexes, function ($a, $b) {
-            return $a['date'] < $b['date'];
+            return $a['date'] < $b['date'] ? 1 : -1;
         });
 
         $afterLiveCounter = 0;
