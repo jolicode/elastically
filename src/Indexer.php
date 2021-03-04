@@ -88,12 +88,10 @@ class Indexer
         try {
             $response = $this->getCurrentBulk()->send();
         } catch (ResponseException $exception) {
-            $this->currentBulk = null;
-
             throw $exception;
+        } finally {
+            $this->currentBulk = null;
         }
-
-        $this->currentBulk = null;
 
         return $response;
     }
