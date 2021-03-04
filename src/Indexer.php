@@ -2,7 +2,7 @@
 
 namespace JoliCode\Elastically;
 
-use Elastica\Bulk;
+use Elastica\Bulk as ElasticaBulk;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Index;
@@ -35,7 +35,7 @@ class Indexer
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
-        $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_INDEX);
+        $this->getCurrentBulk()->addDocument($document, ElasticaBulk\Action::OP_TYPE_INDEX);
 
         $this->flushIfNeeded();
     }
@@ -44,7 +44,7 @@ class Indexer
     {
         $document = new Document($id, '');
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        $this->getCurrentBulk()->addAction(new Bulk\Action\DeleteDocument($document));
+        $this->getCurrentBulk()->addAction(new ElasticaBulk\Action\DeleteDocument($document));
 
         $this->flushIfNeeded();
     }
@@ -57,7 +57,7 @@ class Indexer
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
-        $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_UPDATE);
+        $this->getCurrentBulk()->addDocument($document, ElasticaBulk\Action::OP_TYPE_UPDATE);
 
         $this->flushIfNeeded();
     }
@@ -70,12 +70,12 @@ class Indexer
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
-        $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_CREATE);
+        $this->getCurrentBulk()->addDocument($document, ElasticaBulk\Action::OP_TYPE_CREATE);
 
         $this->flushIfNeeded();
     }
 
-    public function flush(): ?Bulk\ResponseSet
+    public function flush(): ?ElasticaBulk\ResponseSet
     {
         if (null === $this->currentBulk) {
             return null;
@@ -104,7 +104,7 @@ class Indexer
             return 0;
         }
 
-        return count($this->currentBulk->getActions());
+        return $this->currentBulk->getSize();
     }
 
     public function refresh($index)
