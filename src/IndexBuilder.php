@@ -71,7 +71,7 @@ class IndexBuilder
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public function migrate(Index $currentIndex, array $params = [])
+    public function migrate(Index $currentIndex, array $params = []): Index
     {
         $pureIndexName = $this->client->getPureIndexName($currentIndex->getName());
         $newIndex = $this->createIndex($pureIndexName);
@@ -81,20 +81,20 @@ class IndexBuilder
 
         $response = $reindex->run();
 
-        if ($response->isOk()) {
-            $taskId = $response->getData()['task'];
-
-            $task = new Task($this->client, $taskId);
-
-            while (false === $task->isCompleted()) {
-                sleep(1); // Migrate of an index is not a production critical operation, sleep is ok.
-                $task->refresh();
-            }
-
-            return $newIndex;
-        } else {
+        if (!$response->isOk()) {
             throw new RuntimeException(sprintf('Reindex call failed. %s', $response->getError()));
         }
+
+        $taskId = $response->getData()['task'];
+
+        $task = new Task($this->client, $taskId);
+
+        while (false === $task->isCompleted()) {
+            sleep(1); // Migrate of an index is not a production critical operation, sleep is ok.
+            $task->refresh();
+        }
+
+        return $newIndex;
     }
 
     public function purgeOldIndices(string $indexName): array
