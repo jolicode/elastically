@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Messenger;
 
 use Elastica\Exception\Bulk\ResponseException;
@@ -71,8 +80,8 @@ class IndexationRequestHandler implements MessageHandlerInterface
             // Responses are checked in reverse mode because we have only requests from the last bulk
             $failedMessages = [];
             $allResponses = $exception->getResponseSet()->getBulkResponses();
-            $concernedResponses = array_reverse(array_slice($allResponses, $responseOffset));
-            $executedMessages = array_reverse(array_slice($messages, 0, $messageOffset));
+            $concernedResponses = array_reverse(\array_slice($allResponses, $responseOffset));
+            $executedMessages = array_reverse(\array_slice($messages, 0, $messageOffset));
             foreach ($concernedResponses as $key => $response) {
                 if (!$response->isOk()) {
                     array_unshift($failedMessages, $executedMessages[$key]);
@@ -80,13 +89,13 @@ class IndexationRequestHandler implements MessageHandlerInterface
             }
 
             // Throws exception as-is if all operations have failed
-            if (count($failedMessages) === count($messages)) {
+            if (\count($failedMessages) === \count($messages)) {
                 throw $exception;
             }
 
             // Redispatch failed and non-executed messages
-            $nonExecutedMessages = array_slice($messages, $messageOffset);
-            if (count($nonExecutedMessages) > 1) {
+            $nonExecutedMessages = \array_slice($messages, $messageOffset);
+            if (\count($nonExecutedMessages) > 1) {
                 $nonExecutedMessages = [new MultipleIndexationRequest($nonExecutedMessages)];
             }
             $toRedispatch = array_merge($failedMessages, $nonExecutedMessages);

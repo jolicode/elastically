@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests;
 
 use Elastica\Exception\RuntimeException;
@@ -28,7 +37,7 @@ final class ClientTest extends BaseTestCase
 
         $client = new Client([
             Client::CONFIG_INDEX_CLASS_MAPPING => [
-                'todo' => '\\'.TestDTO::class,
+                'todo' => '\\' . TestDTO::class,
             ],
         ]);
 

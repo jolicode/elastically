@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests\Jane;
 
 use Elastica\Document;
@@ -28,7 +37,7 @@ class JaneTest extends TestCase
         // Build the models
         $command = new GenerateCommand(new ConfigLoader(), new SchemaLoader());
         $inputArray = new ArrayInput([
-            '--config-file' => __DIR__.'/jane-config.php',
+            '--config-file' => __DIR__ . '/jane-config.php',
         ], $command->getDefinition());
 
         $command->execute($inputArray, new NullOutput());
@@ -47,7 +56,7 @@ class JaneTest extends TestCase
 
         // Build Elastically Client
         $elastically = new Client([
-            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/../configs',
+            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
             Client::CONFIG_INDEX_CLASS_MAPPING => [
                 'beers' => MyModel::class,
             ],
@@ -86,6 +95,6 @@ class JaneTest extends TestCase
 
         // DTO are not the same object but are identical
         $this->assertNotSame($dto, $elasticallyDto);
-        $this->assertEquals($dto, $elasticallyDto);
+        $this->assertSame($dto, $elasticallyDto);
     }
 }

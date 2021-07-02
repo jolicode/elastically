@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically;
 
 use Elastica\Client as ElasticaClient;
@@ -67,7 +76,7 @@ class Client extends ElasticaClient
 
     public function getIndexNameFromClass(string $className): string
     {
-        $indexToClass = $this->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
+        $indexToClass = $this->getConfig(self::CONFIG_INDEX_CLASS_MAPPING);
         $indexName = array_search($className, $indexToClass, true);
 
         if (!$indexName) {
@@ -79,7 +88,7 @@ class Client extends ElasticaClient
 
     public function getPureIndexName(string $fullIndexName): string
     {
-        $prefix = $this->getConfigValue(Client::CONFIG_INDEX_PREFIX);
+        $prefix = $this->getConfigValue(self::CONFIG_INDEX_PREFIX);
 
         if ($prefix) {
             $pattern = sprintf('/%s_(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($prefix, '/'));

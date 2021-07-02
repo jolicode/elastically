@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests\Messenger;
 
 use Elastica\Document;
@@ -43,7 +52,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
         $resultSet = $index->search();
 
         $this->assertInstanceOf(ResultSet::class, $resultSet);
-        $this->assertEquals(3, $resultSet->getTotalHits());
+        $this->assertSame(3, $resultSet->getTotalHits());
 
         $this->assertInstanceOf(TestDTO::class, $index->getModel('1234567890'));
         $this->assertInstanceOf(TestDTO::class, $index->getModel('ref7777'));
@@ -77,8 +86,8 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
     public function testRequeueOnlyFailedMessageFromMultiple(): void
     {
-        $indexNameWritable = mb_strtolower(__FUNCTION__).'_writable';
-        $indexNameReadonly = mb_strtolower(__FUNCTION__).'_readonly';
+        $indexNameWritable = mb_strtolower(__FUNCTION__) . '_writable';
+        $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
         $client = $this->getClient();
         $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
@@ -108,7 +117,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
     public function testThrowsResponseExceptionIfAllRequestsFailInMulti(): void
     {
-        $indexNameReadonly = mb_strtolower(__FUNCTION__).'_readonly';
+        $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
         $client = $this->getClient();
         $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
@@ -134,7 +143,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
     public function testThrowsResponseExceptionIfSingleRequestFail(): void
     {
-        $indexNameReadonly = mb_strtolower(__FUNCTION__).'_readonly';
+        $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
         $client = $this->getClient();
         $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
@@ -158,8 +167,8 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
     public function testMultipleBulkResilienceOverError(): void
     {
-        $indexNameWritable = mb_strtolower(__FUNCTION__).'_writable';
-        $indexNameReadonly = mb_strtolower(__FUNCTION__).'_readonly';
+        $indexNameWritable = mb_strtolower(__FUNCTION__) . '_writable';
+        $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
         $client = $this->getClient();
         $client->getIndexer()->setBulkMaxSize(3);

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Transport;
 
 use Elastica\Connection;
@@ -55,12 +64,12 @@ class HttpClientTransport extends AbstractTransport
         $data = $request->getData();
         $method = $request->getMethod();
         if (!empty($data) || '0' === $data) {
-            if (ElasticaRequest::GET == $method) {
+            if (ElasticaRequest::GET === $method) {
                 $method = ElasticaRequest::POST;
             }
 
-            if (is_array($data)) {
-                $options['body'] = JSON::stringify($data, JSON_UNESCAPED_UNICODE);
+            if (\is_array($data)) {
+                $options['body'] = JSON::stringify($data, \JSON_UNESCAPED_UNICODE);
             } else {
                 $options['body'] = $data;
             }
@@ -71,7 +80,7 @@ class HttpClientTransport extends AbstractTransport
         }
 
         $proxy = $connection->getProxy();
-        if (!\is_null($proxy)) {
+        if (null !== $proxy) {
             $options['proxy'] = $proxy;
         }
 
@@ -110,7 +119,7 @@ class HttpClientTransport extends AbstractTransport
         if (!empty($url)) {
             $baseUri = $url;
         } else {
-            $baseUri = $this->scheme.'://'.$connection->getHost().':'.$connection->getPort().'/'.$connection->getPath();
+            $baseUri = $this->scheme . '://' . $connection->getHost() . ':' . $connection->getPort() . '/' . $connection->getPath();
         }
 
         $requestPath = $request->getPath();
@@ -123,7 +132,7 @@ class HttpClientTransport extends AbstractTransport
         $query = $request->getQuery();
 
         if (!empty($query)) {
-            $baseUri .= '?'.\http_build_query($this->sanityzeQueryStringBool($query));
+            $baseUri .= '?' . http_build_query($this->sanityzeQueryStringBool($query));
         }
 
         return $baseUri;

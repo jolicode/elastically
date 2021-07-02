@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests\Symfony;
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -24,9 +33,19 @@ class TestKernel extends Kernel
         return $bundles;
     }
 
+    public function getCacheDir()
+    {
+        return sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'elastically';
+    }
+
+    public function getLogDir()
+    {
+        return sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'elastically_logs';
+    }
+
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config.yaml');
+        $loader->load(__DIR__ . '/config.yaml');
 
         $def = $c->register(TestController::class);
         $def->setAutowired(true);
@@ -35,17 +54,7 @@ class TestKernel extends Kernel
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
-        $routes->add('/with_exception', TestController::class.'::withException', 'with_exception');
-        $routes->add('/with_response', TestController::class.'::withResponse', 'with_response');
-    }
-
-    public function getCacheDir()
-    {
-        return sys_get_temp_dir().DIRECTORY_SEPARATOR.'elastically';
-    }
-
-    public function getLogDir()
-    {
-        return sys_get_temp_dir().DIRECTORY_SEPARATOR.'elastically_logs';
+        $routes->add('/with_exception', TestController::class . '::withException', 'with_exception');
+        $routes->add('/with_response', TestController::class . '::withResponse', 'with_response');
     }
 }
