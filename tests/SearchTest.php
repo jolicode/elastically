@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests;
 
 use Elastica\Document;
@@ -14,11 +23,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class SearchTest extends BaseTestCase
 {
-    private function getIndexer($path = null): Indexer
-    {
-        return $this->getClient($path)->getIndexer();
-    }
-
     public function testIndexAndSearch(): void
     {
         $indexName = mb_strtolower(__FUNCTION__);
@@ -45,7 +49,7 @@ final class SearchTest extends BaseTestCase
 
         $results = $client->getIndex($indexName)->search('unicorns');
 
-        $this->assertEquals(1, $results->getTotalHits());
+        $this->assertSame(1, $results->getTotalHits());
 
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
         $this->assertInstanceOf(Document::class, $results->getDocuments()[0]);
@@ -77,7 +81,7 @@ final class SearchTest extends BaseTestCase
         $query->setSource(['foo']);
         $results = $client->getIndex($indexName)->search($query);
 
-        $this->assertEquals(1, $results->getTotalHits());
+        $this->assertSame(1, $results->getTotalHits());
 
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
         $this->assertInstanceOf(Document::class, $results->getDocuments()[0]);
@@ -111,11 +115,16 @@ final class SearchTest extends BaseTestCase
 
         $results = $client->getIndex($indexName)->search('testMyOwnSerializer');
 
-        $this->assertEquals(1, $results->getTotalHits());
+        $this->assertSame(1, $results->getTotalHits());
 
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
         $this->assertInstanceOf(Document::class, $results->getDocuments()[0]);
         $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
+    }
+
+    private function getIndexer($path = null): Indexer
+    {
+        return $this->getClient($path)->getIndexer();
     }
 }
 

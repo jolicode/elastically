@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests\Transport;
 
 use Elastica\Document;
@@ -42,7 +51,7 @@ final class HttpClientTransportTest extends BaseTestCase
     public function testCreateIndex(): void
     {
         $client = new Client([
-            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/../configs',
+            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
             'log' => false,
             'transport' => new HttpClientTransport(HttpClient::create()),
         ]);
@@ -58,7 +67,7 @@ final class HttpClientTransportTest extends BaseTestCase
     public function testHttpClientIsCalledOnSearch()
     {
         $responses = [
-            new MockResponse(<<<JSON
+            new MockResponse(<<<'JSON'
 {
   "took" : 1,
   "timed_out" : false,
@@ -83,7 +92,7 @@ JSON
         $results = $client->getIndex(__FUNCTION__)->search();
 
         $this->assertInstanceOf(ResultSet::class, $results);
-        $this->assertEquals(0, $results->getTotalHits());
+        $this->assertSame(0, $results->getTotalHits());
     }
 
     public function testHttpClientHandleErrorIdentically()
@@ -153,7 +162,7 @@ JSON
 
         $this->assertInstanceOf(ExceptionInterface::class, $nativeException);
         $this->assertInstanceOf(ExceptionInterface::class, $httpClientException);
-        $this->assertInstanceOf(get_class($httpClientException), $nativeException);
+        $this->assertInstanceOf(\get_class($httpClientException), $nativeException);
     }
 }
 

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically;
 
 use Elastica\Bulk;
@@ -30,8 +39,8 @@ class Indexer
     public function scheduleIndex($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (is_object($document->getData())) {
-            $context = $this->client->getSerializerContext(get_class($document->getData()));
+        if (\is_object($document->getData())) {
+            $context = $this->client->getSerializerContext(\get_class($document->getData()));
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
@@ -52,8 +61,8 @@ class Indexer
     public function scheduleUpdate($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (is_object($document->getData())) {
-            $context = $this->client->getSerializerContext(get_class($document->getData()));
+        if (\is_object($document->getData())) {
+            $context = $this->client->getSerializerContext(\get_class($document->getData()));
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
@@ -65,8 +74,8 @@ class Indexer
     public function scheduleCreate($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (is_object($document->getData())) {
-            $context = $this->client->getSerializerContext(get_class($document->getData()));
+        if (\is_object($document->getData())) {
+            $context = $this->client->getSerializerContext(\get_class($document->getData()));
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
@@ -104,7 +113,7 @@ class Indexer
             return 0;
         }
 
-        return count($this->currentBulk->getActions());
+        return \count($this->currentBulk->getActions());
     }
 
     public function refresh($index)
@@ -114,28 +123,11 @@ class Indexer
         $this->client->getIndex($indexName)->refresh();
     }
 
-    protected function getCurrentBulk(): Bulk
-    {
-        if (!($this->currentBulk instanceof Bulk)) {
-            $this->currentBulk = new Bulk($this->client);
-            $this->refreshBulkRequestParams();
-        }
-
-        return $this->currentBulk;
-    }
-
     public function setBulkMaxSize(int $bulkMaxSize): void
     {
         $this->bulkMaxSize = $bulkMaxSize;
 
         if ($this->getQueueSize() > $bulkMaxSize) {
-            $this->flush();
-        }
-    }
-
-    protected function flushIfNeeded(): void
-    {
-        if ($this->getQueueSize() >= $this->bulkMaxSize) {
             $this->flush();
         }
     }
@@ -149,6 +141,23 @@ class Indexer
     {
         $this->bulkRequestParams = $bulkRequestParams;
         $this->refreshBulkRequestParams();
+    }
+
+    protected function getCurrentBulk(): Bulk
+    {
+        if (!($this->currentBulk instanceof Bulk)) {
+            $this->currentBulk = new Bulk($this->client);
+            $this->refreshBulkRequestParams();
+        }
+
+        return $this->currentBulk;
+    }
+
+    protected function flushIfNeeded(): void
+    {
+        if ($this->getQueueSize() >= $this->bulkMaxSize) {
+            $this->flush();
+        }
     }
 
     private function refreshBulkRequestParams()

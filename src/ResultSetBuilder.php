@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically;
 
 use Elastica\Exception\RuntimeException;
@@ -22,6 +31,19 @@ class ResultSetBuilder implements BuilderInterface
         $results = $this->buildResults($response);
 
         return new ResultSet($response, $query, $results);
+    }
+
+    public function buildModelFromIndexAndData($indexName, $data)
+    {
+        $pureIndexName = $this->client->getPureIndexName($indexName);
+        $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
+        if (!isset($indexToClass[$pureIndexName])) {
+            throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $pureIndexName, Client::CONFIG_INDEX_CLASS_MAPPING));
+        }
+
+        $context = $this->client->getSerializerContext($indexToClass[$pureIndexName]);
+
+        return $this->client->getSerializer()->denormalize($data, $indexToClass[$pureIndexName], null, $context);
     }
 
     private function buildResults(Response $response): array
@@ -51,18 +73,5 @@ class ResultSetBuilder implements BuilderInterface
         }
 
         return $this->buildModelFromIndexAndData($result->getIndex(), $source);
-    }
-
-    public function buildModelFromIndexAndData($indexName, $data)
-    {
-        $pureIndexName = $this->client->getPureIndexName($indexName);
-        $indexToClass = $this->client->getConfig(Client::CONFIG_INDEX_CLASS_MAPPING);
-        if (!isset($indexToClass[$pureIndexName])) {
-            throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $pureIndexName, Client::CONFIG_INDEX_CLASS_MAPPING));
-        }
-
-        $context = $this->client->getSerializerContext($indexToClass[$pureIndexName]);
-
-        return $this->client->getSerializer()->denormalize($data, $indexToClass[$pureIndexName], null, $context);
     }
 }

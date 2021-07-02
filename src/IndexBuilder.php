@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically;
 
 use Elastica\Exception\InvalidException;
@@ -24,14 +33,14 @@ class IndexBuilder
 
     public function createIndex($indexName, $fileName = null): Index
     {
-        $fileName = $fileName ?? ($indexName.'_mapping.yaml');
-        $mappingFilePath = $this->configurationDirectory.DIRECTORY_SEPARATOR.$fileName;
+        $fileName = $fileName ?? ($indexName . '_mapping.yaml');
+        $mappingFilePath = $this->configurationDirectory . \DIRECTORY_SEPARATOR . $fileName;
         if (!is_file($mappingFilePath)) {
             throw new InvalidException(sprintf('Mapping file "%s" not found.', $mappingFilePath));
         }
         $mapping = Yaml::parseFile($mappingFilePath);
 
-        $analyzerFilePath = $this->configurationDirectory.'/analyzers.yaml';
+        $analyzerFilePath = $this->configurationDirectory . '/analyzers.yaml';
         if ($mapping && is_file($analyzerFilePath)) {
             $analyzer = Yaml::parseFile($analyzerFilePath);
             $mapping['settings']['analysis'] = array_merge_recursive($mapping['settings']['analysis'] ?? [], $analyzer);
@@ -117,7 +126,7 @@ class IndexBuilder
             }
 
             // Check suffix (it must contains a valid date)
-            $indexSuffixName = substr($realIndexName, strlen($indexName) + 1);
+            $indexSuffixName = substr($realIndexName, \strlen($indexName) + 1);
             $date = \DateTime::createFromFormat('Y-m-d-His', $indexSuffixName);
             if (!$date) {
                 unset($indexes[$realIndexName]);
@@ -125,7 +134,7 @@ class IndexBuilder
             }
 
             $data['date'] = $date;
-            $data['is_live'] = false !== array_search($indexName, $data['aliases']);
+            $data['is_live'] = false !== array_search($indexName, $data['aliases'], true);
         }
 
         // Newest first

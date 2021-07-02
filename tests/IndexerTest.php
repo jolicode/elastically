@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliCode\Elastically\Tests;
 
 use Elastica\Bulk\ResponseSet;
@@ -12,11 +21,6 @@ use JoliCode\Elastically\Indexer;
 
 final class IndexerTest extends BaseTestCase
 {
-    private function getIndexer($path = null): Indexer
-    {
-        return $this->getClient($path)->getIndexer();
-    }
-
     public function testIndexOneDocument(): void
     {
         $indexName = mb_strtolower(__FUNCTION__);
@@ -36,7 +40,7 @@ final class IndexerTest extends BaseTestCase
         $document = $client->getIndex($indexName)->getDocument('f');
 
         $this->assertInstanceOf(Document::class, $document);
-        $this->assertEquals('f', $document->getId());
+        $this->assertSame('f', $document->getId());
     }
 
     public function testIndexOneDocumentWithMapping(): void
@@ -61,8 +65,8 @@ final class IndexerTest extends BaseTestCase
         $model = $client->getIndex($indexName)->getModel('f');
 
         $this->assertInstanceOf(TestDTO::class, $model);
-        $this->assertEquals($dto->bar, $model->bar);
-        $this->assertEquals($dto->foo, $model->foo);
+        $this->assertSame($dto->bar, $model->bar);
+        $this->assertSame($dto->foo, $model->foo);
     }
 
     public function testIndexMultipleDocuments(): void
@@ -82,11 +86,11 @@ final class IndexerTest extends BaseTestCase
         }
 
         // 3 bulks should have been sent, leaving only one document
-        $this->assertEquals(1, $indexer->getQueueSize());
+        $this->assertSame(1, $indexer->getQueueSize());
 
         $indexer->flush();
 
-        $this->assertEquals(0, $indexer->getQueueSize());
+        $this->assertSame(0, $indexer->getQueueSize());
     }
 
     public function testAllIndexerOperations(): void
@@ -137,7 +141,7 @@ final class IndexerTest extends BaseTestCase
 
         $this->assertInstanceOf(ResponseSet::class, $response);
         $this->assertTrue($response->hasError());
-        $this->assertEquals(0, $indexer->getQueueSize());
+        $this->assertSame(0, $indexer->getQueueSize());
     }
 
     public function testRequestParameters(): void
@@ -215,7 +219,7 @@ final class IndexerTest extends BaseTestCase
         $model = $client->getIndex($indexName)->getModel('f');
 
         $this->assertInstanceOf(TestDTO::class, $model);
-        $this->assertEquals($dto->foo, $model->foo);
+        $this->assertSame($dto->foo, $model->foo);
         $this->assertEmpty($model->bar);
 
         // Also work on read
@@ -228,6 +232,11 @@ final class IndexerTest extends BaseTestCase
         $this->assertInstanceOf(TestDTO::class, $model);
         $this->assertEmpty($model->foo);
         $this->assertEmpty($model->bar);
+    }
+
+    private function getIndexer($path = null): Indexer
+    {
+        return $this->getClient($path)->getIndexer();
     }
 }
 
