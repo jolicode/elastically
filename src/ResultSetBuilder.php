@@ -35,7 +35,7 @@ class ResultSetBuilder implements BuilderInterface
         $results = [];
 
         if (!isset($data['hits']['hits'])) {
-            return $results;
+            return new ResultSet($response, $query, []);
         }
 
         foreach ($data['hits']['hits'] as $hit) {
