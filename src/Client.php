@@ -17,6 +17,7 @@ use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -63,7 +64,7 @@ class Client extends ElasticaClient
     }
 
     /**
-     * The type hint here is wrong on purpose, to allow PHP 7.2.
+     * Return an elastically index.
      *
      * @return Index
      */
@@ -96,6 +97,17 @@ class Client extends ElasticaClient
         return $this->getPrefixedIndex($indexName);
     }
 
+    public function getClassFromIndexName(string $indexName): string
+    {
+        $indexToClass = $this->getConfig(self::CONFIG_INDEX_CLASS_MAPPING);
+
+        if (!isset($indexToClass[$indexName])) {
+            throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $indexName, self::CONFIG_INDEX_CLASS_MAPPING));
+        }
+
+        return $indexToClass[$indexName];
+    }
+
     public function getPureIndexName(string $fullIndexName): string
     {
         $prefix = $this->getConfigValue(self::CONFIG_INDEX_PREFIX);
@@ -113,6 +125,9 @@ class Client extends ElasticaClient
         return $fullIndexName;
     }
 
+    /**
+     * @return SerializerInterface|DenormalizerInterface
+     */
     public function getSerializer(): SerializerInterface
     {
         $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER);
