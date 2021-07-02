@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.3.0] - 2021-07-02
+
+### Added
+
 - Adds elastica raw result in serializer context while denormalizing results
 
 ### Deprecated
@@ -94,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to set Serializer Context for input/output.
 
 [Unreleased]: https://github.com/jolicode/elastically/compare/v1.2.0...HEAD
+[1.3.0]: https://github.com/jolicode/elastically/compare/v1.3.0...v1.3.0
 [1.2.0]: https://github.com/jolicode/elastically/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/jolicode/elastically/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jolicode/elastically/compare/v1.0.2...v1.1.0
