@@ -21,14 +21,12 @@ class Index extends ElasticaIndex
     {
         $document = $this->getDocument($id);
 
-        return $this->getBuilder()->buildModelFromIndexAndData($document->getIndex(), $document->getData());
+        return $this->getBuilder()->buildModelFromDocument($document);
     }
 
     public function createSearch($query = '', $options = null, BuilderInterface $builder = null): Search
     {
-        $builder = $builder ?? $this->getClient()->getBuilder();
-
-        return parent::createSearch($query, $options, $builder);
+        return parent::createSearch($query, $options, $builder ?? $this->getClient()->getBuilder());
     }
 
     public function getBuilder(): ResultSetBuilder
@@ -36,5 +34,15 @@ class Index extends ElasticaIndex
         trigger_deprecation('jolicode/elastically', '1.3.0', 'Method %s() is deprecated. Use %s::getBuilder() instead', __METHOD__, Client::class);
 
         return $this->getClient()->getBuilder();
+    }
+
+    /**
+     * Returns an elastically client.
+     *
+     * @return Client
+     */
+    public function getClient(): \Elastica\Client
+    {
+        return parent::getClient();
     }
 }
