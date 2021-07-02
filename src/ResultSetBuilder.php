@@ -11,6 +11,7 @@
 
 namespace JoliCode\Elastically;
 
+use Elastica\Document;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
@@ -19,6 +20,7 @@ use Elastica\ResultSet\BuilderInterface;
 class ResultSetBuilder implements BuilderInterface
 {
     public const RESULT_KEY = 'elastically_result';
+    public const DOCUMENT_KEY = 'elastically_document';
 
     private $client;
 
@@ -38,33 +40,41 @@ class ResultSetBuilder implements BuilderInterface
 
         foreach ($data['hits']['hits'] as $hit) {
             $result = new Result($hit);
-            $result->setModel($this->buildModelResult($result));
+            $result->setModel($this->buildModelFromResult($result));
             $results[] = $result;
         }
 
         return new ResultSet($response, $query, $results);
     }
 
-    public function buildModelFromIndexAndData(string $indexName, $data)
+    public function buildModelFromIndexAndData(string $indexName, $source)
     {
-        $class = $this->client->getClassFromIndexName($this->client->getPureIndexName($indexName));
-
-        $context = $this->client->getSerializerContext($class);
-
-        return $this->client->getSerializer()->denormalize($data, $class, null, $context);
+        return $this->buildModel($indexName, $source, []);
     }
 
-    private function buildModelResult(Result $result)
+    public function buildModelFromDocument(Document $document)
     {
-        $source = $result->getSource();
+        return $this->buildModel($document->getData(), $document->getIndex(), [
+            self::DOCUMENT_KEY => $document,
+        ]);
+    }
+
+    private function buildModelFromResult(Result $result)
+    {
+        return $this->buildModel($result->getSource(), $result->getIndex(), [
+            self::RESULT_KEY => $result,
+        ]);
+    }
+
+    private function buildModel($source, string $indexName, array $context)
+    {
         if (!$source) {
             return null;
         }
 
-        $class = $this->client->getClassFromIndexName($this->client->getPureIndexName($result->getIndex()));
+        $class = $this->client->getClassFromIndexName($this->client->getPureIndexName($indexName));
 
-        $context = $this->client->getSerializerContext($class);
-        $context[self::RESULT_KEY] = $result;
+        $context = array_merge($this->client->getSerializerContext($class), $context);
 
         return $this->client->getSerializer()->denormalize($source, $class, null, $context);
     }
