@@ -33,6 +33,7 @@ class Client extends ElasticaClient
 
     private $indexer;
     private $indexBuilder;
+    private $builder;
 
     public function getIndexBuilder(): IndexBuilder
     {
@@ -50,6 +51,15 @@ class Client extends ElasticaClient
         }
 
         return $this->indexer;
+    }
+
+    public function getBuilder(): ResultSetBuilder
+    {
+        if (!$this->builder) {
+            $this->builder = new ResultSetBuilder($this);
+        }
+
+        return $this->builder;
     }
 
     /**

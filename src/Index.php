@@ -17,8 +17,6 @@ use Elastica\Search;
 
 class Index extends ElasticaIndex
 {
-    private $builder;
-
     public function getModel($id)
     {
         $document = $this->getDocument($id);
@@ -28,17 +26,15 @@ class Index extends ElasticaIndex
 
     public function createSearch($query = '', $options = null, BuilderInterface $builder = null): Search
     {
-        $builder = $builder ?? $this->getBuilder();
+        $builder = $builder ?? $this->getClient()->getBuilder();
 
         return parent::createSearch($query, $options, $builder);
     }
 
     public function getBuilder(): ResultSetBuilder
     {
-        if (!$this->builder) {
-            $this->builder = new ResultSetBuilder($this->getClient());
-        }
+        trigger_deprecation('jolicode/elastically', '1.3.0', 'Method %s() is deprecated. Use %s::getBuilder() instead', __METHOD__, Client::class);
 
-        return $this->builder;
+        return $this->getClient()->getBuilder();
     }
 }

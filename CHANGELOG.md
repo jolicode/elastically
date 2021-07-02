@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Deprecated
+
+* deprecates `Index::getBuilder()` in favor of `Client::getBuilder()`
+
 ## [1.2.0] - 2021-02-16
 
 ### Added
