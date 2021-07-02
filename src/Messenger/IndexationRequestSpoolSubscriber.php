@@ -2,7 +2,6 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -16,17 +15,14 @@ use Symfony\Contracts\Service\ResetInterface;
  */
 class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, ResetInterface
 {
-    private $logger;
-
     private $wasExceptionThrown = false;
 
     private $singleTransport;
 
     private $bus;
 
-    public function __construct(TransportInterface $singleTransport, MessageBusInterface $bus, LoggerInterface $logger = null)
+    public function __construct(TransportInterface $singleTransport, MessageBusInterface $bus)
     {
-        $this->logger = $logger;
         $this->singleTransport = $singleTransport;
         $this->bus = $bus;
     }

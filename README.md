@@ -15,7 +15,6 @@ Main features:
 - Symfony Messenger Handler support (with or without spool);
 - Symfony HttpClient compatible transport;
 - Tested with Symfony 3.4 to 5;
-- Extra commands to monitor, update mapping, reindex... Commonly implemented tasks.
 
 **Require PHP 7.2+ and Elasticsearch 7+**.
 
@@ -47,7 +46,7 @@ $client = new Client([
     Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/mappings',
     // What object to find in each index
     Client::CONFIG_INDEX_CLASS_MAPPING => [
-        'beers' => Beer::class,    
+        'beers' => Beer::class,
     ],
 ]);
 
@@ -149,12 +148,12 @@ When creating a `foobar` index, a `foobar_mapping.yaml` file is expected.
 If an `analyzers.yaml` file is present, **all** the indices will get it.
 
 ### Client::CONFIG_INDEX_CLASS_MAPPING (required)
- 
+
 An array of index name to class FQN.
 
 ```php
 [
-  'indexName' => '\My\AwesomeDTO'
+  'indexName' => My\AwesomeDTO::class,
 ]
 ```
 
@@ -179,13 +178,13 @@ $client->setConfigValue(Client::CONFIG_SERIALIZER_CONTEXT_PER_CLASS, [
 _Default to `[]`._
 
 ### Client::CONFIG_BULK_SIZE (optional)
-    
-When running indexation of lots of documents, this setting allow you to fine-tune the number of document threshold. 
+
+When running indexation of lots of documents, this setting allow you to fine-tune the number of document threshold.
 
 _Default to 100._
 
 ### Client::CONFIG_INDEX_PREFIX (optional)
-    
+
 Add a prefix to all indexes and aliases created via Elastically.
 
 _Default to `null`._
@@ -310,6 +309,7 @@ _[Not compatible with Jane < 6](https://github.com/jolicode/elastically/issues/1
 - some "todo" in the code
 - optional Doctrine connector
 - better logger - maybe via a processor? extending _log is supposed to be deprecated :(
+- extra commands to monitor, update mapping, reindex... Commonly implemented tasks
 - optional Symfony integration (DIC)
   - web debug toolbar!
 - scripts / commands for common tasks:
