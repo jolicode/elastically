@@ -95,6 +95,6 @@ class JaneTest extends TestCase
 
         // DTO are not the same object but are identical
         $this->assertNotSame($dto, $elasticallyDto);
-        $this->assertSame($dto, $elasticallyDto);
+        $this->assertSame(serialize($dto), serialize($elasticallyDto));
     }
 }
