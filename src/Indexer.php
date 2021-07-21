@@ -13,18 +13,16 @@ namespace JoliCode\Elastically;
 
 use Elastica\Bulk;
 use Elastica\Document;
-use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Index;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class Indexer
 {
-    private $client;
-    private $bulkMaxSize;
-    private $serializer;
-    /** @var Bulk|null */
-    private $currentBulk = null;
-    private $bulkRequestParams = [];
+    private Client $client;
+    private SerializerInterface $serializer;
+    private int $bulkMaxSize;
+    private array $bulkRequestParams;
+    private ?Bulk $currentBulk = null;
 
     public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [])
     {
@@ -86,7 +84,7 @@ class Indexer
 
     public function flush(): ?Bulk\ResponseSet
     {
-        if (null === $this->currentBulk) {
+        if (!$this->currentBulk) {
             return null;
         }
 
@@ -96,20 +94,16 @@ class Indexer
 
         try {
             $response = $this->getCurrentBulk()->send();
-        } catch (ResponseException $exception) {
+        } finally {
             $this->currentBulk = null;
-
-            throw $exception;
         }
-
-        $this->currentBulk = null;
 
         return $response;
     }
 
     public function getQueueSize()
     {
-        if (null === $this->currentBulk) {
+        if (!$this->currentBulk) {
             return 0;
         }
 
@@ -145,7 +139,7 @@ class Indexer
 
     protected function getCurrentBulk(): Bulk
     {
-        if (!($this->currentBulk instanceof Bulk)) {
+        if (!$this->currentBulk) {
             $this->currentBulk = new Bulk($this->client);
             $this->refreshBulkRequestParams();
         }

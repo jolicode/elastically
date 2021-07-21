@@ -16,20 +16,14 @@ use Elastica\Result as ElasticaResult;
 
 class Result extends ElasticaResult
 {
-    private $model;
+    private object $model;
 
-    /**
-     * @return object
-     */
-    public function getModel()
+    public function getModel(): object
     {
         return $this->model;
     }
 
-    /**
-     * @param object $model
-     */
-    public function setModel($model)
+    public function setModel(object $model)
     {
         $this->model = $model;
     }
@@ -37,7 +31,7 @@ class Result extends ElasticaResult
     public function getDocument(): Document
     {
         $doc = parent::getDocument();
-        $doc->setData($this->getModel());
+        $doc->setData($this->model);
 
         return $doc;
     }

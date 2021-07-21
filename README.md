@@ -16,7 +16,7 @@ Main features:
 - Symfony HttpClient compatible transport;
 - Tested with Symfony 4.4 to 5;
 
-**Require PHP 7.2+ and Elasticsearch 7+**.
+**Require PHP 7.4+ and Elasticsearch 7+**.
 
 ## Installation
 

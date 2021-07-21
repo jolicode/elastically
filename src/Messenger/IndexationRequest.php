@@ -13,9 +13,9 @@ namespace JoliCode\Elastically\Messenger;
 
 final class IndexationRequest implements IndexationRequestInterface
 {
-    private $operation;
-    private $className;
-    private $id;
+    private string $className;
+    private string $id;
+    private string $operation;
 
     public function __construct(string $className, string $id, string $operation = IndexationRequestHandler::OP_INDEX)
     {
