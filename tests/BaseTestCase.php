@@ -14,20 +14,26 @@ declare(strict_types=1);
 namespace JoliCode\Elastically\Tests;
 
 use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
 use PHPUnit\Framework\TestCase;
 
 abstract class BaseTestCase extends TestCase
 {
     protected function setUp(): void
     {
-        (new Client())->request('*', 'DELETE');
+        $this->getFactory()->buildClient()->request('*', 'DELETE');
     }
 
-    protected function getClient($path = null): Client
+    protected function getFactory(?string $path = null, array $config = []): Factory
     {
-        return new Client([
-            Client::CONFIG_MAPPINGS_DIRECTORY => $path ?? __DIR__ . '/configs',
+        return new Factory($config + [
+            Factory::CONFIG_MAPPINGS_DIRECTORY => $path ?? __DIR__ . '/configs',
             'log' => false,
         ]);
+    }
+
+    protected function getClient(?string $path = null, array $config = []): Client
+    {
+        return $this->getFactory($path, $config)->buildClient();
     }
 }

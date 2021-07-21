@@ -16,17 +16,23 @@ use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\BuilderInterface;
+use JoliCode\Elastically\Serializer\ContextBuilderInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class ResultSetBuilder implements BuilderInterface
 {
     public const RESULT_KEY = 'elastically_result';
     public const DOCUMENT_KEY = 'elastically_document';
 
-    private Client $client;
+    private IndexNameMapper $indexNameMapper;
+    private ContextBuilderInterface $contextBuilder;
+    private DenormalizerInterface $denormalizer;
 
-    public function __construct(Client $client)
+    public function __construct(IndexNameMapper $indexNameMapper, ContextBuilderInterface $contextBuilder, DenormalizerInterface $denormalizer)
     {
-        $this->client = $client;
+        $this->indexNameMapper = $indexNameMapper;
+        $this->contextBuilder = $contextBuilder;
+        $this->denormalizer = $denormalizer;
     }
 
     public function buildResultSet(Response $response, Query $query): ResultSet
@@ -72,10 +78,10 @@ class ResultSetBuilder implements BuilderInterface
             return null;
         }
 
-        $class = $this->client->getClassFromIndexName($this->client->getPureIndexName($indexName));
+        $class = $this->indexNameMapper->getClassFromIndexName($this->indexNameMapper->getPureIndexName($indexName));
 
-        $context = array_merge($this->client->getSerializerContext($class), $context);
+        $context = array_merge($this->contextBuilder->buildContext($class), $context);
 
-        return $this->client->getDenormalizer()->denormalize($source, $class, null, $context);
+        return $this->denormalizer->denormalize($source, $class, null, $context);
     }
 }

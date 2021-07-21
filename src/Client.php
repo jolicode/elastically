@@ -12,57 +12,40 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Client as ElasticaClient;
-use Elastica\Exception\RuntimeException;
-use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class Client extends ElasticaClient
 {
-    /* Elastically config keys */
-    public const CONFIG_MAPPINGS_DIRECTORY = 'elastically_mappings_directory';
-    public const CONFIG_INDEX_CLASS_MAPPING = 'elastically_index_class_mapping';
-    public const CONFIG_INDEX_PREFIX = 'elastically_index_prefix';
-    public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = 'elastically_serializer_context_per_class';
-    public const CONFIG_SERIALIZER = 'elastically_serializer';
-    public const CONFIG_BULK_SIZE = 'elastically_bulk_size';
+    /* Elastically config keys // BC Layer, to remove in 2.0 */
+    public const CONFIG_MAPPINGS_DIRECTORY = Factory::CONFIG_MAPPINGS_DIRECTORY;
+    public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = Factory::CONFIG_SERIALIZER_CONTEXT_PER_CLASS;
+    public const CONFIG_SERIALIZER = Factory::CONFIG_SERIALIZER;
+    public const CONFIG_BULK_SIZE = Factory::CONFIG_BULK_SIZE;
+    public const CONFIG_INDEX_PREFIX = Factory::CONFIG_INDEX_PREFIX;
+    public const CONFIG_INDEX_CLASS_MAPPING = Factory::CONFIG_INDEX_CLASS_MAPPING;
 
-    private Indexer $indexer;
-    private IndexBuilder $indexBuilder;
+    private Factory $factory;
     private ResultSetBuilder $resultSetBuilder;
-    private SerializerInterface $serializer;
-    private DenormalizerInterface $denormalizer;
+    private IndexNameMapper $indexNameMapper;
 
-    public function getIndexBuilder(): IndexBuilder
+    public function __construct($config = [], ?callable $callback = null, ?LoggerInterface $logger = null, ?ResultSetBuilder $resultSetBuilder = null, ?IndexNameMapper $indexNameMapper = null)
     {
-        if (!isset($this->indexBuilder)) {
-            $this->indexBuilder = new IndexBuilder($this, $this->getConfig(self::CONFIG_MAPPINGS_DIRECTORY));
+        parent::__construct($config, $callback, $logger);
+
+        // BC Layer, to remove in 2.0
+        $config[Factory::CONFIG_CLIENT] = $this;
+        $this->factory = new Factory($config);
+        if (!$resultSetBuilder) {
+            trigger_deprecation('jolicode/elastically', '1.4.0', 'Passing null as #4 argument of %s() is deprecated. Inject a %s instance instead.', __METHOD__, ResultSetBuilder::class);
         }
-
-        return $this->indexBuilder;
-    }
-
-    public function getIndexer(): Indexer
-    {
-        if (!isset($this->indexer)) {
-            $this->indexer = new Indexer($this, $this->getSerializer(), $this->getConfigValue(self::CONFIG_BULK_SIZE, 100));
+        $this->resultSetBuilder = $resultSetBuilder ?? $this->factory->buildBuilder();
+        if (!$indexNameMapper) {
+            trigger_deprecation('jolicode/elastically', '1.4.0', 'Passing null as #5 argument of %s() is deprecated. Inject a %s instance instead.', __METHOD__, IndexNameMapper::class);
         }
-
-        return $this->indexer;
-    }
-
-    public function getBuilder(): ResultSetBuilder
-    {
-        if (!isset($this->resultSetBuilder)) {
-            $this->resultSetBuilder = new ResultSetBuilder($this);
-        }
-
-        return $this->resultSetBuilder;
+        $this->indexNameMapper = $indexNameMapper ?? $this->factory->buildBuilder();
+        // End of BC Layer
     }
 
     /**
@@ -72,87 +55,76 @@ class Client extends ElasticaClient
      */
     public function getIndex(string $name): \Elastica\Index
     {
-        $name = $this->getPrefixedIndex($name);
+        $name = $this->indexNameMapper->getPrefixedIndex($name);
 
-        return new Index($this, $name);
+        return new Index($this, $name, $this->resultSetBuilder);
     }
 
     public function getPrefixedIndex(string $name): string
     {
-        $prefix = $this->getConfigValue(self::CONFIG_INDEX_PREFIX);
-        if ($prefix) {
-            return sprintf('%s_%s', $prefix, $name);
-        }
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Use %s::%s() instead.', __METHOD__, IndexNameMapper::class, __FUNCTION__);
 
-        return $name;
+        return $this->indexNameMapper->getPrefixedIndex($name);
     }
 
     public function getIndexNameFromClass(string $className): string
     {
-        $indexToClass = $this->getConfig(self::CONFIG_INDEX_CLASS_MAPPING);
-        $indexName = array_search($className, $indexToClass, true);
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Use %s::%s() instead.', __METHOD__, IndexNameMapper::class, __FUNCTION__);
 
-        if (!$indexName) {
-            throw new RuntimeException(sprintf('The given type (%s) does not exist in the configuration.', $className));
-        }
-
-        return $this->getPrefixedIndex($indexName);
+        return $this->indexNameMapper->getIndexNameFromClass($className);
     }
 
     public function getClassFromIndexName(string $indexName): string
     {
-        $indexToClass = $this->getConfig(self::CONFIG_INDEX_CLASS_MAPPING);
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Use %s::%s() instead.', __METHOD__, IndexNameMapper::class, __FUNCTION__);
 
-        if (!isset($indexToClass[$indexName])) {
-            throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $indexName, self::CONFIG_INDEX_CLASS_MAPPING));
-        }
-
-        return $indexToClass[$indexName];
+        return $this->indexNameMapper->getClassFromIndexName($indexName);
     }
 
     public function getPureIndexName(string $fullIndexName): string
     {
-        $prefix = $this->getConfigValue(self::CONFIG_INDEX_PREFIX);
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Use %s::%s() instead.', __METHOD__, IndexNameMapper::class, __FUNCTION__);
 
-        if ($prefix) {
-            $pattern = sprintf('/%s_(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($prefix, '/'));
-        } else {
-            $pattern = '/(.+)_\d{4}-\d{2}-\d{2}-\d+/i';
-        }
+        return $this->indexNameMapper->getPureIndexName($fullIndexName);
+    }
 
-        if (1 === preg_match($pattern, $fullIndexName, $matches)) {
-            return $matches[1];
-        }
+    public function getIndexBuilder(): IndexBuilder
+    {
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a IndexBuilder instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
 
-        return $fullIndexName;
+        return $this->factory->buildIndexBuilder();
+    }
+
+    public function getIndexer(): Indexer
+    {
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a Indexer instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
+
+        return $this->factory->buildIndexer();
+    }
+
+    public function getBuilder(): ResultSetBuilder
+    {
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a ResultSetBuilder instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
+
+        return $this->factory->buildBuilder();
     }
 
     public function getSerializer(): SerializerInterface
     {
-        return $this->serializer ??= $this->getConfigValue(self::CONFIG_SERIALIZER) ?? $this->buildDefaultSerializer();
+        return $this->factory->buildSerializer();
     }
 
     public function getDenormalizer(): DenormalizerInterface
     {
-        return $this->denormalizer ??= $this->getConfigValue(self::CONFIG_SERIALIZER) ?? $this->buildDefaultSerializer();
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a SerializerInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
+
+        return $this->factory->buildDenormalizer();
     }
 
-    public function getSerializerContext($class): array
+    public function getSerializerContext(string $class): array
     {
-        $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS);
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a DenormalizerInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
 
-        return $configSerializer[$class] ?? [];
-    }
-
-    private function buildDefaultSerializer(): Serializer
-    {
-        // Use a minimal default serializer
-        return new Serializer([
-            new ArrayDenormalizer(),
-            new DateTimeNormalizer(),
-            new ObjectNormalizer(null, null, null, new PhpDocExtractor()),
-        ], [
-            new JsonEncoder(),
-        ]);
+        return $this->factory->buildSerializerContext($class);
     }
 }

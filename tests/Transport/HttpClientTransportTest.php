@@ -17,6 +17,7 @@ use Elastica\Document;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\ResultSet;
 use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Tests\BaseTestCase;
 use JoliCode\Elastically\Transport\HttpClientTransport;
 use Symfony\Component\HttpClient\HttpClient;
@@ -33,11 +34,9 @@ final class HttpClientTransportTest extends BaseTestCase
         $dto->bar = 'Roses are red';
         $dto->foo = 'Violets are blue';
 
-        $client = new Client([
+        $indexer = $this->getFactory(null, [
             'transport' => new HttpClientTransport(HttpClient::create()),
-        ]);
-
-        $indexer = $client->getIndexer();
+        ])->buildIndexer();
 
         $indexer->scheduleIndex($indexName, new Document('1', $dto));
         $indexer->scheduleIndex($indexName, new Document('2', $dto));
@@ -50,13 +49,11 @@ final class HttpClientTransportTest extends BaseTestCase
 
     public function testCreateIndex(): void
     {
-        $client = new Client([
-            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
+        $indexBuilder = $this->getFactory(null, [
+            Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
             'log' => false,
             'transport' => new HttpClientTransport(HttpClient::create()),
-        ]);
-
-        $indexBuilder = $client->getIndexBuilder();
+        ])->buildIndexBuilder();
 
         $index = $indexBuilder->createIndex('beers');
         $response = $indexBuilder->markAsLive($index, 'beers');
@@ -84,7 +81,7 @@ JSON
 ),
         ];
 
-        $client = new Client([
+        $client = $this->getClient(null, [
             'log' => false,
             'transport' => new HttpClientTransport(new MockHttpClient($responses)),
         ]);
@@ -97,37 +94,38 @@ JSON
 
     public function testHttpClientHandleErrorIdentically()
     {
-        $clientHttpClient = new Client([
+        $clientHttpClient = $this->getClient(null, [
             'log' => false,
             'transport' => new HttpClientTransport(HttpClient::create()),
         ]);
 
-        $clientNativeTransport = new Client([
+        $clientNativeTransport = $this->getClient(null, [
             'log' => false,
+            'transport' => new HttpClientTransport(HttpClient::create()),
         ]);
 
         $this->runOnBothAndCompare($clientHttpClient, $clientNativeTransport);
 
-        $clientHttpClient = new Client([
+        $clientHttpClient = $this->getClient(null, [
             'log' => false,
             'host' => 'MALFORMED:828282',
             'transport' => new HttpClientTransport(HttpClient::create()),
         ]);
 
-        $clientNativeTransport = new Client([
+        $clientNativeTransport = $this->getClient(null, [
             'host' => 'MALFORMED:828282',
             'log' => false,
         ]);
 
         $this->runOnBothAndCompare($clientHttpClient, $clientNativeTransport);
 
-        $clientHttpClient = new Client([
+        $clientHttpClient = $this->getClient(null, [
             'log' => false,
             'proxy' => '127.0.0.1:9292',
             'transport' => new HttpClientTransport(HttpClient::create()),
         ]);
 
-        $clientNativeTransport = new Client([
+        $clientNativeTransport = $this->getClient(null, [
             'proxy' => '127.0.0.1:9292',
             'log' => false,
         ]);
@@ -135,7 +133,7 @@ JSON
         $this->runOnBothAndCompare($clientHttpClient, $clientNativeTransport);
     }
 
-    protected function runOnBothAndCompare(Client $clientHttpClient, Client $clientNative)
+    private function runOnBothAndCompare(Client $clientHttpClient, Client $clientNative)
     {
         try {
             $clientHttpClient->getIndex(__FUNCTION__)->search();

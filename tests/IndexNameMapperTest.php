@@ -14,46 +14,39 @@ declare(strict_types=1);
 namespace JoliCode\Elastically\Tests;
 
 use Elastica\Exception\RuntimeException;
-use JoliCode\Elastically\Client;
+use JoliCode\Elastically\IndexNameMapper;
 
-final class ClientTest extends BaseTestCase
+final class IndexNameMapperTest extends BaseTestCase
 {
     public function testClientIndexNameFromClass(): void
     {
         $this->expectException(RuntimeException::class);
 
-        $client = new Client([
-            Client::CONFIG_INDEX_CLASS_MAPPING => [
-                'todo' => TestDTO::class,
-            ],
+        $mapper = new IndexNameMapper(null, [
+            'todo' => TestDTO::class,
         ]);
 
-        $client->getIndexNameFromClass('OLA');
+        $mapper->getIndexNameFromClass('OLA');
     }
 
     public function testIndexNameFromClassWithBackslashes(): void
     {
         $this->expectException(RuntimeException::class);
 
-        $client = new Client([
-            Client::CONFIG_INDEX_CLASS_MAPPING => [
-                'todo' => '\\' . TestDTO::class,
-            ],
+        $mapper = new IndexNameMapper(null, [
+            'todo' => '\\' . TestDTO::class,
         ]);
 
-        $client->getIndexNameFromClass(TestDTO::class);
+        $mapper->getIndexNameFromClass(TestDTO::class);
     }
 
     public function testIndexNameFromClassWithConfigIndexPrefix(): void
     {
-        $client = new Client([
-            Client::CONFIG_INDEX_CLASS_MAPPING => [
-                'todo' => TestDTO::class,
-            ],
-            Client::CONFIG_INDEX_PREFIX => 'foo',
+        $mapper = new IndexNameMapper('foo', [
+            'todo' => TestDTO::class,
         ]);
 
-        $indexName = $client->getIndexNameFromClass(TestDTO::class);
+        $indexName = $mapper->getIndexNameFromClass(TestDTO::class);
         $this->assertSame('foo_todo', $indexName);
     }
 }

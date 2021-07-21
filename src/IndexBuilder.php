@@ -24,11 +24,15 @@ class IndexBuilder
 {
     private Client $client;
     private string $configurationDirectory;
+    private ResultSetBuilder $resultSetBuilder;
+    private IndexNameMapper $indexNameMapper;
 
-    public function __construct(Client $client, string $configurationDirectory)
+    public function __construct(Client $client, string $configurationDirectory, ResultSetBuilder $resultSetBuilder, IndexNameMapper $indexNameMapper)
     {
         $this->client = $client;
         $this->configurationDirectory = $configurationDirectory;
+        $this->resultSetBuilder = $resultSetBuilder;
+        $this->indexNameMapper = $indexNameMapper;
     }
 
     public function createIndex(string $indexName, ?string $fileName = null): Index
@@ -60,7 +64,7 @@ class IndexBuilder
 
     public function markAsLive(Index $index, string $indexName): Response
     {
-        $indexName = $this->client->getPrefixedIndex($indexName);
+        $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
         $data = ['actions' => []];
 
@@ -82,7 +86,7 @@ class IndexBuilder
 
     public function migrate(Index $currentIndex, array $params = []): Index
     {
-        $pureIndexName = $this->client->getPureIndexName($currentIndex->getName());
+        $pureIndexName = $this->indexNameMapper->getPureIndexName($currentIndex->getName());
         $newIndex = $this->createIndex($pureIndexName);
 
         $reindex = new Reindex($currentIndex, $newIndex, $params);
@@ -108,7 +112,7 @@ class IndexBuilder
 
     public function purgeOldIndices(string $indexName): array
     {
-        $indexName = $this->client->getPrefixedIndex($indexName);
+        $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
         $stateRequest = new State();
         $stateRequest->setParams([
@@ -157,12 +161,12 @@ class IndexBuilder
 
             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $index = new Index($this->client, $realIndexName);
+                $index = new Index($this->client, $realIndexName, $this->resultSetBuilder);
                 $index->delete();
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $index = new Index($this->client, $realIndexName);
+                $index = new Index($this->client, $realIndexName, $this->resultSetBuilder);
                 $index->close();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }

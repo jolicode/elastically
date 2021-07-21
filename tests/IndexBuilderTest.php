@@ -18,7 +18,7 @@ use Elastica\Exception\InvalidException;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Index\Settings;
-use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\IndexBuilder;
 
 final class IndexBuilderTest extends BaseTestCase
@@ -79,9 +79,9 @@ final class IndexBuilderTest extends BaseTestCase
 
     public function testPrefixedIndexName(): void
     {
-        $client = $this->getClient(__DIR__ . '/configs_analysis');
-        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
-        $indexBuilder = $client->getIndexBuilder();
+        $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs_analysis', [
+            Factory::CONFIG_INDEX_PREFIX => 'hip',
+        ]);
 
         $index = $indexBuilder->createIndex('hop');
 
@@ -90,18 +90,18 @@ final class IndexBuilderTest extends BaseTestCase
 
     public function testCohabitationOfPrefixedIndexName(): void
     {
-        $client1 = $this->getClient(__DIR__ . '/configs_analysis');
-        $client1->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
+        $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs_analysis', [
+            Factory::CONFIG_INDEX_PREFIX => 'hip',
+        ]);
 
-        $indexBuilder = $client1->getIndexBuilder();
         $index1 = $indexBuilder->createIndex('hop');
 
         $this->assertStringStartsWith('hip_hop', $index1->getName());
 
-        $client2 = $this->getClient(__DIR__ . '/configs_analysis');
-        $client2->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'testing');
+        $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs_analysis', [
+            Factory::CONFIG_INDEX_PREFIX => 'testing',
+        ]);
 
-        $indexBuilder = $client2->getIndexBuilder();
         $index2 = $indexBuilder->createIndex('hop');
 
         $this->assertStringStartsWith('testing_hop', $index2->getName());
@@ -112,32 +112,35 @@ final class IndexBuilderTest extends BaseTestCase
 
     public function testGetBackThePureIndexName(): void
     {
-        $client = $this->getClient(__DIR__ . '/configs_analysis');
-        $indexBuilder = $client->getIndexBuilder();
+        $factory = $this->getFactory(__DIR__ . '/configs_analysis');
+
+        $indexBuilder = $factory->buildIndexBuilder();
+        $indexNameMapper = $factory->buildIndexNameMapper();
 
         $index = $indexBuilder->createIndex('hop');
         $this->assertInstanceOf(Index::class, $index);
 
         $this->assertNotSame('hop', $index->getName());
-        $this->assertSame('hop', $client->getPureIndexName($index->getName()));
+        $this->assertSame('hop', $indexNameMapper->getPureIndexName($index->getName()));
     }
 
     public function testGetBackThePureIndexNamePrefixed(): void
     {
-        $client = $this->getClient(__DIR__ . '/configs_analysis');
-        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
-        $indexBuilder = $client->getIndexBuilder();
+        $factory = $this->getFactory(__DIR__ . '/configs_analysis', [
+            Factory::CONFIG_INDEX_PREFIX => 'hip',
+        ]);
+
+        $indexBuilder = $factory->buildIndexBuilder();
+        $indexNameMapper = $factory->buildIndexNameMapper();
 
         $index = $indexBuilder->createIndex('hop');
         $this->assertInstanceOf(Index::class, $index);
 
         $this->assertNotSame('hop', $index->getName());
-        $this->assertSame('hop', $client->getPureIndexName($index->getName()));
+        $this->assertSame('hop', $indexNameMapper->getPureIndexName($index->getName()));
     }
 
-    /**
-     * @dataProvider purgeIndexBuilderProvider
-     */
+    /** @dataProvider purgeIndexBuilderProvider */
     public function testPurgeAndCloseOldIndices(IndexBuilder $indexBuilder): void
     {
         $index1 = $indexBuilder->createIndex('hop');
@@ -176,18 +179,13 @@ final class IndexBuilderTest extends BaseTestCase
         }
     }
 
-    public function purgeIndexBuilderProvider()
+    public function purgeIndexBuilderProvider(): \Generator
     {
-        $client = $this->getClient(__DIR__ . '/configs_analysis');
-        $client->setConfigValue(Client::CONFIG_INDEX_PREFIX, 'hip');
-        $indexBuilderWithPrefix = $client->getIndexBuilder();
+        yield 'simple config' => [$this->getIndexBuilder(__DIR__ . '/configs_analysis')];
 
-        $client = $this->getClient(__DIR__ . '/configs_analysis');
-
-        return [
-            'simple config' => [$client->getIndexBuilder()],
-            'with prefixed indices' => [$indexBuilderWithPrefix],
-        ];
+        yield 'with prefixed indices' => [$this->getIndexBuilder(__DIR__ . '/configs_analysis', [
+            Factory::CONFIG_INDEX_PREFIX => 'hip',
+        ])];
     }
 
     public function testPurgerDistinguishesIndicesWithTheSamePrefix(): void
@@ -231,7 +229,7 @@ final class IndexBuilderTest extends BaseTestCase
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $indexer = $this->getClient()->getIndexer();
+        $indexer = $this->getFactory()->buildIndexer();
 
         $indexer->scheduleIndex($indexName, new Document('f', $dto));
         $indexer->flush();
@@ -250,9 +248,9 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertInstanceOf(Document::class, $document);
     }
 
-    private function getIndexBuilder($path = null): IndexBuilder
+    private function getIndexBuilder(?string $path = null, array $config = []): IndexBuilder
     {
-        return $this->getClient($path)->getIndexBuilder();
+        return $this->getFactory($path, $config)->buildIndexBuilder();
     }
 }
 

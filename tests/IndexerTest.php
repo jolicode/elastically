@@ -16,7 +16,7 @@ namespace JoliCode\Elastically\Tests;
 use Elastica\Bulk\ResponseSet;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
-use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
 
 final class IndexerTest extends BaseTestCase
@@ -46,16 +46,17 @@ final class IndexerTest extends BaseTestCase
     public function testIndexOneDocumentWithMapping(): void
     {
         $indexName = mb_strtolower(__FUNCTION__);
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexName => TestDTO::class,
+        $client = $this->getClient(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => TestDTO::class,
+            ],
         ]);
 
         $dto = new TestDTO();
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $indexer = $client->getIndexer();
+        $indexer = $this->getIndexer();
 
         $indexer->scheduleIndex($indexName, new Document('f', $dto));
         $indexer->flush();
@@ -77,9 +78,9 @@ final class IndexerTest extends BaseTestCase
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_BULK_SIZE, 10);
-        $indexer = $client->getIndexer();
+        $indexer = $this->getIndexer(null, [
+            Factory::CONFIG_BULK_SIZE => 10,
+        ]);
 
         for ($i = 1; $i <= 31; ++$i) {
             $indexer->scheduleIndex($indexName, new Document((string) $i, $dto));
@@ -101,9 +102,7 @@ final class IndexerTest extends BaseTestCase
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_BULK_SIZE, 10);
-        $indexer = $client->getIndexer();
+        $indexer = $this->getIndexer();
 
         $indexer->scheduleCreate($indexName, new Document('1', $dto));
         $indexer->scheduleUpdate($indexName, new Document('1', $dto));
@@ -124,9 +123,9 @@ final class IndexerTest extends BaseTestCase
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_BULK_SIZE, 3);
-        $indexer = $client->getIndexer();
+        $indexer = $this->getIndexer(null, [
+            Factory::CONFIG_BULK_SIZE => 3,
+        ]);
 
         try {
             $indexer->scheduleCreate($indexName, new Document('1', $dto));
@@ -151,9 +150,7 @@ final class IndexerTest extends BaseTestCase
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_BULK_SIZE, 3);
-        $indexer = $client->getIndexer();
+        $indexer = $this->getIndexer();
         $indexer->setBulkRequestParams([
             'refresh' => 'wait_for',
         ]);
@@ -198,19 +195,22 @@ final class IndexerTest extends BaseTestCase
     {
         $indexName = mb_strtolower(__FUNCTION__);
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexName => TestDTO::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => TestDTO::class,
+            ],
+            Factory::CONFIG_SERIALIZER_CONTEXT_PER_CLASS => [
+                TestDTO::class => ['attributes' => ['foo']],
+            ],
         ]);
-        $client->setConfigValue(Client::CONFIG_SERIALIZER_CONTEXT_PER_CLASS, [
-            TestDTO::class => ['attributes' => ['foo']],
-        ]);
+
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
 
         $dto = new TestDTO();
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $indexer = $client->getIndexer();
         $indexer->scheduleIndex($indexName, new Document('f', $dto));
         $indexer->flush();
 
@@ -223,9 +223,15 @@ final class IndexerTest extends BaseTestCase
         $this->assertEmpty($model->bar);
 
         // Also work on read
-        $client->setConfigValue(Client::CONFIG_SERIALIZER_CONTEXT_PER_CLASS, [
-            TestDTO::class => ['attributes' => ['yolo']],
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => TestDTO::class,
+            ],
+            Factory::CONFIG_SERIALIZER_CONTEXT_PER_CLASS => [
+                TestDTO::class => ['attributes' => ['yolo']],
+            ],
         ]);
+        $client = $factory->buildClient();
 
         $model = $client->getIndex($indexName)->getModel('f');
 
@@ -234,9 +240,9 @@ final class IndexerTest extends BaseTestCase
         $this->assertEmpty($model->bar);
     }
 
-    private function getIndexer($path = null): Indexer
+    private function getIndexer($path = null, array $config = []): Indexer
     {
-        return $this->getClient($path)->getIndexer();
+        return $this->getFactory($path, $config)->buildIndexer();
     }
 }
 

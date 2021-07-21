@@ -15,7 +15,7 @@ namespace JoliCode\Elastically\Tests;
 
 use Elastica\Document;
 use Elastica\Query;
-use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\Result;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -27,7 +27,14 @@ final class SearchTest extends BaseTestCase
     {
         $indexName = mb_strtolower(__FUNCTION__);
 
-        $indexer = $this->getIndexer();
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => SearchTestDto::class,
+            ],
+        ]);
+        $indexer = $factory->buildIndexer();
+        $client = $factory->buildClient();
+
         $dto = new SearchTestDto();
         $dto->bar = 'coucou unicorns';
         $dto->foo = '123';
@@ -36,13 +43,6 @@ final class SearchTest extends BaseTestCase
         $indexer->flush();
 
         $indexer->refresh($indexName);
-
-        $client = $this->getClient();
-
-        // Give the class mapping
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexName => SearchTestDto::class,
-        ]);
 
         $this->assertInstanceOf(Document::class, $client->getIndex($indexName)->getDocument('f'));
         $this->assertInstanceOf(SearchTestDto::class, $client->getIndex($indexName)->getModel('f'));
@@ -60,7 +60,14 @@ final class SearchTest extends BaseTestCase
     {
         $indexName = mb_strtolower(__FUNCTION__);
 
-        $indexer = $this->getIndexer();
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => SearchTestDto::class,
+            ],
+        ]);
+        $indexer = $factory->buildIndexer();
+        $client = $factory->buildClient();
+
         $dto = new SearchTestDto();
         $dto->bar = 'coucou unicorns';
         $dto->foo = '123';
@@ -69,13 +76,6 @@ final class SearchTest extends BaseTestCase
         $indexer->flush();
 
         $indexer->refresh($indexName);
-
-        $client = $this->getClient();
-
-        // Give the class mapping
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexName => SearchTestDto::class,
-        ]);
 
         $query = Query::create('coucou');
         $query->setSource(['foo']);
@@ -98,13 +98,15 @@ final class SearchTest extends BaseTestCase
 
         $indexName = mb_strtolower(__FUNCTION__);
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexName => SearchTestDto::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => SearchTestDto::class,
+            ],
+            Factory::CONFIG_SERIALIZER => $serializer,
         ]);
-        $client->setConfigValue(Client::CONFIG_SERIALIZER, $serializer);
+        $indexer = $factory->buildIndexer();
+        $client = $factory->buildClient();
 
-        $indexer = $client->getIndexer();
         $dto = new SearchTestDto();
         $dto->foo = 'testMyOwnSerializer';
 
@@ -122,9 +124,9 @@ final class SearchTest extends BaseTestCase
         $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
     }
 
-    private function getIndexer($path = null): Indexer
+    private function getIndexer($path = null, array $config = []): Indexer
     {
-        return $this->getClient($path)->getIndexer();
+        return $this->getFactory($path, $config)->buildIndexer();
     }
 }
 
