@@ -36,12 +36,7 @@ class Index extends ElasticaIndex
         return $this->getClient()->getBuilder();
     }
 
-    /**
-     * Returns an elastically client.
-     *
-     * @return Client
-     */
-    public function getClient(): \Elastica\Client
+    public function getClient(): Client
     {
         return parent::getClient();
     }

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switch to Github Action instead of travis
 - Drop support for Symfony < 4.4
 - Drop support for PHP < 7.4
+- Add PHPStan
 
 ## [1.3.0] - 2021-07-02
 

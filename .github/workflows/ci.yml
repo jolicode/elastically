@@ -20,6 +20,25 @@ jobs:
               with:
                 args: --config=.php-cs-fixer.php --diff --dry-run
 
+    phpstan:
+        name: PHPStan
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v2
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 7.4
+
+            - name: PHPStan
+              uses: docker://oskarstark/phpstan-ga
+              env:
+                REQUIRE_DEV: true
+              with:
+                args: analyse --level=5 --configuration=phpstan-baseline.neon src/
+
     ci:
         name: Test PHP ${{ matrix.php-version }} ${{ matrix.name }}
         runs-on: ubuntu-latest
@@ -51,19 +70,8 @@ jobs:
               with:
                   php-version: ${{ matrix.php-version }}
 
-            - name: Get composer cache directory
-              id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-            - name: Cache composer dependencies
-              uses: actions/cache@v2
-              with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer
-                  restore-keys: composer
-
             - name: Install Composer dependencies
-              run: composer update --prefer-dist --no-interaction ${{ matrix.composer-flags }}
+              run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}
 
             - name: Wait for ES to be ready
               run: |
