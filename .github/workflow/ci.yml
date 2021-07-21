@@ -1,0 +1,68 @@
+name: CI
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+    schedule:
+        -   cron: '0 0 * * MON'
+
+jobs:
+    check-cs:
+        name: Check Coding Standards
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: PHP-CS-Fixer
+              uses: docker://oskarstark/php-cs-fixer-ga
+              with:
+                args: --config=.php-cs-fixer.php --diff --dry-run
+
+    ci:
+        name: Test PHP ${{ matrix.php-version }} ${{ matrix.name }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: ['7.4', '8.0']
+                composer-flags: ['']
+                name: ['']
+                include:
+                    - php-version: 7.2
+                      composer-flags: '--prefer-lowest'
+                      name: '(prefer lowest dependencies)'
+        services:
+          elasticsearch:
+            image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.8.0
+            ports:
+              - '9200:9200'
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+
+            - name: Get composer cache directory
+              id: composer-cache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: Cache composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer
+                  restore-keys: composer
+
+            - name: Install Composer dependencies
+              run: composer update --prefer-dist --no-interaction ${{ matrix.composer-flags }}
+
+            - name: Wait for ES to be ready
+              run: wget -q --waitretry=1 --retry-connrefused -T 10 -O - http://127.0.0.1:9200
+
+            - name: Run Tests
+              run: make test
