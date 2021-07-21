@@ -34,11 +34,9 @@ class IndexationRequestHandler implements MessageHandlerInterface
         self::OP_CREATE,
     ];
 
-    private $client;
-
-    private $bus;
-
-    private $exchanger;
+    private Client $client;
+    private MessageBusInterface $bus;
+    private DocumentExchangerInterface $exchanger;
 
     public function __construct(Client $client, MessageBusInterface $bus, DocumentExchangerInterface $exchanger)
     {

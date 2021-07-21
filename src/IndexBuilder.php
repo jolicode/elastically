@@ -22,16 +22,16 @@ use Symfony\Component\Yaml\Yaml;
 
 class IndexBuilder
 {
-    private $client;
-    private $configurationDirectory;
+    private Client $client;
+    private string $configurationDirectory;
 
-    public function __construct(Client $client, $configurationDirectory)
+    public function __construct(Client $client, string $configurationDirectory)
     {
         $this->client = $client;
         $this->configurationDirectory = $configurationDirectory;
     }
 
-    public function createIndex($indexName, $fileName = null): Index
+    public function createIndex(string $indexName, ?string $fileName = null): Index
     {
         $fileName = $fileName ?? ($indexName . '_mapping.yaml');
         $mappingFilePath = $this->configurationDirectory . \DIRECTORY_SEPARATOR . $fileName;
@@ -58,7 +58,7 @@ class IndexBuilder
         return $index;
     }
 
-    public function markAsLive(Index $index, $indexName): Response
+    public function markAsLive(Index $index, string $indexName): Response
     {
         $indexName = $this->client->getPrefixedIndex($indexName);
 

@@ -22,7 +22,7 @@ class ResultSetBuilder implements BuilderInterface
     public const RESULT_KEY = 'elastically_result';
     public const DOCUMENT_KEY = 'elastically_document';
 
-    private $client;
+    private Client $client;
 
     public function __construct(Client $client)
     {

@@ -24,11 +24,9 @@ use Symfony\Contracts\Service\ResetInterface;
  */
 class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, ResetInterface
 {
-    private $wasExceptionThrown = false;
-
-    private $singleTransport;
-
-    private $bus;
+    private TransportInterface $singleTransport;
+    private MessageBusInterface $bus;
+    private bool $wasExceptionThrown = false;
 
     public function __construct(TransportInterface $singleTransport, MessageBusInterface $bus)
     {

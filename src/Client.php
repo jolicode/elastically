@@ -32,13 +32,13 @@ class Client extends ElasticaClient
     public const CONFIG_SERIALIZER = 'elastically_serializer';
     public const CONFIG_BULK_SIZE = 'elastically_bulk_size';
 
-    private $indexer;
-    private $indexBuilder;
-    private $builder;
+    private Indexer $indexer;
+    private IndexBuilder $indexBuilder;
+    private ResultSetBuilder $resultSetBuilder;
 
     public function getIndexBuilder(): IndexBuilder
     {
-        if (!$this->indexBuilder) {
+        if (!isset($this->indexBuilder)) {
             $this->indexBuilder = new IndexBuilder($this, $this->getConfig(self::CONFIG_MAPPINGS_DIRECTORY));
         }
 
@@ -47,7 +47,7 @@ class Client extends ElasticaClient
 
     public function getIndexer(): Indexer
     {
-        if (!$this->indexer) {
+        if (!isset($this->indexer)) {
             $this->indexer = new Indexer($this, $this->getSerializer(), $this->getConfigValue(self::CONFIG_BULK_SIZE, 100));
         }
 
@@ -56,11 +56,11 @@ class Client extends ElasticaClient
 
     public function getBuilder(): ResultSetBuilder
     {
-        if (!$this->builder) {
-            $this->builder = new ResultSetBuilder($this);
+        if (!isset($this->resultSetBuilder)) {
+            $this->resultSetBuilder = new ResultSetBuilder($this);
         }
 
-        return $this->builder;
+        return $this->resultSetBuilder;
     }
 
     /**

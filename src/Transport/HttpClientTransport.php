@@ -33,12 +33,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class HttpClientTransport extends AbstractTransport
 {
-    private $client;
+    private HttpClientInterface $client;
 
     /**
      * Elastica Connection does not have this option.
      */
-    private $scheme;
+    private string $scheme;
 
     public function __construct(HttpClientInterface $client, string $scheme = 'http', ?Connection $connection = null)
     {
