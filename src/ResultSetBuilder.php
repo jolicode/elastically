@@ -76,6 +76,6 @@ class ResultSetBuilder implements BuilderInterface
 
         $context = array_merge($this->client->getSerializerContext($class), $context);
 
-        return $this->client->getSerializer()->denormalize($source, $class, null, $context);
+        return $this->client->getDenormalizer()->denormalize($source, $class, null, $context);
     }
 }

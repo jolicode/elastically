@@ -35,6 +35,8 @@ class Client extends ElasticaClient
     private Indexer $indexer;
     private IndexBuilder $indexBuilder;
     private ResultSetBuilder $resultSetBuilder;
+    private SerializerInterface $serializer;
+    private DenormalizerInterface $denormalizer;
 
     public function getIndexBuilder(): IndexBuilder
     {
@@ -125,16 +127,25 @@ class Client extends ElasticaClient
         return $fullIndexName;
     }
 
-    /**
-     * @return SerializerInterface|DenormalizerInterface
-     */
     public function getSerializer(): SerializerInterface
     {
-        $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER);
-        if ($configSerializer) {
-            return $configSerializer;
-        }
+        return $this->serializer ??= $this->getConfigValue(self::CONFIG_SERIALIZER) ?? $this->buildDefaultSerializer();
+    }
 
+    public function getDenormalizer(): DenormalizerInterface
+    {
+        return $this->denormalizer ??= $this->getConfigValue(self::CONFIG_SERIALIZER) ?? $this->buildDefaultSerializer();
+    }
+
+    public function getSerializerContext($class): array
+    {
+        $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS);
+
+        return $configSerializer[$class] ?? [];
+    }
+
+    private function buildDefaultSerializer(): Serializer
+    {
         // Use a minimal default serializer
         return new Serializer([
             new ArrayDenormalizer(),
@@ -143,12 +154,5 @@ class Client extends ElasticaClient
         ], [
             new JsonEncoder(),
         ]);
-    }
-
-    public function getSerializerContext($class): array
-    {
-        $configSerializer = $this->getConfigValue(self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS);
-
-        return $configSerializer[$class] ?? [];
     }
 }
