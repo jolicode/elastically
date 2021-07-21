@@ -21,7 +21,7 @@ class Index extends ElasticaIndex
     {
         $document = $this->getDocument($id);
 
-        return $this->getBuilder()->buildModelFromDocument($document);
+        return $this->getClient()->getBuilder()->buildModelFromDocument($document);
     }
 
     public function createSearch($query = '', $options = null, BuilderInterface $builder = null): Search
