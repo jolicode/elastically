@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Switch to Github Action instead of travis
+- Drop support for Symfony < 4.4
 
 ## [1.3.0] - 2021-07-02
 
