@@ -65,7 +65,11 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
 
     public function onResponse(ResponseEvent $event)
     {
-        if (!$event->isMasterRequest()) {
+        if (method_exists($event, 'isMainRequest')) {
+            if (!$event->isMainRequest()) {
+                return;
+            }
+        } elseif (!$event->isMasterRequest()) {
             return;
         }
 
