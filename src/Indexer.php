@@ -33,8 +33,8 @@ class Indexer
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 
         $this->client = $client;
-        $this->bulkMaxSize = $bulkMaxSize ?? 100;
         $this->serializer = $serializer;
+        $this->bulkMaxSize = $bulkMaxSize ?? 100;
         $this->bulkRequestParams = $bulkRequestParams;
         $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
     }

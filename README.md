@@ -217,16 +217,46 @@ _Default to `null`._
 Just declare the proper service in `services.yaml`:
 
 ```yaml
-JoliCode\Elastically\Client:
-    arguments:
-        $config:
-            host: '%env(ELASTICSEARCH_HOST)%'
-            elastically_mappings_directory: '%kernel.project_dir%/Elasticsearch/mappings'
-            elastically_index_class_mapping:
-                my_index_name: App\Model\MyModel
-            elastically_serializer: '@serializer'
-            elastically_bulk_size: 100
-        $logger: '@logger'
+services:
+    JoliCode\Elastically\IndexNameMapper:
+        arguments:
+            $prefix: null # or a string to prefix index name
+            $indexClassMapping:
+                indexName: My\AwesomeDTO
+
+    JoliCode\Elastically\Serializer\StaticContextBuilder:
+        arguments:
+            $mapping:
+                My\AwesomeDTO: []
+
+    JoliCode\Elastically\ResultSetBuilder:
+        arguments:
+            $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
+            $contextBuilder: '@JoliCode\Elastically\Serializer\StaticContextBuilder'
+            $denormalizer: '@serializer'
+
+    JoliCode\Elastically\Client:
+        arguments:
+            $config:
+                host: '%env(ELASTICSEARCH_HOST)%'
+            $logger: '@logger'
+            $resultSetBuilder: '@JoliCode\Elastically\ResultSetBuilder'
+            $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
+
+    JoliCode\Elastically\Indexer:
+        arguments:
+            $client: '@JoliCode\Elastically\Client'
+            $serializer: '@serializer'
+            $bulkMaxSize: 100
+            $bulkRequestParams: []
+            $contextBuilder: '@JoliCode\Elastically\Serializer\StaticContextBuilder'
+
+    JoliCode\Elastically\IndexBuilder:
+        arguments:
+            $client: '@JoliCode\Elastically\Client'
+            $configurationDirectory: '%kernel.project_dir%/config/elasticsearch'
+            $resultSetBuilder: '@JoliCode\Elastically\ResultSetBuilder'
+            $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
 ```
 
 ### Using HttpClient as Transport
@@ -315,10 +345,10 @@ services:
 
 ## Using Jane to build PHP DTO and fast Normalizers
 
-Install [JanePHP](https://jane.readthedocs.io/) json-schema tools to build your own DTO and Normalizers. All you have to do is setting the Jane-completed Serializer on the Client:
+Install [JanePHP](https://jane.readthedocs.io/) json-schema tools to build your own DTO and Normalizers. All you have to do is setting the Jane-completed Serializer on the Factory:
 
 ```php
-$client = new Client([
+$factory = new Factory([
     Factory::CONFIG_SERIALIZER => $serializer,
 ]);
 ```
