@@ -145,7 +145,7 @@ mappings:
 
 This library add custom configurations on top of Elastica's:
 
-### `Factory::CONFIG_MAPPINGS_DIRECTORY` (required)
+### `Factory::CONFIG_MAPPINGS_DIRECTORY` (required with default configuration)
 
 The directory Elastically is going to look for YAML.
 
@@ -162,6 +162,13 @@ An array of index name to class FQN.
   'indexName' => My\AwesomeDTO::class,
 ]
 ```
+
+### `Factory::CONFIG_MAPPINGS_PROVIDER`
+
+An instance of `MappingProviderInterface`.
+
+If this option is not defined, the factory will fallback to `YamlProvider` and will use
+`Factory::CONFIG_MAPPINGS_DIRECTORY` option.
 
 ### `Factory::CONFIG_SERIALIZER` (optional)
 
@@ -251,10 +258,14 @@ services:
             $bulkRequestParams: []
             $contextBuilder: '@JoliCode\Elastically\Serializer\StaticContextBuilder'
 
+    JoliCode\Elastically\Mapping\YamlProvider:
+        arguments:
+            $configurationDirectory: '%kernel.project_dir%/config/elasticsearch'
+
     JoliCode\Elastically\IndexBuilder:
         arguments:
+            $mappingProvider: '@JoliCode\Elastically\Mapping\YamlProvider'
             $client: '@JoliCode\Elastically\Client'
-            $configurationDirectory: '%kernel.project_dir%/config/elasticsearch'
             $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
 ```
 
