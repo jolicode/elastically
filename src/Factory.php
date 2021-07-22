@@ -26,7 +26,6 @@ final class Factory
 {
     /* Elastically config keys */
     public const CONFIG_BULK_SIZE = 'elastically_bulk_size';
-    public const CONFIG_CLIENT = 'elastically_client';
     public const CONFIG_DENORMALIZER = 'elastically_denormalizer';
     public const CONFIG_INDEX_CLASS_MAPPING = 'elastically_index_class_mapping';
     public const CONFIG_INDEX_NAME_MAPPER = 'elastically_index_name_mapper';
@@ -52,9 +51,14 @@ final class Factory
         $this->config = $config;
     }
 
+    public function setClient(Client $client): void
+    {
+        $this->client = $client;
+    }
+
     public function buildClient(): Client
     {
-        return $this->client ??= $this->config[self::CONFIG_CLIENT] ?? new Client(
+        return $this->client ??= new Client(
             $this->config,
             null,
             null,

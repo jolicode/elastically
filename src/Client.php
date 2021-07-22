@@ -35,8 +35,8 @@ class Client extends ElasticaClient
         parent::__construct($config, $callback, $logger);
 
         // BC Layer, to remove in 2.0
-        $config[Factory::CONFIG_CLIENT] = $this;
         $this->factory = new Factory($config);
+        $this->factory->setClient($this);
         if (!$resultSetBuilder) {
             trigger_deprecation('jolicode/elastically', '1.4.0', 'Passing null as #4 argument of %s() is deprecated. Inject a %s instance instead.', __METHOD__, ResultSetBuilder::class);
         }
