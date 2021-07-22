@@ -25,16 +25,16 @@ use Symfony\Component\Serializer\SerializerInterface;
 final class Factory
 {
     /* Elastically config keys */
-    public const CONFIG_MAPPINGS_DIRECTORY = 'elastically_mappings_directory';
-    public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = 'elastically_serializer_context_per_class';
-    public const CONFIG_CLIENT = 'elastically_client';
-    public const CONFIG_INDEX_NAME_MAPPER = 'elastically_index_name_mapper';
-    public const CONFIG_SERIALIZER = 'elastically_serializer';
-    public const CONFIG_DENORMALIZER = 'elastically_denormalizer';
-    public const CONFIG_CONTEXT_BUILDER = 'elastically_context_builder';
     public const CONFIG_BULK_SIZE = 'elastically_bulk_size';
-    public const CONFIG_INDEX_PREFIX = 'elastically_index_prefix';
+    public const CONFIG_CLIENT = 'elastically_client';
+    public const CONFIG_DENORMALIZER = 'elastically_denormalizer';
     public const CONFIG_INDEX_CLASS_MAPPING = 'elastically_index_class_mapping';
+    public const CONFIG_INDEX_NAME_MAPPER = 'elastically_index_name_mapper';
+    public const CONFIG_INDEX_PREFIX = 'elastically_index_prefix';
+    public const CONFIG_MAPPINGS_DIRECTORY = 'elastically_mappings_directory';
+    public const CONFIG_SERIALIZER = 'elastically_serializer';
+    public const CONFIG_SERIALIZER_CONTEXT_BUILDER = 'elastically_serializer_context_builder';
+    public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = 'elastically_serializer_context_per_class';
 
     private array $config;
 
@@ -101,7 +101,7 @@ final class Factory
 
     public function buildContextBuilder(): ContextBuilderInterface
     {
-        return $this->contextBuilder ??= $this->config[self::CONFIG_CONTEXT_BUILDER] ?? new StaticContextBuilder($this->config[self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS] ?? []);
+        return $this->contextBuilder ??= $this->config[self::CONFIG_SERIALIZER_CONTEXT_BUILDER] ?? new StaticContextBuilder($this->config[self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS] ?? []);
     }
 
     public function buildSerializerContext(string $class): array
