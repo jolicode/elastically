@@ -69,7 +69,18 @@ final class Factory
 
     public function buildIndexNameMapper(): IndexNameMapper
     {
-        return $this->indexNameMapper ??= $this->config[self::CONFIG_INDEX_NAME_MAPPER] ?? new IndexNameMapper($this->config[self::CONFIG_INDEX_PREFIX] ?? null, $this->config[self::CONFIG_INDEX_CLASS_MAPPING] ?? []);
+        if (isset($this->indexNameMapper)) {
+            return $this->indexNameMapper;
+        }
+
+        if (\array_key_exists(self::CONFIG_INDEX_NAME_MAPPER, $this->config)) {
+            return $this->indexNameMapper = $this->config[self::CONFIG_INDEX_NAME_MAPPER];
+        }
+
+        $prefix = $this->config[self::CONFIG_INDEX_PREFIX] ?? null;
+        $indexClassMapping = $this->config[self::CONFIG_INDEX_CLASS_MAPPING] ?? [];
+
+        return $this->indexNameMapper = new IndexNameMapper($prefix, $indexClassMapping);
     }
 
     public function buildIndexBuilder(): IndexBuilder
