@@ -12,7 +12,6 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Exception\RuntimeException;
-use Elastica\Index;
 use Elastica\Reindex;
 use Elastica\Request;
 use Elastica\Response;
@@ -148,12 +147,12 @@ class IndexBuilder
 
             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $index = new Index($this->client, $realIndexName);
+                $index = new \Elastica\Index($this->client, $realIndexName);
                 $index->delete();
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $index = new Index($this->client, $realIndexName);
+                $index = new \Elastica\Index($this->client, $realIndexName);
                 $index->close();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }
