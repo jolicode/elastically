@@ -43,7 +43,7 @@ class Beer
 use JoliCode\Elastically\Factory;
 use Elastica\Document;
 
-// New Factory object with new options
+// Factory object with Elastica options + new Elastically options in the same array
 $factory = new Factory([
     // Where to find the mappings
     Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/mappings',
@@ -53,7 +53,7 @@ $factory = new Factory([
     ],
 ]);
 
-// Class to perform request
+// Class to perform request, same as the Elastica Client
 $client = $factory->buildClient();
 
 // Class to build Indexes
@@ -165,7 +165,7 @@ An array of index name to class FQN.
 
 ### `Factory::CONFIG_SERIALIZER` (optional)
 
-A `SerializerInterface` compatible object that will by used both on indexation.
+A `SerializerInterface` compatible object that will by used on indexation.
 
 _Default to Symfony Serializer with Object Normalizer._
 
@@ -173,7 +173,7 @@ A faster alternative is to use Jane to generate plain PHP Normalizer, see below.
 
 ### `Factory::CONFIG_DENORMALIZER` (optional)
 
-A `DenormalizerInterface` compatible object that will by used both on search.
+A `DenormalizerInterface` compatible object that will by used on search results to build your objects back.
 
 If this option is not defined, the factory will fallback to
 `Factory::CONFIG_SERIALIZER` option.
@@ -183,7 +183,7 @@ If this option is not defined, the factory will fallback to
 An instance of `ContextBuilderInterface` that build a serializer context from a
 class name.
 
-If it is not defined, elastically, will use a `StaticContextBuilder` with the
+If it is not defined, Elastically, will use a `StaticContextBuilder` with the
 configuration from `Factory::CONFIG_SERIALIZER_CONTEXT_PER_CLASS`.
 
 ### `Factory::CONFIG_SERIALIZER_CONTEXT_PER_CLASS` (optional)
