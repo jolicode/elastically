@@ -85,7 +85,7 @@ final class Factory
 
     public function buildIndexBuilder(): IndexBuilder
     {
-        return $this->indexBuilder ??= new IndexBuilder($this->buildClient(), $this->config[self::CONFIG_MAPPINGS_DIRECTORY], $this->buildBuilder(), $this->buildIndexNameMapper());
+        return $this->indexBuilder ??= new IndexBuilder($this->buildClient(), $this->config[self::CONFIG_MAPPINGS_DIRECTORY], $this->buildIndexNameMapper());
     }
 
     public function buildIndexer(): Indexer

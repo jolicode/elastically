@@ -255,7 +255,6 @@ services:
         arguments:
             $client: '@JoliCode\Elastically\Client'
             $configurationDirectory: '%kernel.project_dir%/config/elasticsearch'
-            $resultSetBuilder: '@JoliCode\Elastically\ResultSetBuilder'
             $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
 ```
 

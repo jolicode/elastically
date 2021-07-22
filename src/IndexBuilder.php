@@ -13,6 +13,7 @@ namespace JoliCode\Elastically;
 
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\RuntimeException;
+use Elastica\Index;
 use Elastica\Reindex;
 use Elastica\Request;
 use Elastica\Response;
@@ -24,14 +25,12 @@ class IndexBuilder
 {
     private Client $client;
     private string $configurationDirectory;
-    private ResultSetBuilder $resultSetBuilder;
     private IndexNameMapper $indexNameMapper;
 
-    public function __construct(Client $client, string $configurationDirectory, ResultSetBuilder $resultSetBuilder, IndexNameMapper $indexNameMapper)
+    public function __construct(Client $client, string $configurationDirectory, IndexNameMapper $indexNameMapper)
     {
         $this->client = $client;
         $this->configurationDirectory = $configurationDirectory;
-        $this->resultSetBuilder = $resultSetBuilder;
         $this->indexNameMapper = $indexNameMapper;
     }
 
@@ -161,12 +160,12 @@ class IndexBuilder
 
             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $index = new Index($this->client, $realIndexName, $this->resultSetBuilder);
+                $index = new Index($this->client, $realIndexName);
                 $index->delete();
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $index = new Index($this->client, $realIndexName, $this->resultSetBuilder);
+                $index = new Index($this->client, $realIndexName);
                 $index->close();
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }

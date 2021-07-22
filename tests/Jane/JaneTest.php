@@ -74,7 +74,7 @@ class JaneTest extends TestCase
             $indexNameMapper
         );
 
-        $indexBuilder = new IndexBuilder($elastically, __DIR__ . '/../configs', $resultSetBuilder, $indexNameMapper);
+        $indexBuilder = new IndexBuilder($elastically, __DIR__ . '/../configs', $indexNameMapper);
         $indexer = new Indexer($elastically, $serializer);
 
         // Build Index
