@@ -44,7 +44,7 @@ class Client extends ElasticaClient
         if (!$indexNameMapper) {
             trigger_deprecation('jolicode/elastically', '1.4.0', 'Passing null as #5 argument of %s() is deprecated. Inject a %s instance instead.', __METHOD__, IndexNameMapper::class);
         }
-        $this->indexNameMapper = $indexNameMapper ?? $this->factory->buildBuilder();
+        $this->indexNameMapper = $indexNameMapper ?? $this->factory->buildIndexNameMapper();
         // End of BC Layer
     }
 
