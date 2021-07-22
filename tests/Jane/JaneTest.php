@@ -18,10 +18,10 @@ use Jane\JsonSchema\Console\Command\GenerateCommand;
 use Jane\JsonSchema\Console\Loader\ConfigLoader;
 use Jane\JsonSchema\Console\Loader\SchemaLoader;
 use JoliCode\Elastically\Client;
-use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
+use JoliCode\Elastically\Mapping\YamlProvider;
 use JoliCode\Elastically\ResultSetBuilder;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModel;
@@ -64,17 +64,14 @@ class JaneTest extends TestCase
 
         // Build Elastically Client
         $elastically = new Client(
-            [
-                Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
-                Factory::CONFIG_SERIALIZER => $serializer,
-            ],
+            [],
             null,
             null,
             $resultSetBuilder,
             $indexNameMapper
         );
 
-        $indexBuilder = new IndexBuilder($elastically, __DIR__ . '/../configs', $indexNameMapper);
+        $indexBuilder = new IndexBuilder(new YamlProvider(__DIR__ . '/../configs'), $elastically, $indexNameMapper);
         $indexer = new Indexer($elastically, $serializer);
 
         // Build Index

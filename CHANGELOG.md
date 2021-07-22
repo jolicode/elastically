@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   concrete implementation: `JoliCode\Elastically\Serializer\StaticContextBuilder`
 - Extract code to manage index name from `JoliCode\Elastically\Client` to
   `JoliCode\Elastically\IndexNameMapper`
+- Introduce `JoliCode\Elastically\Mapping\MappingProviderInterface` and concrete
+  implementation: `JoliCode\Elastically\Mapping\YamlProvider`
 
 ### Deprecated
 

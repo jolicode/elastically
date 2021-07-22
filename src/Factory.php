@@ -11,6 +11,8 @@
 
 namespace JoliCode\Elastically;
 
+use JoliCode\Elastically\Mapping\MappingProviderInterface;
+use JoliCode\Elastically\Mapping\YamlProvider;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
@@ -31,6 +33,7 @@ final class Factory
     public const CONFIG_INDEX_NAME_MAPPER = 'elastically_index_name_mapper';
     public const CONFIG_INDEX_PREFIX = 'elastically_index_prefix';
     public const CONFIG_MAPPINGS_DIRECTORY = 'elastically_mappings_directory';
+    public const CONFIG_MAPPINGS_PROVIDER = 'elastically_mappings_provider';
     public const CONFIG_SERIALIZER = 'elastically_serializer';
     public const CONFIG_SERIALIZER_CONTEXT_BUILDER = 'elastically_serializer_context_builder';
     public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = 'elastically_serializer_context_per_class';
@@ -45,6 +48,7 @@ final class Factory
     private ContextBuilderInterface $contextBuilder;
     private SerializerInterface $serializer;
     private DenormalizerInterface $denormalizer;
+    private MappingProviderInterface $mappingProvider;
 
     public function __construct(array $config = [])
     {
@@ -85,7 +89,7 @@ final class Factory
 
     public function buildIndexBuilder(): IndexBuilder
     {
-        return $this->indexBuilder ??= new IndexBuilder($this->buildClient(), $this->config[self::CONFIG_MAPPINGS_DIRECTORY], $this->buildIndexNameMapper());
+        return $this->indexBuilder ??= new IndexBuilder($this->buildMappingProvider(), $this->buildClient(), $this->buildIndexNameMapper());
     }
 
     public function buildIndexer(): Indexer
@@ -134,5 +138,10 @@ final class Factory
         ], [
             new JsonEncoder(),
         ]);
+    }
+
+    private function buildMappingProvider(): MappingProviderInterface
+    {
+        return $this->mappingProvider ??= $this->config[self::CONFIG_MAPPINGS_PROVIDER] ?? new YamlProvider($this->config[self::CONFIG_MAPPINGS_DIRECTORY]);
     }
 }

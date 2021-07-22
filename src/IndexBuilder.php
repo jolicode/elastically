@@ -11,7 +11,6 @@
 
 namespace JoliCode\Elastically;
 
-use Elastica\Exception\InvalidException;
 use Elastica\Exception\RuntimeException;
 use Elastica\Index;
 use Elastica\Reindex;
@@ -19,35 +18,24 @@ use Elastica\Request;
 use Elastica\Response;
 use Elastica\Task;
 use Elasticsearch\Endpoints\Cluster\State;
-use Symfony\Component\Yaml\Yaml;
+use JoliCode\Elastically\Mapping\MappingProviderInterface;
 
 class IndexBuilder
 {
+    private MappingProviderInterface $mappingProvider;
     private Client $client;
-    private string $configurationDirectory;
     private IndexNameMapper $indexNameMapper;
 
-    public function __construct(Client $client, string $configurationDirectory, IndexNameMapper $indexNameMapper)
+    public function __construct(MappingProviderInterface $mappingProvider, Client $client, IndexNameMapper $indexNameMapper)
     {
+        $this->mappingProvider = $mappingProvider;
         $this->client = $client;
-        $this->configurationDirectory = $configurationDirectory;
         $this->indexNameMapper = $indexNameMapper;
     }
 
-    public function createIndex(string $indexName, ?string $fileName = null): Index
+    public function createIndex(string $indexName, array $context = []): Index
     {
-        $fileName = $fileName ?? ($indexName . '_mapping.yaml');
-        $mappingFilePath = $this->configurationDirectory . \DIRECTORY_SEPARATOR . $fileName;
-        if (!is_file($mappingFilePath)) {
-            throw new InvalidException(sprintf('Mapping file "%s" not found.', $mappingFilePath));
-        }
-        $mapping = Yaml::parseFile($mappingFilePath);
-
-        $analyzerFilePath = $this->configurationDirectory . '/analyzers.yaml';
-        if ($mapping && is_file($analyzerFilePath)) {
-            $analyzer = Yaml::parseFile($analyzerFilePath);
-            $mapping['settings']['analysis'] = array_merge_recursive($mapping['settings']['analysis'] ?? [], $analyzer);
-        }
+        $mapping = $this->mappingProvider->provideMapping($indexName, $context);
 
         $realName = sprintf('%s_%s', $indexName, date('Y-m-d-His'));
         $index = $this->client->getIndex($realName);
