@@ -111,19 +111,21 @@ class Client extends ElasticaClient
 
     public function getSerializer(): SerializerInterface
     {
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a SerializerInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
+
         return $this->factory->buildSerializer();
     }
 
     public function getDenormalizer(): DenormalizerInterface
     {
-        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a SerializerInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a DenormalizerInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
 
         return $this->factory->buildDenormalizer();
     }
 
     public function getSerializerContext(string $class): array
     {
-        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a DenormalizerInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
+        trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Inject a ContextBuilderInterface instance in your code directly using dependency injection or call the %s.', __METHOD__, Factory::class);
 
         return $this->factory->buildSerializerContext($class);
     }
