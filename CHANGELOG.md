@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drop support for Symfony < 4.4
 - Drop support for PHP < 7.4
 - Add PHPStan
+- Move all the "factory" logic from the `JoliCode\Elastically\Client` to the
+  `JoliCode\Elastically\Factory`
+- Inject dependencies where possible
+- Introduce `JoliCode\Elastically\Serializer\ContextBuilderInterface` and
+  concrete implementation: `JoliCode\Elastically\Serializer\StaticContextBuilder`
+- Extract code to manage index name from `JoliCode\Elastically\Client` to
+  `JoliCode\Elastically\IndexNameMapper`
+
+### Deprecated
+
+- Deprecate following methods on `JoliCode\Elastically\Client`:
+    - `getPrefixedIndex()`: Use `IndexNameMapper` instead
+    - `getIndexNameFromClass()`: Use `IndexNameMapper` instead
+    - `getClassFromIndexName()`: Use `IndexNameMapper` instead
+    - `getPureIndexName()`: Use `IndexNameMapper` instead
+    - `getIndexBuilder()`: Inject the `IndexBuilder` instead where you need it
+    - `getIndexer()`: Inject the `Indexer` instead where you need it
+    - `getBuilder()`: Inject the `ResultSetBuilder` instead where you need it
+    - `getSerializer()`: Inject the `Serializer` instead where you need it
+    - `getDenormalizer()`: Inject the `Denormalizer` instead where you need it
+    - `getSerializerContext()`: Inject the `SerializerContext` instead where you need it;
 
 ## [1.3.0] - 2021-07-02
 

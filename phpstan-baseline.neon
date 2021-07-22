@@ -11,6 +11,11 @@ parameters:
 			path: src/Indexer.php
 
 		-
+			message: "#^Parameter \\#1 \\$class of method JoliCode\\\\Elastically\\\\Serializer\\\\ContextBuilderInterface\\:\\:buildContext\\(\\) expects string, false given\\.$#"
+			count: 3
+			path: src/Indexer.php
+
+		-
 			message: "#^Parameter \\#1 \\$data of method Elastica\\\\Document\\:\\:setData\\(\\) expects array\\|string, object given\\.$#"
 			count: 1
 			path: src/Result.php

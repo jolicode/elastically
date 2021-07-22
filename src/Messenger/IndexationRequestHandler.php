@@ -15,6 +15,7 @@ use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
+use JoliCode\Elastically\IndexNameMapper;
 use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -37,12 +38,16 @@ class IndexationRequestHandler implements MessageHandlerInterface
     private Client $client;
     private MessageBusInterface $bus;
     private DocumentExchangerInterface $exchanger;
+    private Indexer $indexer;
+    private IndexNameMapper $indexNameMapper;
 
-    public function __construct(Client $client, MessageBusInterface $bus, DocumentExchangerInterface $exchanger)
+    public function __construct(Client $client, MessageBusInterface $bus, DocumentExchangerInterface $exchanger, Indexer $indexer, IndexNameMapper $indexNameMapper)
     {
         $this->client = $client;
         $this->bus = $bus;
         $this->exchanger = $exchanger;
+        $this->indexer = $indexer;
+        $this->indexNameMapper = $indexNameMapper;
 
         // Disable the logs for memory concerns
         $this->client->setLogger(new NullLogger());
@@ -57,22 +62,20 @@ class IndexationRequestHandler implements MessageHandlerInterface
             $messages = [$message];
         }
 
-        $indexer = $this->client->getIndexer();
-
         $messageOffset = 0;
-        $responseOffset = $indexer->getQueueSize();
+        $responseOffset = $this->indexer->getQueueSize();
 
         try {
             foreach ($messages as $indexationRequest) {
                 ++$messageOffset;
-                $this->schedule($indexer, $indexationRequest);
+                $this->schedule($this->indexer, $indexationRequest);
 
-                if (0 === $indexer->getQueueSize()) {
+                if (0 === $this->indexer->getQueueSize()) {
                     $responseOffset = 0;
                 }
             }
 
-            $indexer->flush();
+            $this->indexer->flush();
         } catch (ResponseException $exception) {
             // Extracts failed operations from the bulk
             // Responses are checked in reverse mode because we have only requests from the last bulk
@@ -106,7 +109,7 @@ class IndexationRequestHandler implements MessageHandlerInterface
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
     {
         try {
-            $indexName = $this->client->getIndexNameFromClass($indexationRequest->getClassName());
+            $indexName = $this->indexNameMapper->getIndexNameFromClass($indexationRequest->getClassName());
         } catch (RuntimeException $e) {
             throw new UnrecoverableMessageHandlingException('Cannot guess the Index for this request. Dropping the message.', 0, $e);
         }

@@ -14,6 +14,8 @@ namespace JoliCode\Elastically;
 use Elastica\Bulk;
 use Elastica\Document;
 use Elastica\Index;
+use JoliCode\Elastically\Serializer\ContextBuilderInterface;
+use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class Indexer
@@ -22,23 +24,26 @@ class Indexer
     private SerializerInterface $serializer;
     private int $bulkMaxSize;
     private array $bulkRequestParams;
+    private ContextBuilderInterface $contextBuilder;
+
     private ?Bulk $currentBulk = null;
 
-    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [])
+    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [], ?ContextBuilderInterface $contextBuilder = null)
     {
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 
         $this->client = $client;
-        $this->bulkMaxSize = $bulkMaxSize ?? 100;
         $this->serializer = $serializer;
+        $this->bulkMaxSize = $bulkMaxSize ?? 100;
         $this->bulkRequestParams = $bulkRequestParams;
+        $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
     }
 
     public function scheduleIndex($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         if (\is_object($document->getData())) {
-            $context = $this->client->getSerializerContext(\get_class($document->getData()));
+            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
@@ -60,7 +65,7 @@ class Indexer
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         if (\is_object($document->getData())) {
-            $context = $this->client->getSerializerContext(\get_class($document->getData()));
+            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 
@@ -73,7 +78,7 @@ class Indexer
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         if (\is_object($document->getData())) {
-            $context = $this->client->getSerializerContext(\get_class($document->getData()));
+            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
             $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
         }
 

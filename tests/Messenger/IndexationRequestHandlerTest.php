@@ -16,7 +16,7 @@ namespace JoliCode\Elastically\Tests\Messenger;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\ResultSet;
-use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Messenger\DocumentExchangerInterface;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\IndexationRequestHandler;
@@ -34,12 +34,16 @@ final class IndexationRequestHandlerTest extends BaseTestCase
     {
         $indexName = mb_strtolower(__FUNCTION__);
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexName => TestDTO::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => TestDTO::class,
+            ],
         ]);
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+        $indexNameMapper = $factory->buildIndexNameMapper();
 
-        $handler = new IndexationRequestHandler($client, new MessageBus(), new TestDocumentExchanger());
+        $handler = new IndexationRequestHandler($client, new MessageBus(), new TestDocumentExchanger(), $indexer, $indexNameMapper);
         $handler(new IndexationRequest(TestDTO::class, '1234567890'));
         $handler(new IndexationRequest(TestDTO::class, '1234567890', IndexationRequestHandler::OP_UPDATE));
         $handler(new IndexationRequest(TestDTO::class, 'ref7777', IndexationRequestHandler::OP_CREATE));
@@ -89,11 +93,15 @@ final class IndexationRequestHandlerTest extends BaseTestCase
         $indexNameWritable = mb_strtolower(__FUNCTION__) . '_writable';
         $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexNameWritable => FooDTO::class,
-            $indexNameReadonly => BarDTO::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexNameWritable => FooDTO::class,
+                $indexNameReadonly => BarDTO::class,
+            ],
         ]);
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+        $indexNameMapper = $factory->buildIndexNameMapper();
 
         $indexReadonly = $client->getIndex($indexNameReadonly);
         $indexReadonly->create();
@@ -101,7 +109,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         $goodRequest = new IndexationRequest(FooDTO::class, '1234567892');
         $badRequest = new IndexationRequest(BarDTO::class, '1234567892');
@@ -119,10 +127,14 @@ final class IndexationRequestHandlerTest extends BaseTestCase
     {
         $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexNameReadonly => BarDTO::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexNameReadonly => BarDTO::class,
+            ],
         ]);
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+        $indexNameMapper = $factory->buildIndexNameMapper();
 
         $indexReadonly = $client->getIndex($indexNameReadonly);
         $indexReadonly->create();
@@ -130,7 +142,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         $badRequest1 = new IndexationRequest(BarDTO::class, '1234567892');
         $badRequest2 = new IndexationRequest(BarDTO::class, '1234567892');
@@ -145,10 +157,14 @@ final class IndexationRequestHandlerTest extends BaseTestCase
     {
         $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
-        $client = $this->getClient();
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexNameReadonly => BarDTO::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexNameReadonly => BarDTO::class,
+            ],
         ]);
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+        $indexNameMapper = $factory->buildIndexNameMapper();
 
         $indexReadonly = $client->getIndex($indexNameReadonly);
         $indexReadonly->create();
@@ -156,7 +172,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         $badRequest = new IndexationRequest(BarDTO::class, '1234567892');
 
@@ -170,12 +186,20 @@ final class IndexationRequestHandlerTest extends BaseTestCase
         $indexNameWritable = mb_strtolower(__FUNCTION__) . '_writable';
         $indexNameReadonly = mb_strtolower(__FUNCTION__) . '_readonly';
 
-        $client = $this->getClient();
-        $client->getIndexer()->setBulkMaxSize(3);
-        $client->setConfigValue(Client::CONFIG_INDEX_CLASS_MAPPING, [
-            $indexNameWritable => FooDTO::class,
-            $indexNameReadonly => BarDTO::class,
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexNameWritable => FooDTO::class,
+                $indexNameReadonly => BarDTO::class,
+            ],
         ]);
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+        $indexNameMapper = $factory->buildIndexNameMapper();
+
+        $indexer = $factory->buildIndexer();
+        $client = $factory->buildClient();
+
+        $indexer->setBulkMaxSize(3);
 
         $indexReadonly = $client->getIndex($indexNameReadonly);
         $indexReadonly->create();
@@ -183,7 +207,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger());
+        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         // bulk 1
         $request1 = new IndexationRequest(FooDTO::class, 'bulk-1-message-1');

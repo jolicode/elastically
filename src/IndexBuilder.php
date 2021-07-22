@@ -13,6 +13,7 @@ namespace JoliCode\Elastically;
 
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\RuntimeException;
+use Elastica\Index;
 use Elastica\Reindex;
 use Elastica\Request;
 use Elastica\Response;
@@ -24,11 +25,13 @@ class IndexBuilder
 {
     private Client $client;
     private string $configurationDirectory;
+    private IndexNameMapper $indexNameMapper;
 
-    public function __construct(Client $client, string $configurationDirectory)
+    public function __construct(Client $client, string $configurationDirectory, IndexNameMapper $indexNameMapper)
     {
         $this->client = $client;
         $this->configurationDirectory = $configurationDirectory;
+        $this->indexNameMapper = $indexNameMapper;
     }
 
     public function createIndex(string $indexName, ?string $fileName = null): Index
@@ -60,7 +63,7 @@ class IndexBuilder
 
     public function markAsLive(Index $index, string $indexName): Response
     {
-        $indexName = $this->client->getPrefixedIndex($indexName);
+        $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
         $data = ['actions' => []];
 
@@ -82,7 +85,7 @@ class IndexBuilder
 
     public function migrate(Index $currentIndex, array $params = []): Index
     {
-        $pureIndexName = $this->client->getPureIndexName($currentIndex->getName());
+        $pureIndexName = $this->indexNameMapper->getPureIndexName($currentIndex->getName());
         $newIndex = $this->createIndex($pureIndexName);
 
         $reindex = new Reindex($currentIndex, $newIndex, $params);
@@ -108,7 +111,7 @@ class IndexBuilder
 
     public function purgeOldIndices(string $indexName): array
     {
-        $indexName = $this->client->getPrefixedIndex($indexName);
+        $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
         $stateRequest = new State();
         $stateRequest->setParams([

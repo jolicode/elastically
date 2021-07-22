@@ -18,6 +18,12 @@ use Jane\JsonSchema\Console\Command\GenerateCommand;
 use Jane\JsonSchema\Console\Loader\ConfigLoader;
 use Jane\JsonSchema\Console\Loader\SchemaLoader;
 use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Factory;
+use JoliCode\Elastically\IndexBuilder;
+use JoliCode\Elastically\Indexer;
+use JoliCode\Elastically\IndexNameMapper;
+use JoliCode\Elastically\ResultSetBuilder;
+use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModel;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModelIngredientsItemAnyOf;
 use JoliCode\Elastically\Tests\Jane\generated\Normalizer\JaneObjectNormalizer;
@@ -54,17 +60,24 @@ class JaneTest extends TestCase
 
         $serializer = new Serializer($normalizers, $encoders);
 
+        $resultSetBuilder = new ResultSetBuilder($indexNameMapper = new IndexNameMapper(null, ['beers' => MyModel::class]), new StaticContextBuilder(), $serializer);
+
         // Build Elastically Client
-        $elastically = new Client([
-            Client::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
-            Client::CONFIG_INDEX_CLASS_MAPPING => [
-                'beers' => MyModel::class,
+        $elastically = new Client(
+            [
+                Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/../configs',
+                Factory::CONFIG_SERIALIZER => $serializer,
             ],
-            Client::CONFIG_SERIALIZER => $serializer,
-        ]);
+            null,
+            null,
+            $resultSetBuilder,
+            $indexNameMapper
+        );
+
+        $indexBuilder = new IndexBuilder($elastically, __DIR__ . '/../configs', $indexNameMapper);
+        $indexer = new Indexer($elastically, $serializer);
 
         // Build Index
-        $indexBuilder = $elastically->getIndexBuilder();
         $index = $indexBuilder->createIndex('beers');
         $indexBuilder->markAsLive($index, 'beers');
 
@@ -81,7 +94,6 @@ class JaneTest extends TestCase
         $dto->setIngredients([$ingredient1, $ingredient2, $ingredient3]);
 
         // Index the DTO
-        $indexer = $elastically->getIndexer();
         $indexer->scheduleIndex('beers', new Document('123', $dto));
         $indexer->flush();
         $indexer->refresh('beers');
