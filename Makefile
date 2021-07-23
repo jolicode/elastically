@@ -11,8 +11,7 @@ kibana: ## Start debug tools (Kibana)
 	docker run -e "ELASTICSEARCH_HOSTS=http://127.0.0.1:9200/" --network host docker.elastic.co/kibana/kibana-oss:7.8.0
 
 cs: ## Fix PHP CS
-	./vendor/bin/php-cs-fixer fix --verbose --rules=@Symfony,ordered_imports src/
-	./vendor/bin/php-cs-fixer fix --verbose --rules=@Symfony,ordered_imports tests/
+	./vendor/bin/php-cs-fixer fix --verbose
 
 .PHONY: help
 

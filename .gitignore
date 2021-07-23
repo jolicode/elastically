@@ -4,3 +4,4 @@
 /tests/Jane/generated/*
 !/tests/Jane/generated/.gitkeep
 .php_cs.cache
+.php-cs-fixer.cache
