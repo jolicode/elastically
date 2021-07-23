@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jolicode/elastically library.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 $header = <<<'EOF'
 This file is part of the jolicode/elastically library.
 
@@ -12,11 +21,11 @@ EOF;
 $config = new PhpCsFixer\Config();
 $config
     ->setRiskyAllowed(true)
-    ->setRules(array(
+    ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        'header_comment' => array('header' => $header),
-        'array_syntax' => array('syntax' => 'short'),
+        'header_comment' => ['header' => $header],
+        'array_syntax' => ['syntax' => 'short'],
         'ordered_class_elements' => true,
         'ordered_imports' => true,
         'heredoc_to_nowdoc' => true,
@@ -31,11 +40,14 @@ $config
         'no_useless_return' => true,
         'semicolon_after_instruction' => true,
         'combine_consecutive_unsets' => true,
-        'concat_space' => array('spacing' => 'one'),
-    ))
+        'concat_space' => ['spacing' => 'one'],
+    ])
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->in(__DIR__)
+            ->name(['*.php', '.php-cs-fixer.php'])
+            ->ignoreDotFiles(false)
+            ->exclude('tests/Jane/generated/')
     )
 ;
 
