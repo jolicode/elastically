@@ -38,6 +38,7 @@ return (new PhpCsFixer\Config())
         'phpdoc_add_missing_param_annotation' => false, // From @PhpCsFixer but we don't want it
         'header_comment' => ['header' => $fileHeaderComment, 'separate' => 'both'],
         'concat_space' => ['spacing' => 'one'],
+        'method_chaining_indentation' => false, // Does not work with tree builder
     ])
     ->setFinder($finder)
 ;

@@ -24,3 +24,8 @@ parameters:
 			message: "#^Parameter \\#1 \\$data of method Elastica\\\\Document\\:\\:setData\\(\\) expects array\\|string, object given\\.$#"
 			count: 1
 			path: src/Result.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
+			count: 1
+			path: src/Bridge/Symfony/DependencyInjection/Configuration.php

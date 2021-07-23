@@ -25,7 +25,7 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf(IndexBuilder::class, $factory->buildIndexBuilder());
 
         $this->expectExceptionMessage(
-            'Mapping file "/beers_mapping.yaml" not found. Have you correctly set the \JoliCode\Elastically\Factory::CONFIG_MAPPINGS_DIRECTORY option?'
+            'Mapping file "/beers_mapping.yaml" not found. Please check your configuration.'
         );
 
         $factory->buildIndexBuilder()->createIndex('beers');
