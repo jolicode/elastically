@@ -13,6 +13,9 @@ kibana: ## Start debug tools (Kibana)
 cs: ## Fix PHP CS
 	./vendor/bin/php-cs-fixer fix --verbose
 
+phpstan: # Run phpstan
+	./vendor/bin/phpstan analyse
+
 .PHONY: help
 
 help: ## Display this help
