@@ -37,7 +37,7 @@ jobs:
               env:
                 REQUIRE_DEV: true
               with:
-                args: analyse --level=5 --configuration=phpstan-baseline.neon src/
+                args: analyse
 
     ci:
         name: Test PHP ${{ matrix.php-version }} ${{ matrix.name }}

@@ -14,6 +14,9 @@ cs: ## Fix PHP CS
 	./vendor/bin/php-cs-fixer fix --verbose --rules=@Symfony,ordered_imports src/
 	./vendor/bin/php-cs-fixer fix --verbose --rules=@Symfony,ordered_imports tests/
 
+phpstan: # Run phpstan
+	./vendor/bin/phpstan analyse
+
 .PHONY: help
 
 help: ## Display this help

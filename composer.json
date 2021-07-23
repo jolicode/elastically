@@ -29,6 +29,7 @@
         "friendsofphp/php-cs-fixer": "^3.0",
         "jane-php/json-schema": "^6.0",
         "jane-php/json-schema-runtime": "^6.0",
+        "phpstan/phpstan": "^0.12.93",
         "symfony/browser-kit": "^4.4|^5.0",
         "symfony/framework-bundle": "^4.4|^5.0",
         "symfony/http-client": "^4.4|^5.0",
