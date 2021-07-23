@@ -23,7 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extract code to manage index name from `JoliCode\Elastically\Client` to
   `JoliCode\Elastically\IndexNameMapper`
 - Introduce `JoliCode\Elastically\Mapping\MappingProviderInterface` and concrete
-  implementation: `JoliCode\Elastically\Mapping\YamlProvider`
+  implementations: `JoliCode\Elastically\Mapping\YamlProvider` and
+  `JoliCode\Elastically\Mapping\PhpProvider`
 
 ### Deprecated
 
