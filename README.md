@@ -170,6 +170,8 @@ An instance of `MappingProviderInterface`.
 If this option is not defined, the factory will fallback to `YamlProvider` and will use
 `Factory::CONFIG_MAPPINGS_DIRECTORY` option.
 
+There are two providers available in Elastically: `YamlProvider` and `PhpProvider`.
+
 ### `Factory::CONFIG_SERIALIZER` (optional)
 
 A `SerializerInterface` compatible object that will by used on indexation.
