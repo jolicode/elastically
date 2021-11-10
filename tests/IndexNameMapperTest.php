@@ -49,4 +49,61 @@ final class IndexNameMapperTest extends BaseTestCase
         $indexName = $mapper->getIndexNameFromClass(TestDTO::class);
         $this->assertSame('foo_todo', $indexName);
     }
+
+    public function testPureIndexNameFromIndex(): void
+    {
+        $mapper = new IndexNameMapper(null, [
+            'todo' => TestDTO::class,
+        ]);
+
+        $pureIndexName = $mapper->getPureIndexName('todo_2222-22-22-000001');
+        $this->assertSame('todo', $pureIndexName);
+    }
+
+    public function testPureIndexNameFromIndexPrefix(): void
+    {
+        $mapper = new IndexNameMapper('foo', [
+            'todo' => TestDTO::class,
+        ]);
+
+        $pureIndexName = $mapper->getPureIndexName('foo_todo_2222-22-22-000001');
+        $this->assertSame('todo', $pureIndexName);
+    }
+    public function testPureIndexNameFromIndexAlias(): void
+    {
+        $mapper = new IndexNameMapper(null, [
+            'todo' => TestDTO::class,
+        ]);
+
+        $pureIndexName = $mapper->getPureIndexName('todo');
+        $this->assertSame('todo', $pureIndexName);
+    }
+
+    public function testPureIndexNameFromIndexAliasPrefix(): void
+    {
+        $mapper = new IndexNameMapper('foo', [
+            'todo' => TestDTO::class,
+        ]);
+
+        $pureIndexName = $mapper->getPureIndexName('foo_todo');
+        $this->assertSame('todo', $pureIndexName);
+    }
+
+    public function testMappedIndices(): void
+    {
+        $mapper = new IndexNameMapper('foo', [
+            'todo' => TestDTO::class,
+            'bar' => TestBarDTO::class,
+        ]);
+        $mappedIndices = $mapper->getMappedIndices();
+        $this->assertCount(2, $mappedIndices);
+        $this->assertContains('todo', $mappedIndices);
+        $this->assertContains('bar', $mappedIndices);
+    }
+}
+
+class TestBarDTO
+{
+    public $bar;
+    public $baz;
 }
