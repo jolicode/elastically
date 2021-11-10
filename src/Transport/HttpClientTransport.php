@@ -87,7 +87,7 @@ class HttpClientTransport extends AbstractTransport
         try {
             $response = $this->client->request($method, $this->_getUri($request, $connection), $options);
             $elasticaResponse = new Response($response->getContent(), $response->getStatusCode());
-        } catch (ClientException | ServerException $e) { // Error 4xx and 5xx
+        } catch (ClientException|ServerException $e) { // Error 4xx and 5xx
             $elasticaResponse = new Response($response->getContent(false), $response->getStatusCode());
         } catch (HttpExceptionInterface $e) {
             throw new HttpException($e->getCode(), $request);

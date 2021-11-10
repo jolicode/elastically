@@ -69,6 +69,7 @@ final class IndexNameMapperTest extends BaseTestCase
         $pureIndexName = $mapper->getPureIndexName('foo_todo_2222-22-22-000001');
         $this->assertSame('todo', $pureIndexName);
     }
+
     public function testPureIndexNameFromIndexAlias(): void
     {
         $mapper = new IndexNameMapper(null, [

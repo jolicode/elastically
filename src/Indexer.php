@@ -34,7 +34,7 @@ class Indexer
 
         $this->client = $client;
         $this->serializer = $serializer;
-        $this->bulkMaxSize = $bulkMaxSize ?? 100;
+        $this->bulkMaxSize = $bulkMaxSize;
         $this->bulkRequestParams = $bulkRequestParams;
         $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
     }
