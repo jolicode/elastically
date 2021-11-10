@@ -64,21 +64,22 @@ final class HttpClientTransportTest extends BaseTestCase
     public function testHttpClientIsCalledOnSearch()
     {
         $responses = [
-            new MockResponse(<<<'JSON'
-{
-  "took" : 1,
-  "timed_out" : false,
-  "hits" : {
-    "total" : {
-      "value" : 0,
-      "relation" : "eq"
-    },
-    "max_score" : null,
-    "hits" : [ ]
-  }
-}
-JSON
-),
+            new MockResponse(
+                <<<'JSON'
+                    {
+                      "took" : 1,
+                      "timed_out" : false,
+                      "hits" : {
+                        "total" : {
+                          "value" : 0,
+                          "relation" : "eq"
+                        },
+                        "max_score" : null,
+                        "hits" : [ ]
+                      }
+                    }
+                    JSON
+            ),
         ];
 
         $client = $this->getClient(null, [

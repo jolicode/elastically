@@ -130,7 +130,7 @@ final class SearchTest extends BaseTestCase
     }
 }
 
-/* Needed to mock */
+// Needed to mock
 class SearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
 {
     /**

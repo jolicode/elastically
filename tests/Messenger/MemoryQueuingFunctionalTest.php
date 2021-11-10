@@ -16,6 +16,7 @@ namespace JoliCode\Elastically\Tests\Messenger;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\MultipleIndexationRequest;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,8 +33,8 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
     {
         static::bootKernel(['debug' => false]);
 
-        /* @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.queuing.test');
+        /** @var InMemoryTransport $transport */
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
         $this->assertCount(0, $transport->getSent());
     }
 
@@ -41,21 +42,21 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
     {
         static::bootKernel(['debug' => false]);
 
-        /* @var MessageBus $bus */
-        $bus = self::$container->get('messenger.default_bus');
+        /** @var MessageBus $bus */
+        $bus = self::getContainer()->get('messenger.default_bus');
 
         $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567890'));
         $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567891'));
         $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567892'));
 
-        /* @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.queuing.test');
+        /** @var InMemoryTransport $transport */
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
         $this->assertCount(3, $transport->getSent());
         $this->assertEmpty($transport->getAcknowledged());
         $this->assertEmpty($transport->getRejected());
 
-        /* @var EventDispatcher $dispatcher */
-        $dispatcher = self::$container->get('event_dispatcher');
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = self::getContainer()->get('event_dispatcher');
 
         // Simulate Kernel Response
         $dispatcher->dispatch(
@@ -66,16 +67,16 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
         $this->assertCount(3, $transport->getAcknowledged());
         $this->assertEmpty($transport->getRejected());
 
-        /* @var InMemoryTransport $transportBulk */
-        $transportBulk = self::$container->get('messenger.transport.async.test');
+        /** @var InMemoryTransport $transportBulk */
+        $transportBulk = self::getContainer()->get('messenger.transport.async.test');
         $this->assertCount(1, $transportBulk->getSent());
         $this->assertEmpty($transportBulk->getAcknowledged());
         $this->assertEmpty($transportBulk->getRejected());
 
-        $message = $transportBulk->get();
-        $this->assertCount(1, $message);
-        $message = reset($message);
-        /* @var Envelope $message */
+        $messages = $transportBulk->get();
+        $this->assertCount(1, $messages);
+        /** @var Envelope $message */
+        $message = reset($messages);
         $this->assertInstanceOf(MultipleIndexationRequest::class, $message->getMessage());
         $this->assertCount(3, $message->getMessage()->getOperations());
     }
@@ -84,15 +85,12 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
     {
         static::bootKernel(['debug' => false]);
 
-        /* @var MessageBus $bus */
-        $bus = self::$container->get('messenger.default_bus');
-
-        /* @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.queuing.test');
+        /** @var InMemoryTransport $transport */
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
         $this->assertCount(0, $transport->getSent());
 
-        /* @var EventDispatcher $dispatcher */
-        $dispatcher = self::$container->get('event_dispatcher');
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = self::getContainer()->get('event_dispatcher');
 
         // Simulate Kernel Response
         $dispatcher->dispatch(
@@ -102,8 +100,17 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
         $this->assertCount(0, $transport->getAcknowledged());
 
-        /* @var InMemoryTransport $transportBulk */
-        $transportBulk = self::$container->get('messenger.transport.async.test');
+        /** @var InMemoryTransport $transportBulk */
+        $transportBulk = self::getContainer()->get('messenger.transport.async.test');
         $this->assertCount(0, $transportBulk->getSent());
+    }
+
+    protected static function getContainer(): ContainerInterface
+    {
+        if (method_exists('parent', 'getContainer')) {
+            return parent::getContainer();
+        }
+
+        return self::$container;
     }
 }

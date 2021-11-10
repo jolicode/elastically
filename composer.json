@@ -26,7 +26,7 @@
         "symfony/yaml": "^4.4|^5.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.3.2",
         "jane-php/json-schema": "^7.0",
         "jane-php/json-schema-runtime": "^7.0",
         "phpstan/phpstan": "^0.12.93",

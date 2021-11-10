@@ -23,11 +23,11 @@ final class TestControllerFunctionalTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/with_exception');
 
-        /* @var InMemoryTransport $transport */
+        /** @var InMemoryTransport $transport */
         $transport = self::$container->get('messenger.transport.queuing.test');
         $this->assertCount(2, $transport->getSent());
 
-        /* @var InMemoryTransport $transport */
+        /** @var InMemoryTransport $transport */
         $transport = self::$container->get('messenger.transport.async.test');
         $this->assertCount(0, $transport->getSent());
 
@@ -39,12 +39,12 @@ final class TestControllerFunctionalTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/with_response');
 
-        /* @var InMemoryTransport $transport */
+        /** @var InMemoryTransport $transport */
         $transport = self::$container->get('messenger.transport.queuing.test');
         $this->assertCount(2, $transport->getSent());
         $this->assertCount(2, $transport->getAcknowledged());
 
-        /* @var InMemoryTransport $transport */
+        /** @var InMemoryTransport $transport */
         $transport = self::$container->get('messenger.transport.async.test');
         $this->assertCount(1, $transport->getSent());
 

@@ -53,9 +53,11 @@ class JaneTest extends TestCase
             new ArrayDenormalizer(),
             new JaneObjectNormalizer(),
         ];
-        $encoders = [new JsonEncoder(
-            new JsonEncode(),
-            new JsonDecode([JsonDecode::ASSOCIATIVE => true])),
+        $encoders = [
+            new JsonEncoder(
+                new JsonEncode(),
+                new JsonDecode([JsonDecode::ASSOCIATIVE => true])
+            ),
         ];
 
         $serializer = new Serializer($normalizers, $encoders);
