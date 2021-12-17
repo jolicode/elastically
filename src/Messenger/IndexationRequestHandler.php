@@ -134,12 +134,17 @@ class IndexationRequestHandler implements MessageHandlerInterface
         switch ($indexationRequest->getOperation()) {
             case self::OP_INDEX:
                 $indexer->scheduleIndex($indexName, $document);
+
                 break;
+
             case self::OP_CREATE:
                 $indexer->scheduleCreate($indexName, $document);
+
                 break;
+
             case self::OP_UPDATE:
                 $indexer->scheduleUpdate($indexName, $document);
+
                 break;
         }
     }

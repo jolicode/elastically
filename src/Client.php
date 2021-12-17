@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class Client extends ElasticaClient
 {
-    /* Elastically config keys // BC Layer, to remove in 2.0 */
+    // Elastically config keys // BC Layer, to remove in 2.0
     public const CONFIG_MAPPINGS_DIRECTORY = Factory::CONFIG_MAPPINGS_DIRECTORY;
     public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = Factory::CONFIG_SERIALIZER_CONTEXT_PER_CLASS;
     public const CONFIG_SERIALIZER = Factory::CONFIG_SERIALIZER;
