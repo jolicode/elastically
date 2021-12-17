@@ -65,7 +65,7 @@ class IndexNameMapper
             return $matches[1];
         }
 
-        $prefixLength = \strlen($this->prefix);
+        $prefixLength = \strlen((string) $this->prefix);
 
         if ($this->prefix && substr($fullIndexName, 0, $prefixLength) === $this->prefix) {
             return substr($fullIndexName, $prefixLength + 1);
