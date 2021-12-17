@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Messenger;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
 final class TestControllerFunctionalTest extends WebTestCase
@@ -24,11 +26,11 @@ final class TestControllerFunctionalTest extends WebTestCase
         $client->request('GET', '/with_exception');
 
         /** @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.queuing.test');
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
         $this->assertCount(2, $transport->getSent());
 
         /** @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.async.test');
+        $transport = self::getContainer()->get('messenger.transport.async.test');
         $this->assertCount(0, $transport->getSent());
 
         $this->assertSame(500, $client->getResponse()->getStatusCode());
@@ -40,14 +42,23 @@ final class TestControllerFunctionalTest extends WebTestCase
         $client->request('GET', '/with_response');
 
         /** @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.queuing.test');
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
         $this->assertCount(2, $transport->getSent());
         $this->assertCount(2, $transport->getAcknowledged());
 
         /** @var InMemoryTransport $transport */
-        $transport = self::$container->get('messenger.transport.async.test');
+        $transport = self::getContainer()->get('messenger.transport.async.test');
         $this->assertCount(1, $transport->getSent());
 
         $this->assertSame(200, $client->getResponse()->getStatusCode());
+    }
+
+    protected static function getContainer(): ContainerInterface
+    {
+        if (method_exists(KernelTestCase::class, 'getContainer')) {
+            return parent::getContainer();
+        }
+
+        return self::$container;
     }
 }
