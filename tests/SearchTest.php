@@ -157,7 +157,7 @@ abstract class AbstractSearchTestDummySerializer implements SerializerInterface,
     }
 }
 
-if (6 >= Kernel::MAJOR_VERSION) {
+if (6 <= Kernel::MAJOR_VERSION) {
     class SearchTestDummySerializer extends AbstractSearchTestDummySerializer
     {
         public function serialize(mixed $data, string $format, array $context = []): string
