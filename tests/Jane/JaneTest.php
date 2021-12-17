@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace JoliCode\Elastically\Tests\Jane;
 
 use Elastica\Document;
-use Jane\JsonSchema\Console\Command\GenerateCommand;
-use Jane\JsonSchema\Console\Loader\ConfigLoader;
-use Jane\JsonSchema\Console\Loader\SchemaLoader;
+use Jane\Component\JsonSchema\Console\Command\GenerateCommand;
+use Jane\Component\JsonSchema\Console\Loader\ConfigLoader;
+use Jane\Component\JsonSchema\Console\Loader\SchemaLoader;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
