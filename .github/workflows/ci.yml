@@ -52,8 +52,11 @@ jobs:
                 composer-flags: ['']
                 name: ['']
                 include:
+                    - php-version: 7.4
+                      composer-flags: '--prefer-lowest'
+                      name: '(prefer lowest dependencies)'
+                      symfony-version: '4.4.*'
                     - php-version: '8.0'
-                      symfony-version: '6.0.*'
 
         services:
           elasticsearch:
@@ -76,7 +79,7 @@ jobs:
               run: composer global require --no-progress --no-scripts --no-plugins symfony/flex
 
             - name: Install Composer dependencies
-              run: composer update --prefer-dist --no-interaction --no-ansi
+              run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}
 
             - name: Wait for ES to be ready
               run: |
