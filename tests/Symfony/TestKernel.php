@@ -24,13 +24,11 @@ class TestKernel extends Kernel
 {
     use MicroKernelTrait;
 
-    public function registerBundles(): array
+    public function registerBundles(): iterable
     {
-        $bundles = [
+        return [
             new FrameworkBundle(),
         ];
-
-        return $bundles;
     }
 
     public function getCacheDir(): string

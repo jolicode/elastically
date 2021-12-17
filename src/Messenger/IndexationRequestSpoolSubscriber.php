@@ -76,14 +76,12 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
 
     public static function getSubscribedEvents(): array
     {
-        $listeners = [
+        return [
             KernelEvents::EXCEPTION => 'onException',
             KernelEvents::RESPONSE => ['onResponse', -10],
             ConsoleEvents::ERROR => 'onException',
             ConsoleEvents::TERMINATE => 'onTerminate',
         ];
-
-        return $listeners;
     }
 
     public function reset()

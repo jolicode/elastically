@@ -181,7 +181,8 @@ final class IndexerTest extends BaseTestCase
 
         $indexer = $this->getIndexer();
 
-        $indexer->scheduleIndex($indexName, new Document('f',
+        $indexer->scheduleIndex($indexName, new Document(
+            'f',
             json_encode(['foo' => 'I love unicorns.', 'bar' => 'I think PHP is better than butter.'])
         ));
 

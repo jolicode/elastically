@@ -131,7 +131,7 @@ final class SearchTest extends BaseTestCase
     }
 }
 
-/* Needed to mock */
+// Needed to mock
 abstract class AbstractSearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
 {
     /**

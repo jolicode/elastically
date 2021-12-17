@@ -26,7 +26,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class Factory
 {
-    /* Elastically config keys */
+    // Elastically config keys
     public const CONFIG_BULK_SIZE = 'elastically_bulk_size';
     public const CONFIG_DENORMALIZER = 'elastically_denormalizer';
     public const CONFIG_INDEX_CLASS_MAPPING = 'elastically_index_class_mapping';

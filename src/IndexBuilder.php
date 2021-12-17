@@ -112,6 +112,7 @@ class IndexBuilder
         foreach ($indexes as $realIndexName => &$data) {
             if (0 !== strpos($realIndexName, $indexName)) {
                 unset($indexes[$realIndexName]);
+
                 continue;
             }
 
@@ -120,6 +121,7 @@ class IndexBuilder
             $date = \DateTime::createFromFormat('Y-m-d-His', $indexSuffixName);
             if (!$date) {
                 unset($indexes[$realIndexName]);
+
                 continue;
             }
 
