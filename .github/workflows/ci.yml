@@ -47,7 +47,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ['7.4', '8.0']
+                php-version: ['7.4', '8.0', '8.1']
                 symfony-version: ['4.4.*', '5.3.*']
                 composer-flags: ['']
                 include:
@@ -55,6 +55,8 @@ jobs:
                       composer-flags: '--prefer-lowest'
                       symfony-version: '4.4.*'
                     - php-version: '8.0'
+                      symfony-version: '6.0.*'
+                    - php-version: '8.1'
                       symfony-version: '6.0.*'
 
         services:
