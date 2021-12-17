@@ -53,7 +53,7 @@ jobs:
                 name: ['']
                 include:
                     - php-version: '8.0'
-                      symfony-version: '6.0.x@dev'
+                      symfony-version: '6.0.*'
 
         services:
           elasticsearch:
