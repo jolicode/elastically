@@ -40,18 +40,23 @@ jobs:
                 args: analyse
 
     ci:
-        name: Test PHP ${{ matrix.php-version }} ${{ matrix.name }}
+        name: Test PHP ${{ matrix.php-version }} & Symfony ${{ matrix.symfony-version }} ${{ matrix.composer-flags }}
         runs-on: ubuntu-latest
+        env:
+            SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
         strategy:
             fail-fast: false
             matrix:
                 php-version: ['7.4', '8.0']
+                symfony-version: ['4.4.*', '5.3.*']
                 composer-flags: ['']
                 name: ['']
                 include:
                     - php-version: 7.4
                       composer-flags: '--prefer-lowest'
-                      name: '(prefer lowest dependencies)'
+                      symfony-version: '4.4.*'
+                    - php-version: '8.0'
+                      symfony-version: '6.0.*'
 
         services:
           elasticsearch:
@@ -69,6 +74,9 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php-version }}
+
+            - name: Install Symfony Flex
+              run: composer global require --no-progress --no-scripts --no-plugins symfony/flex
 
             - name: Install Composer dependencies
               run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}

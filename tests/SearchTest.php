@@ -18,6 +18,7 @@ use Elastica\Query;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\Result;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -131,7 +132,7 @@ final class SearchTest extends BaseTestCase
 }
 
 // Needed to mock
-class SearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
+abstract class AbstractSearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
 {
     /**
      * @param mixed      $data
@@ -154,26 +155,42 @@ class SearchTestDummySerializer implements SerializerInterface, DenormalizerInte
     public function supportsDenormalization($data, $type, $format = null)
     {
     }
+}
 
-    /**
-     * @param mixed $data
-     * @param mixed $format
-     *
-     * @return string
-     */
-    public function serialize($data, $format, array $context = [])
+if (6 <= Kernel::MAJOR_VERSION) {
+    class SearchTestDummySerializer extends AbstractSearchTestDummySerializer
     {
+        public function serialize(mixed $data, string $format, array $context = []): string
+        {
+        }
+
+        public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed
+        {
+        }
     }
-
-    /**
-     * @param mixed $data
-     * @param mixed $type
-     * @param mixed $format
-     *
-     * @return mixed
-     */
-    public function deserialize($data, $type, $format, array $context = [])
+} else {
+    class SearchTestDummySerializer extends AbstractSearchTestDummySerializer
     {
+        /**
+         * @param mixed $data
+         * @param mixed $format
+         *
+         * @return string
+         */
+        public function serialize($data, $format, array $context = [])
+        {
+        }
+
+        /**
+         * @param mixed $data
+         * @param mixed $type
+         * @param mixed $format
+         *
+         * @return mixed
+         */
+        public function deserialize($data, $type, $format, array $context = [])
+        {
+        }
     }
 }
 

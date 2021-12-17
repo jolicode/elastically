@@ -107,7 +107,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
     protected static function getContainer(): ContainerInterface
     {
-        if (method_exists('parent', 'getContainer')) {
+        if (method_exists(KernelTestCase::class, 'getContainer')) {
             return parent::getContainer();
         }
 
