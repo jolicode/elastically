@@ -40,7 +40,7 @@ jobs:
                 args: analyse
 
     ci:
-        name: Test PHP ${{ matrix.php-version }} & Symfony ${{ matrix.symfony-version }}
+        name: Test PHP ${{ matrix.php-version }} & Symfony ${{ matrix.symfony-version }} ${{ matrix.composer-flags }}
         runs-on: ubuntu-latest
         env:
             SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
@@ -54,9 +54,9 @@ jobs:
                 include:
                     - php-version: 7.4
                       composer-flags: '--prefer-lowest'
-                      name: '(prefer lowest dependencies)'
                       symfony-version: '4.4.*'
                     - php-version: '8.0'
+                      symfony-version: '6.0.*'
 
         services:
           elasticsearch:
