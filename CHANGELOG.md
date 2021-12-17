@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add support for Symfony 6.0
+* Add support for PHP 8.1
 * Upgrade to jane 7.0
 
 ### Deprecated
