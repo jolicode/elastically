@@ -47,17 +47,19 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                composer-flags: ['']
                 include:
                     - php-version: 7.4
-                      composer-flags: '--prefer-lowest'
                       symfony-version: '4.4.*'
+                      composer-flags: '--prefer-lowest'
                     - php-version: 7.4
                       symfony-version: '5.4.*'
+                      composer-flags: ''
                     - php-version: '8.0'
                       symfony-version: '6.0.*'
+                      composer-flags: ''
                     - php-version: '8.1'
                       symfony-version: '6.0.*'
+                      composer-flags: ''
 
         services:
           elasticsearch:
