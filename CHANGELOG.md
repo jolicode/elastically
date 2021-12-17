@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Add support for Symfony 6.0
+* Upgrade to jane 7.0
+
 ### Deprecated
 
 ## [1.4.0] - 2021-11-10

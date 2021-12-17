@@ -50,7 +50,6 @@ jobs:
                 php-version: ['7.4', '8.0']
                 symfony-version: ['4.4.*', '5.3.*']
                 composer-flags: ['']
-                name: ['']
                 include:
                     - php-version: 7.4
                       composer-flags: '--prefer-lowest'
