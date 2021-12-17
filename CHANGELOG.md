@@ -12,11 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Deprecated
+
+## [1.5.0] - 2021-12-17
+
+### Added
+
 * Add support for Symfony 6.0
 * Add support for PHP 8.1
 * Upgrade to jane 7.0
-
-### Deprecated
 
 ## [1.4.0] - 2021-11-10
 
