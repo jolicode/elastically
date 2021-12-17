@@ -16,6 +16,11 @@ parameters:
 			path: src/Indexer.php
 
 		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\HttpKernel\\\\Event\\\\ResponseEvent\\:\\:isMasterRequest\\(\\)\\.$#"
+			count: 1
+			path: src/Messenger/IndexationRequestSpoolSubscriber.php
+
+		-
 			message: "#^Parameter \\#1 \\$data of method Elastica\\\\Document\\:\\:setData\\(\\) expects array\\|string, object given\\.$#"
 			count: 1
 			path: src/Result.php
