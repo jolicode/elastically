@@ -24,7 +24,7 @@ class TestKernel extends Kernel
 {
     use MicroKernelTrait;
 
-    public function registerBundles()
+    public function registerBundles(): array
     {
         $bundles = [
             new FrameworkBundle(),
@@ -33,12 +33,12 @@ class TestKernel extends Kernel
         return $bundles;
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'elastically';
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'elastically_logs';
     }
@@ -52,9 +52,17 @@ class TestKernel extends Kernel
         $def->setAutoconfigured(true);
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes): void
+    protected function configureRoutes($routes): void
     {
-        $routes->add('/with_exception', TestController::class . '::withException', 'with_exception');
-        $routes->add('/with_response', TestController::class . '::withResponse', 'with_response');
+        if ($routes instanceof RouteCollectionBuilder) {
+            $routes->add('/with_exception', TestController::class . '::withException', 'with_exception');
+            $routes->add('/with_response', TestController::class . '::withResponse', 'with_response');
+        } else {
+            $routeConfigurator = $routes->add('with_exception', '/with_exception');
+            $routeConfigurator->controller(sprintf('%s::withException', TestController::class));
+
+            $routeConfigurator = $routes->add('with_response', '/with_response');
+            $routeConfigurator->controller(sprintf('%s::withResponse', TestController::class));
+        }
     }
 }

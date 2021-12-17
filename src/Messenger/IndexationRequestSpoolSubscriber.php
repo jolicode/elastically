@@ -74,7 +74,7 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
         $this->onTerminate();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         $listeners = [
             KernelEvents::EXCEPTION => 'onException',
