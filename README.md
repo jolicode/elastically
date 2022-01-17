@@ -66,7 +66,7 @@ $index = $indexBuilder->createIndex('beers');
 $indexBuilder->markAsLive($index, 'beers');
 
 // Class to index DTO(s) in an Index
-$indexer = $factory->getIndexer();
+$indexer = $factory->buildIndexer();
 
 $dto = new Beer();
 $dto->bar = 'American Pale Ale';
