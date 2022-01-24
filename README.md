@@ -227,6 +227,25 @@ Just declare the proper service in `services.yaml`:
 
 ```yaml
 services:
+    JoliCode\Elastically\Client:
+        factory: [JoliCode\Elastically\Client, build]
+        arguments:
+            $config:
+                host: '%env(ELASTICSEARCH_HOST)%'
+                elastically_serializer: '@serializer'
+                elastically_mappings_directory: '%kernel.project_dir%/config/elasticsearch'
+                elastically_index_class_mapping:
+                    indexName: My\AwesomeDTO
+                elastically_bulk_size: 10000
+            $logger: '@logger'
+```
+
+### Extending the library
+
+You can extend any of the Elastically component then declare them as following in your `services.yaml` file: 
+
+```yaml
+services:
     JoliCode\Elastically\IndexNameMapper:
         arguments:
             $prefix: null # or a string to prefix index name

@@ -48,6 +48,18 @@ class Client extends ElasticaClient
         // End of BC Layer
     }
 
+    public static function build(array $config, ?LoggerInterface $logger = null): self
+    {
+        $factory = new Factory($config);
+        $client = $factory->buildClient();
+
+        if (null !== $logger) {
+            $client->setLogger($logger);
+        }
+
+        return $client;
+    }
+
     /**
      * Return an elastically index.
      *
