@@ -13,6 +13,7 @@ namespace JoliCode\Elastically;
 
 use Elastica\Bulk;
 use Elastica\Document;
+use Elastica\Exception\InvalidException;
 use Elastica\Index;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
@@ -42,10 +43,8 @@ class Indexer
     public function scheduleIndex($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (\is_object($document->getData())) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
-            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
-        }
+
+        $this->extractModel($document);
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_INDEX);
 
@@ -64,10 +63,8 @@ class Indexer
     public function scheduleUpdate($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (\is_object($document->getData())) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
-            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
-        }
+
+        $this->extractModel($document);
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_UPDATE);
 
@@ -77,10 +74,8 @@ class Indexer
     public function scheduleCreate($index, Document $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (\is_object($document->getData())) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
-            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
-        }
+
+        $this->extractModel($document);
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_CREATE);
 
@@ -168,5 +163,21 @@ class Indexer
         foreach ($this->bulkRequestParams as $key => $value) {
             $this->currentBulk->setRequestParam($key, $value);
         }
+    }
+
+    private function extractModel(Document $document)
+    {
+        try {
+            $model = $document->get('__model');
+        } catch (InvalidException $e){
+            return;
+        }
+
+        if (false === \is_object($model)) {
+            return;
+        }
+
+        $context = $this->contextBuilder->buildContext(\get_class($model));
+        $document->setData($this->serializer->serialize($model, 'json', $context));
     }
 }
