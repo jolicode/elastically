@@ -15,10 +15,12 @@ Main features:
 - Symfony HttpClient compatible transport;
 - Symfony support (**optional**):
     - See dedicated [chapter](#usage-in-symfony);
-    - Tested with Symfony 4.4 to 5;
+    - Tested with Symfony 4.4 to 6;
     - Symfony Messenger Handler support (with or without spool);
 
 **Require PHP 7.4+ and Elasticsearch 7+**.
+
+Works with **Elasticsearch 8+** but is not officially supported by Elastica yet. Use with caution.
 
 ## Installation
 
