@@ -66,7 +66,7 @@ class JaneTest extends TestCase
 
         // Build Elastically Client
         $elastically = new Client(
-            [],
+            ['port' => '9999'],
             null,
             null,
             $resultSetBuilder,
