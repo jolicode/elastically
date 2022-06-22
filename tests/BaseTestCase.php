@@ -29,6 +29,7 @@ abstract class BaseTestCase extends TestCase
         return new Factory($config + [
             Factory::CONFIG_MAPPINGS_DIRECTORY => $path ?? __DIR__ . '/configs',
             'log' => false,
+            'port' => '9999',
         ]);
     }
 
