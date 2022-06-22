@@ -93,6 +93,7 @@ jobs:
             - name: Runs Elasticsearch ${{ matrix.es-version }}
               uses: elastic/elastic-github-actions/elasticsearch@master
               with:
+                security-enabled: false
                 stack-version: ${{ matrix.es-version }}
                 port: 9999
 
