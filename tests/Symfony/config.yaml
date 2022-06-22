@@ -40,6 +40,7 @@ services:
         arguments:
             $config:
                 host: 'localhost'
+                port: '9999'
                 elastically_mappings_directory: '%kernel.project_dir%/configs_analysis'
                 elastically_index_class_mapping:
                     hop: JoliCode\Elastically\Tests\Messenger\TestDTO

@@ -94,10 +94,11 @@ jobs:
               uses: elastic/elastic-github-actions/elasticsearch@master
               with:
                 stack-version: ${{ matrix.es-version }}
+                port: 9999
 
             - name: Wait for ES to be ready
               run: |
-                while ! curl -s -X GET http://127.0.0.1:9200/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
+                while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
                 do
                   echo "==> Waiting for cluster green status" && sleep 1
                 done
