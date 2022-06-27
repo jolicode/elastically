@@ -23,6 +23,8 @@ Main features:
 
 Works with **Elasticsearch 8+** but is not officially supported by Elastica yet. Use with caution.
 
+You can check the [changelog](CHANGELOG.md) and the [upgrade](UPGRADE.md) documents.
+
 ## Installation
 
 ```
