@@ -48,9 +48,6 @@
         }
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "symfony/flex": true
-        }
+        "sort-packages": true
     }
 }
