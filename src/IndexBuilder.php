@@ -76,7 +76,7 @@ class IndexBuilder
         $newIndex = $this->createIndex($pureIndexName);
 
         $reindex = new Reindex($currentIndex, $newIndex, $params);
-        $reindex->setWaitForCompletion(Reindex::WAIT_FOR_COMPLETION_FALSE);
+        $reindex->setWaitForCompletion(false);
 
         $response = $reindex->run();
 
