@@ -142,6 +142,6 @@ final class Factory
 
     private function buildMappingProvider(): MappingProviderInterface
     {
-        return $this->mappingProvider ??= $this->config[self::CONFIG_MAPPINGS_PROVIDER] ?? new YamlProvider($this->config[self::CONFIG_MAPPINGS_DIRECTORY]);
+        return $this->mappingProvider ??= $this->config[self::CONFIG_MAPPINGS_PROVIDER] ?? new YamlProvider($this->config[self::CONFIG_MAPPINGS_DIRECTORY] ?? '');
     }
 }
