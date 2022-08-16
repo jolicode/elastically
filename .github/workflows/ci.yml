@@ -80,6 +80,9 @@ jobs:
             - name: Install Symfony Flex
               run: composer global require --no-progress --no-scripts --no-plugins symfony/flex
 
+            - name: Enable Symfony Flex
+              run: composer global config --no-plugins allow-plugins.symfony/flex true
+
             - name: Install Composer dependencies
               run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}
 

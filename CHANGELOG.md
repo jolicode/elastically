@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Run the tests on a custom Elasticsearch port, fix #56
 * Improve Exception message when Factory is used badly
+* Compatibility with Elastica #109
 
 ## [1.5.1] - 2022-01-18
 
