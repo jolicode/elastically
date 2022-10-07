@@ -129,10 +129,11 @@ jobs:
             search-server:
                 image: ${{ matrix.os-image }}
                 ports:
-                    - 9999:9200
+                    - 9999
                 env:
                     discovery.type: single-node
                     plugins.security.disabled: '${{ contains(matrix.search-server-image, ''opensearch'') && ''true'' || '''' }}'
+                    http.port: 9999
         steps:
             - name: Checkout
               uses: actions/checkout@v2
