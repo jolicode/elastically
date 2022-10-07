@@ -119,7 +119,7 @@ jobs:
 
             - name: Runs OpenSearch ${{ matrix.opensearch-image }}
               if: ${{ matrix.opensearch-image }}
-              uses: docker://${{ matrix.opensearch-image }}
+              uses: docker://opensearchproject/opensearch:2.3.0
               env:
                 discovery.type: single-node
                 plugins.security.disabled: true
