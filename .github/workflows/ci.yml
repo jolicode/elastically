@@ -68,6 +68,14 @@ jobs:
                       symfony-version: '6.0.*'
                       composer-flags: ''
                       es-version: 8.2.0
+                    - php-version: '8.1'
+                      symfony-version: '6.0.*'
+                      composer-flags: ''
+                      opensearch-image: opensearchproject/opensearch:1.3.6
+                    - php-version: '8.1'
+                      symfony-version: '6.0.*'
+                      composer-flags: ''
+                      opensearch-image: opensearchproject/opensearch:2.3.0
         steps:
             - name: Checkout
               uses: actions/checkout@v2
@@ -95,11 +103,20 @@ jobs:
                 sudo sysctl -w vm.max_map_count=262144
 
             - name: Runs Elasticsearch ${{ matrix.es-version }}
+              if: ${{ matrix.es-version }}
               uses: elastic/elastic-github-actions/elasticsearch@master
               with:
                 security-enabled: false
                 stack-version: ${{ matrix.es-version }}
                 port: 9999
+
+            - name: Runs OpenSearch ${{ matrix.opensearch-image }}
+              if: ${{ matrix.opensearch-image }}
+              image: ${{ matrix.search-server-image }}
+              env:
+                discovery.type: single-node
+                plugins.security.disabled: true
+                http.port: 9999
 
             - name: Wait for ES to be ready
               run: |
