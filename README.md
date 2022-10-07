@@ -1,6 +1,6 @@
 # Elastically, **Elastica** based framework
 
-[![Build Status](https://travis-ci.org/jolicode/elastically.svg?branch=master)](https://travis-ci.org/jolicode/elastically)
+![CI](https://github.com/jolicode/elastically/actions/workflows/ci.yml/badge.svg)
 
 Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch implementations.
 
