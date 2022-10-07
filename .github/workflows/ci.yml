@@ -162,7 +162,7 @@ jobs:
 
             - name: Wait for OS to be ready
               run: |
-                while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
+                while ! curl -s -X GET http://0.0.0.0:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
                 do
                   echo "==> Waiting for cluster green status" && sleep 1
                 done
