@@ -129,7 +129,7 @@ jobs:
             search-server:
                 image: ${{ matrix.os-image }}
                 ports:
-                    - 9999
+                    - 9999:9999
                 env:
                     discovery.type: single-node
                     plugins.security.disabled: '${{ contains(matrix.search-server-image, ''opensearch'') && ''true'' || '''' }}'
