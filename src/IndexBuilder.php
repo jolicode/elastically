@@ -70,10 +70,10 @@ class IndexBuilder
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public function migrate(Index $currentIndex, array $params = []): Index
+    public function migrate(Index $currentIndex, array $params = [], array $context = []): Index
     {
         $pureIndexName = $this->indexNameMapper->getPureIndexName($currentIndex->getName());
-        $newIndex = $this->createIndex($pureIndexName);
+        $newIndex = $this->createIndex($pureIndexName, $context);
 
         $reindex = new Reindex($currentIndex, $newIndex, $params);
         $reindex->setWaitForCompletion(false);
