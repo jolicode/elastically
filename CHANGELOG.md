@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.3] - 2022-10-09
+
+* Add "context" in the Migrate method to fix create index isssue #120 
+
 ## [1.5.2] - 2022-08-16
 
 * Run the tests on a custom Elasticsearch port, fix #56
