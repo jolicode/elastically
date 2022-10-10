@@ -1,17 +1,16 @@
 # Elastically, **Elastica** based framework
 
-[![Build Status](https://travis-ci.org/jolicode/elastically.svg?branch=master)](https://travis-ci.org/jolicode/elastically)
+![CI](https://github.com/jolicode/elastically/actions/workflows/ci.yml/badge.svg)
 
-Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch implementations.
+Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch / OpenSearch implementations.
 
 Main features:
 
 - <abbr title="Data Transfer Object">DTO</abbr> are **first class citizen**, you send PHP object as documents, and get objects back on search results, **like an ODM**;
 - All indexes are versioned and aliased automatically;
-- Mappings is done via YAML files, PHP or custom via MappingProviderInterface;
+- Mappings are done via YAML files, PHP or custom via `MappingProviderInterface`;
 - Analysis is separated from mappings to ease reuse;
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
-- Designed for Elasticsearch 7+;
 - Mapping migration capabilities with ReIndex;
 - Symfony HttpClient compatible transport (**optional**);
 - Symfony support (**optional**):
@@ -22,6 +21,8 @@ Main features:
 **Require PHP 7.4+ and Elasticsearch 7+**.
 
 Works with **Elasticsearch 8+** but is not officially supported by Elastica yet. Use with caution.
+
+Works with **OpenSearch 1 and 2**.
 
 You can check the [changelog](CHANGELOG.md) and the [upgrade](UPGRADE.md) documents.
 
