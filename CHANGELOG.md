@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Add OpenSearch in the test suite, fix #113
+
 ## [1.5.2] - 2022-08-16
 
 * Run the tests on a custom Elasticsearch port, fix #56

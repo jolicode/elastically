@@ -4,7 +4,10 @@ test: ## Run test suite
 start: ## Start testing tools (Elasticsearch)
 	docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch-oss:7.8.0
 
-stop: ## Stop testing tools (Elasticsearch)
+start_opensearch: ## Start testing tools (OpenSearch)
+	docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" -e "plugins.security.disabled=true" opensearchproject/opensearch:2.3.0
+
+stop: ## Stop testing tools
 	docker stop "elastically_es"
 
 kibana: ## Start debug tools (Kibana)
