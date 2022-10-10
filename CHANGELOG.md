@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.3] - 2022-10-10
+
+* Add "context" in the Migrate method to fix create index isssue #120 
 * Add OpenSearch in the test suite, fix #113
 
 ## [1.5.2] - 2022-08-16
