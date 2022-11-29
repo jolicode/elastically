@@ -7,30 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fix OpenSearch unallowed "_all" indices for regular user #122
+
 ## [1.5.3] - 2022-10-10
 
-* Add "context" in the Migrate method to fix create index isssue #120 
-* Add OpenSearch in the test suite, fix #113
+### Added
+
+- Add "context" in the Migrate method to fix create index issue #120 
+- Add OpenSearch in the test suite, fix #113
 
 ## [1.5.2] - 2022-08-16
 
-* Run the tests on a custom Elasticsearch port, fix #56
-* Improve Exception message when Factory is used badly
-* Compatibility with Elastica #109
+### Fixed
+
+- Run the tests on a custom Elasticsearch port, fix #56
+
+### Added 
+
+- Improve Exception message when Factory is used badly
+- Compatibility with Elastica #109
 
 ## [1.5.1] - 2022-01-18
 
 ### Added
 
-* Allow symfony/deprecation-contracts 3.0
+- Allow symfony/deprecation-contracts 3.0
 
 ## [1.5.0] - 2021-12-17
 
 ### Added
 
-* Add support for Symfony 6.0
-* Add support for PHP 8.1
-* Upgrade to jane 7.0
+- Add support for Symfony 6.0
+- Add support for PHP 8.1
+- Upgrade to jane 7.0
 
 ## [1.4.0] - 2021-11-10
 
@@ -155,7 +164,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow to set Serializer Context for input/output.
 
-[Unreleased]: https://github.com/jolicode/elastically/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/jolicode/elastically/compare/v1.5.3...HEAD
+[1.5.3]: https://github.com/jolicode/elastically/compare/v1.5.2...v1.5.3
+[1.5.2]: https://github.com/jolicode/elastically/compare/v1.5.1...v1.5.2
+[1.5.1]: https://github.com/jolicode/elastically/compare/v1.5.0...v1.5.1
+[1.5.0]: https://github.com/jolicode/elastically/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/jolicode/elastically/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/jolicode/elastically/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/jolicode/elastically/compare/v1.1.1...v1.2.0
