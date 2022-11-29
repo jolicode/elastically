@@ -50,12 +50,12 @@ class IndexBuilder
 
     public function markAsLive(Index $index, string $indexName): Response
     {
-        $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
+        $indexPrefixedName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
         $data = ['actions' => []];
 
-        $data['actions'][] = ['remove' => ['index' => '*', 'alias' => $indexName]];
-        $data['actions'][] = ['add' => ['index' => $index->getName(), 'alias' => $indexName]];
+        $data['actions'][] = ['remove' => ['index' => $indexPrefixedName . '*', 'alias' => $indexPrefixedName]];
+        $data['actions'][] = ['add' => ['index' => $index->getName(), 'alias' => $indexPrefixedName]];
 
         return $this->client->request('_aliases', Request::POST, $data);
     }
