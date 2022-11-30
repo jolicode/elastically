@@ -12,6 +12,7 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Document;
+use Elastica\Exception\RuntimeException;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
@@ -67,6 +68,10 @@ class ResultSetBuilder implements BuilderInterface
 
     private function buildModelFromResult(Result $result)
     {
+        if (!$result->getIndex()) {
+            throw new RuntimeException('Returned index is empty. Check your "filter_path".');
+        }
+
         return $this->buildModel($result->getSource(), $result->getIndex(), [
             self::RESULT_KEY => $result,
         ]);
