@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Drop support support for Symfony 4.*
+
 ## [1.5.4] - 2022-12-16
 
-### Fixed 
+### Fixed
 
 - Add Exception if Result's index is empty in `JoliCode\Elastically\ResultSetBuilder` #116
 - Fix OpenSearch unallowed "_all" indices for regular user #122
@@ -18,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add "context" in the Migrate method to fix create index issue #120 
+- Add "context" in the Migrate method to fix create index issue #120
 - Add OpenSearch in the test suite, fix #113
 
 ## [1.5.2] - 2022-08-16
@@ -27,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Run the tests on a custom Elasticsearch port, fix #56
 
-### Added 
+### Added
 
 - Improve Exception message when Factory is used badly
 - Compatibility with Elastica #109
