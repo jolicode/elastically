@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.4] - 2022-12-16
+
+### Fixed 
+
 - Add Exception if Result's index is empty in `JoliCode\Elastically\ResultSetBuilder` #116
 - Fix OpenSearch unallowed "_all" indices for regular user #122
 
