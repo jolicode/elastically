@@ -37,6 +37,9 @@
         "symfony/messenger": "^4.4 || ^5.0 || ^6.0",
         "symfony/phpunit-bridge": "^5.2 || ^6.0"
     },
+    "conflict": {
+        "nikic/php-parser": "<4.7"
+    },
     "autoload": {
         "psr-4": {
             "JoliCode\\Elastically\\": "./src"
