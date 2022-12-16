@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Drop support support for Symfony 4.*
+- Drop support for PHP 7.4
 
 ## [1.5.4] - 2022-12-16
 
