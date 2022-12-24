@@ -63,7 +63,7 @@ jobs:
                       symfony-version: '6.*'
                       composer-flags: ''
                       es-version: '7.17.3'
-                    # PHP 8.1, latest SF 6, ES 8
+                    # PHP 8.2, latest SF 6, ES 8
                     - php-version: '8.1'
                       symfony-version: '6.*'
                       composer-flags: ''
