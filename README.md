@@ -252,7 +252,10 @@ elastically:
                 transport:           '@JoliCode\Elastically\Transport\HttpClientTransport'
 
             # Path to the mapping directory (in YAML)
-            mapping_directory: '%kernel.project_dir%/config/elasticsearch'
+            mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
+            
+            # Size of the bulk sent to Elasticsearch (default to 100)
+            bulk_size:               100
 
             # Mapping between an index name and a FQCN
             index_class_mapping:
