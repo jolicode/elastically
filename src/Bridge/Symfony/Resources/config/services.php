@@ -57,7 +57,7 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 '$client' => service(Client::class),
                 '$serializer' => service('serializer'),
-                '$bulkMaxSize' => 100,
+                '$bulkMaxSize' => abstract_arg('bulk size'),
                 '$bulkRequestParams' => [],
                 '$contextBuilder' => abstract_arg('elastically.abstract.static_context_builder'),
             ])

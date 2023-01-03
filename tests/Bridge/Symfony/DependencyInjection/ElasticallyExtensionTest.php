@@ -48,6 +48,7 @@ class ElasticallyExtensionTest extends TestCase
                 'foobar' => [
                     'mapping_directory' => __DIR__,
                     'index_class_mapping' => ['foobar' => self::class],
+                    'bulk_size' => 5000,
                 ],
             ],
         ]);
