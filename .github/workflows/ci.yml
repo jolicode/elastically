@@ -30,7 +30,7 @@ jobs:
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: 7.4
+                  php-version: 8.1
 
             - name: PHPStan
               uses: docker://oskarstark/phpstan-ga
@@ -48,7 +48,7 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - php-version: 7.4
+                    - php-version: '8.0'
                       symfony-version: '5.4.*'
                       composer-flags: '--prefer-lowest'
                       es-version: 7.17.3
