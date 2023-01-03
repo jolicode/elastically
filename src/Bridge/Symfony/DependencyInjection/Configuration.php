@@ -28,13 +28,13 @@ class Configuration implements ConfigurationInterface
                     ->normalizeKeys(false)
                     ->prototype('array')
                         ->children()
-                            ->arrayNode('client')
+                            ->variableNode('client')
                                 ->info('All options for the Elastica client constructor')
                                 ->example([
                                     'host' => '%env(ELASTICSEARCH_HOST)%',
                                     'transport' => '@JoliCode\Elastically\Transport\HttpClientTransport',
                                 ])
-                                ->prototype('variable')->end()
+                                ->defaultValue([])
                             ->end()
                             ->scalarNode('mapping_directory')
                                 ->info('Path to the mapping directory (in YAML)')
