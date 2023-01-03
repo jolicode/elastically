@@ -227,57 +227,99 @@ _Default to `null`._
 
 ## Usage in Symfony
 
-### Client as a service
+### Configuration
 
-Just declare the proper service in `services.yaml`:
+You'll need to add the bundle in `bundles.php`:
 
-```yaml
-services:
-    JoliCode\Elastically\IndexNameMapper:
-        arguments:
-            $prefix: null # or a string to prefix index name
-            $indexClassMapping:
-                indexName: My\AwesomeDTO
-
-    JoliCode\Elastically\Serializer\StaticContextBuilder:
-        arguments:
-            $mapping:
-                My\AwesomeDTO: []
-
-    JoliCode\Elastically\ResultSetBuilder:
-        arguments:
-            $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
-            $contextBuilder: '@JoliCode\Elastically\Serializer\StaticContextBuilder'
-            $denormalizer: '@serializer'
-
-    JoliCode\Elastically\Client:
-        arguments:
-            $config:
-                host: '%env(ELASTICSEARCH_HOST)%'
-            $logger: '@logger'
-            $resultSetBuilder: '@JoliCode\Elastically\ResultSetBuilder'
-            $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
-
-    JoliCode\Elastically\Indexer:
-        arguments:
-            $client: '@JoliCode\Elastically\Client'
-            $serializer: '@serializer'
-            $bulkMaxSize: 100
-            $bulkRequestParams: []
-            $contextBuilder: '@JoliCode\Elastically\Serializer\StaticContextBuilder'
-
-    JoliCode\Elastically\Mapping\YamlProvider:
-        arguments:
-            $configurationDirectory: '%kernel.project_dir%/config/elasticsearch'
-
-    JoliCode\Elastically\IndexBuilder:
-        arguments:
-            $mappingProvider: '@JoliCode\Elastically\Mapping\YamlProvider'
-            $client: '@JoliCode\Elastically\Client'
-            $indexNameMapper: '@JoliCode\Elastically\IndexNameMapper'
+```php
+// config/bundles.php
+return [
+    // ...
+    JoliCode\Elastically\Bridge\Symfony\ElasticallyBundle::class => ['all' => true],
+];
 ```
 
-### Using HttpClient as Transport
+Then configure the bundle:
+
+```yaml
+# config/packages/elastically.yaml
+elastically:
+    connections:
+        default:
+            client:
+                host:                '%env(ELASTICSEARCH_HOST)%'
+                # If you want to use the Symfony Http Client:
+                transport:           '@JoliCode\Elastically\Transport\HttpClientTransport'
+
+            # Path to the mapping directory (in YAML)
+            mapping_directory: '%kernel.project_dir%/config/elasticsearch'
+
+            # Mapping between an index name and a FQCN
+            index_class_mapping:
+                my-foobar-index:     App\Dto\Foobar
+
+            # Configuration for the serializer
+            serializer:
+                # Fill a static context
+                context_mapping:
+                    foo:                 bar
+```
+
+Finally, inject one of those service (autowirable) in you code where you need
+it:
+
+```
+JoliCode\Elastically\Client (elastically.default.client)
+JoliCode\Elastically\IndexBuilder (elastically.default.index_builder)
+JoliCode\Elastically\Indexer (elastically.default.indexer)
+```
+
+#### Advanced Configuration
+
+##### Multiple Connection and Autowiring
+
+If you define multiple connection, you can define a default one. This will be
+useful for autowire:
+
+```yaml
+elastically:
+    default_connection: default
+    connections:
+        default: # ...
+        another: # ...
+```
+
+To use class for other connection, you can use *Autowirable Types*. To discover
+them, run:
+
+```
+bin/console debug:autowiring elastically
+```
+
+##### Use a Custom Serializer Context Builder
+
+```yaml
+elastically:
+    default_connection: default
+    connections:
+        default:
+            serializer:
+                context_builder_service: App\Elastically\Serializer\ContextBuilder
+                # Do not defined "context_mapping" option anymore
+```
+
+##### Use a Custom Mapping provider
+
+```yaml
+elastically:
+    default_connection: default
+    connections:
+        default:
+            mapping_provider_service: App\Elastically\MappingProvider
+            # Do not defined "index_class_mapping" option anymore
+```
+
+##### Using HttpClient as Transport
 
 You can also use the Symfony HttpClient for all Elastica communications:
 
@@ -290,6 +332,14 @@ JoliCode\Elastically\Client:
             host: '%env(ELASTICSEARCH_HOST)%'
             transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
             ...
+```
+
+#### Reference
+
+You can run the following command to get the default configuration reference:
+
+```
+bin/console config:dump elastically
 ```
 
 ### Using Messenger for async indexing
@@ -379,7 +429,7 @@ _[Not compatible with Jane < 6](https://github.com/jolicode/elastically/issues/1
 - optional Doctrine connector
 - better logger - maybe via a processor? extending _log is supposed to be deprecated :(
 - extra commands to monitor, update mapping, reindex... Commonly implemented tasks
-- optional Symfony integration (DIC)
+- optional Symfony integration:
   - web debug toolbar!
 - scripts / commands for common tasks:
   - auto-reindex when the mapping change, handle the aliases and everything

@@ -47,7 +47,7 @@ class IndexNameMapper
     public function getClassFromIndexName(string $indexName): string
     {
         if (!isset($this->indexClassMapping[$indexName])) {
-            throw new RuntimeException(sprintf('Unknown class for index "%s", did you forgot to configure "%s"?', $indexName, Factory::CONFIG_INDEX_CLASS_MAPPING));
+            throw new RuntimeException(sprintf('Unknown class for index "%s". Please check your configuration.', $indexName));
         }
 
         return $this->indexClassMapping[$indexName];
