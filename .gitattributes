@@ -5,5 +5,6 @@
 /.github export-ignore
 /tests export-ignore
 Makefile export-ignore
+phpstan.neon export-ignore
 phpstan-baseline.neon export-ignore
 phpunit.xml.dist export-ignore
