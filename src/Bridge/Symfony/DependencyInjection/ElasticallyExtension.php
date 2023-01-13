@@ -47,7 +47,6 @@ class ElasticallyExtension extends Extension
         $indexNameMapper = new ChildDefinition('elastically.abstract.index_name_mapper');
         $indexNameMapper->replaceArgument('$prefix', $config['prefix']);
         $indexNameMapper->replaceArgument('$indexClassMapping', $config['index_class_mapping']);
-        $indexNameMapper->replaceArgument('$bulkMaxSize', $config['bulk_size']);
         $container->setDefinition("elastically.{$name}.index_name_mapper", $indexNameMapper);
 
         if (\array_key_exists('context_builder_service', $config['serializer'])) {
@@ -75,6 +74,7 @@ class ElasticallyExtension extends Extension
 
         $indexer = new ChildDefinition('elastically.abstract.indexer');
         $indexer->replaceArgument('$client', new Reference("elastically.{$name}.client"));
+        $indexer->replaceArgument('$bulkMaxSize', $config['bulk_size']);
         $indexer->replaceArgument('$contextBuilder', new Reference("elastically.{$name}.static_context_builder"));
         $container->setDefinition($id = "elastically.{$name}.indexer", $indexer);
         if ($isDefaultConnection) {
