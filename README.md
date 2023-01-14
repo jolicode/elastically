@@ -382,7 +382,7 @@ $bus->dispatch(new IndexationRequest(Product::class, '1234567890'));
 And then consume the messages:
 
 ```sh
-$ php bin/console messenger:consume async
+php bin/console messenger:consume async
 ```
 
 ### Grouping IndexationRequest in a spool
