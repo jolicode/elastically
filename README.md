@@ -279,10 +279,10 @@ JoliCode\Elastically\Indexer (elastically.default.indexer)
 
 #### Advanced Configuration
 
-##### Multiple Connection and Autowiring
+##### Multiple Connections and Autowiring
 
-If you define multiple connection, you can define a default one. This will be
-useful for autowire:
+If you define multiple connections, you can define a default one. This will be
+useful for autowiring:
 
 ```yaml
 elastically:
