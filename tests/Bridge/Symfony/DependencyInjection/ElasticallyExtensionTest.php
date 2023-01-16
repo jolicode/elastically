@@ -16,13 +16,15 @@ use JoliCode\Elastically\Bridge\Symfony\ElasticallyBundle;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
+use JoliCode\Elastically\Transport\HttpClientTransport;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ElasticallyExtensionTest extends TestCase
 {
-    public function testWithoutConnections()
+    public function testWithoutConnections(): void
     {
         $container = $this->buildContainer();
 
@@ -39,7 +41,7 @@ class ElasticallyExtensionTest extends TestCase
         $this->assertFalse($container->hasAlias(Indexer::class));
     }
 
-    public function testWithOneConnection()
+    public function testWithOneConnection(): void
     {
         $container = $this->buildContainer();
 
@@ -66,7 +68,7 @@ class ElasticallyExtensionTest extends TestCase
         $this->assertTrue($container->hasAlias(Indexer::class . ' $foobarIndexer'));
     }
 
-    public function testWithTwoConnectionsAndNotDefault()
+    public function testWithTwoConnectionsAndNotDefault(): void
     {
         $container = $this->buildContainer();
 
@@ -104,7 +106,7 @@ class ElasticallyExtensionTest extends TestCase
         $this->assertFalse($container->hasAlias(Indexer::class));
     }
 
-    public function testWithTwoConnectionsAndADefault()
+    public function testWithTwoConnectionsAndADefault(): void
     {
         $container = $this->buildContainer();
 
@@ -146,7 +148,7 @@ class ElasticallyExtensionTest extends TestCase
         $this->assertSame('elastically.another.indexer', (string) $container->getAlias(Indexer::class));
     }
 
-    public function testMissingClassMapping()
+    public function testMissingClassMapping(): void
     {
         $container = $this->buildContainer();
 
@@ -163,7 +165,7 @@ class ElasticallyExtensionTest extends TestCase
         $container->compile();
     }
 
-    public function testDoubleMissingMappingProvider()
+    public function testDoubleMissingMappingProvider(): void
     {
         $container = $this->buildContainer();
 
@@ -181,7 +183,7 @@ class ElasticallyExtensionTest extends TestCase
         $container->compile();
     }
 
-    public function testDoubleDoubleMappingProvider()
+    public function testDoubleDoubleMappingProvider(): void
     {
         $container = $this->buildContainer();
 
@@ -199,6 +201,28 @@ class ElasticallyExtensionTest extends TestCase
         $this->expectExceptionMessage('Invalid configuration for path "elastically.connections.foobar": You cannot use "mapping_directory" and "mapping_provider_service" at the same time.');
 
         $container->compile();
+    }
+
+    public function testWithTransport(): void
+    {
+        $container = $this->buildContainer();
+
+        $container->loadFromExtension('elastically', [
+            'connections' => [
+                'default' => [
+                    'client' => [
+                        'transport' => HttpClientTransport::class,
+                    ],
+                    'mapping_directory' => __DIR__,
+                    'index_class_mapping' => ['foobar' => self::class],
+                ],
+            ],
+        ]);
+
+        $container->compile();
+
+        $configArgument = $container->getDefinition('elastically.default.client')->getArgument('$config');
+        $this->assertInstanceOf(Reference::class, $configArgument['transport']);
     }
 
     private function buildContainer(): ContainerBuilder
