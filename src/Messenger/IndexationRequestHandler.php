@@ -17,11 +17,12 @@ use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
 use Psr\Log\NullLogger;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class IndexationRequestHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+class IndexationRequestHandler
 {
     public const OP_INDEX = 'index';
     public const OP_DELETE = 'delete';
