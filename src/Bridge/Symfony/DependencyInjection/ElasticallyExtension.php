@@ -14,6 +14,7 @@ namespace JoliCode\Elastically\Bridge\Symfony\DependencyInjection;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
+use JoliCode\Elastically\IndexNameMapper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -96,10 +97,11 @@ class ElasticallyExtension extends Extension
         $indexBuilder = new ChildDefinition('elastically.abstract.index_builder');
         $indexBuilder->replaceArgument('$mappingProvider', new Reference("elastically.{$name}.mapping.provider"));
         $indexBuilder->replaceArgument('$client', new Reference("elastically.{$name}.client"));
-        $indexBuilder->replaceArgument('$indexNameMapper', new Reference("elastically.{$name}.index_name_mapper"));
+        $indexBuilder->replaceArgument('$indexNameMapper', new Reference($indexNameMapperId = "elastically.{$name}.index_name_mapper"));
         $container->setDefinition($id = "elastically.{$name}.index_builder", $indexBuilder);
         if ($isDefaultConnection) {
             $container->setAlias(IndexBuilder::class, $id);
+            $container->setAlias(IndexNameMapper::class, $indexNameMapperId);
         }
         $container->registerAliasForArgument($id, IndexBuilder::class, $name . 'IndexBuilder');
     }
