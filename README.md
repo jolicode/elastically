@@ -18,7 +18,7 @@ Main features:
     - Tested with Symfony 5.4 to 6;
     - Symfony Messenger Handler support (with or without spool);
 
-**Require PHP 7.4+ and Elasticsearch 7+**.
+**Require PHP 8.0+ and Elasticsearch 7+**.
 
 Works with **Elasticsearch 8+** but is not officially supported by Elastica yet. Use with caution.
 
