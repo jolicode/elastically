@@ -30,13 +30,18 @@ class Indexer
 
     public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [], ?ContextBuilderInterface $contextBuilder = null)
     {
-        // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
-
         $this->client = $client;
         $this->serializer = $serializer;
         $this->bulkMaxSize = $bulkMaxSize;
         $this->bulkRequestParams = $bulkRequestParams;
         $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
+    }
+
+    public function __destruct()
+    {
+        if ($this->getQueueSize() > 0) {
+            throw new \RuntimeException(sprintf('%s queue is not empty, you need to call flush() to send documents to Elasticsearch or clear() to empty the queue.', __CLASS__));
+        }
     }
 
     public function scheduleIndex($index, Document $document)
@@ -104,6 +109,11 @@ class Indexer
         }
 
         return $response;
+    }
+
+    public function clear(): void
+    {
+        $this->currentBulk = null;
     }
 
     public function getQueueSize()
