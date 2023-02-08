@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Jane;
 
-use Elastica\Document;
 use Jane\Component\JsonSchema\Console\Command\GenerateCommand;
 use Jane\Component\JsonSchema\Console\Loader\ConfigLoader;
 use Jane\Component\JsonSchema\Console\Loader\SchemaLoader;
@@ -22,6 +21,7 @@ use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
 use JoliCode\Elastically\Mapping\YamlProvider;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\ResultSetBuilder;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModel;

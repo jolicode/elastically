@@ -11,7 +11,7 @@
 
 namespace JoliCode\Elastically;
 
-use Elastica\Document;
+use Elastica\Document as ElasticaDocument;
 use Elastica\Exception\RuntimeException;
 use Elastica\Query;
 use Elastica\Response;
@@ -59,7 +59,7 @@ class ResultSetBuilder implements BuilderInterface
         return $this->buildModel($indexName, $source, []);
     }
 
-    public function buildModelFromDocument(Document $document)
+    public function buildModelFromDocument(ElasticaDocument $document)
     {
         return $this->buildModel($document->getData(), $document->getIndex(), [
             self::DOCUMENT_KEY => $document,

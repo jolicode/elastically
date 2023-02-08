@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Messenger;
 
-use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\ResultSet;
 use JoliCode\Elastically\Factory;
@@ -22,6 +21,7 @@ use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\IndexationRequestHandler;
 use JoliCode\Elastically\Messenger\IndexationRequestInterface;
 use JoliCode\Elastically\Messenger\MultipleIndexationRequest;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Tests\BaseTestCase;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
