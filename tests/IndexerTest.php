@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace JoliCode\Elastically\Tests;
 
 use Elastica\Bulk\ResponseSet;
-use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
 

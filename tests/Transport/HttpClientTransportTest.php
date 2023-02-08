@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Transport;
 
-use Elastica\Document;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\ResultSet;
 use JoliCode\Elastically\Client;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Tests\BaseTestCase;
 use JoliCode\Elastically\Transport\HttpClientTransport;

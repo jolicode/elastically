@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
-use Elastica\Document;
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Index\Settings;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\IndexBuilder;
 

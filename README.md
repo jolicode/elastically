@@ -47,7 +47,7 @@ class Beer
 }
 
 use JoliCode\Elastically\Factory;
-use Elastica\Document;
+use JoliCode\Elastically\Model\Document;
 
 // Factory object with Elastica options + new Elastically options in the same array
 $factory = new Factory([
@@ -253,7 +253,7 @@ elastically:
 
             # Path to the mapping directory (in YAML)
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
-            
+
             # Size of the bulk sent to Elasticsearch (default to 100)
             bulk_size:               100
 

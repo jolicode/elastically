@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
-use Elastica\Document;
 use Elastica\Query;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\Result;

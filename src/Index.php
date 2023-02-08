@@ -14,6 +14,7 @@ namespace JoliCode\Elastically;
 use Elastica\Index as ElasticaIndex;
 use Elastica\ResultSet\BuilderInterface;
 use Elastica\Search;
+use JoliCode\Elastically\Model\Document;
 
 class Index extends ElasticaIndex
 {
@@ -28,7 +29,7 @@ class Index extends ElasticaIndex
 
     public function getModel($id)
     {
-        $document = $this->getDocument($id);
+        $document = Document::createFromDocument($this->getDocument($id));
 
         return $this->resultSetBuilder->buildModelFromDocument($document);
     }

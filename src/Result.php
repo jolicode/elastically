@@ -11,8 +11,8 @@
 
 namespace JoliCode\Elastically;
 
-use Elastica\Document;
 use Elastica\Result as ElasticaResult;
+use JoliCode\Elastically\Model\Document;
 
 class Result extends ElasticaResult
 {
@@ -30,9 +30,6 @@ class Result extends ElasticaResult
 
     public function getDocument(): Document
     {
-        $doc = parent::getDocument();
-        $doc->setData($this->model);
-
-        return $doc;
+        return Document::createFromDocument(parent::getDocument(), $this->model);
     }
 }

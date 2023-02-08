@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Messenger;
 
-use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\ResultSet;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Messenger\DocumentExchangerInterface;
 use JoliCode\Elastically\Messenger\IndexationRequest;
