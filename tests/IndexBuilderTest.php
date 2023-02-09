@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
-use Elastica\Document;
+use Elastica\Document as ElasticaDocument;
 use Elastica\Exception\InvalidException;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Index\Settings;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\IndexBuilder;
+use JoliCode\Elastically\Model\Document;
 
 final class IndexBuilderTest extends BaseTestCase
 {
@@ -237,7 +238,7 @@ final class IndexBuilderTest extends BaseTestCase
 
         $client = $this->getClient();
         $document = $client->getIndex($indexName)->getDocument('f');
-        $this->assertInstanceOf(Document::class, $document);
+        $this->assertInstanceOf(ElasticaDocument::class, $document);
 
         $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs');
 
@@ -245,7 +246,7 @@ final class IndexBuilderTest extends BaseTestCase
         $indexer->refresh($newIndex);
 
         $document = $newIndex->getDocument('f');
-        $this->assertInstanceOf(Document::class, $document);
+        $this->assertInstanceOf(ElasticaDocument::class, $document);
     }
 
     private function getIndexBuilder(?string $path = null, array $config = []): IndexBuilder

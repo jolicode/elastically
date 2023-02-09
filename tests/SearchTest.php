@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
-use Elastica\Document;
+use Elastica\Document as ElasticaDocument;
 use Elastica\Query;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Result;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -45,7 +46,7 @@ final class SearchTest extends BaseTestCase
 
         $indexer->refresh($indexName);
 
-        $this->assertInstanceOf(Document::class, $client->getIndex($indexName)->getDocument('f'));
+        $this->assertInstanceOf(ElasticaDocument::class, $client->getIndex($indexName)->getDocument('f'));
         $this->assertInstanceOf(SearchTestDto::class, $client->getIndex($indexName)->getModel('f'));
 
         $results = $client->getIndex($indexName)->search('unicorns');
@@ -53,7 +54,7 @@ final class SearchTest extends BaseTestCase
         $this->assertSame(1, $results->getTotalHits());
 
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
-        $this->assertInstanceOf(Document::class, $results->getDocuments()[0]);
+        $this->assertInstanceOf(ElasticaDocument::class, $results->getDocuments()[0]);
         $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
     }
 
@@ -85,7 +86,7 @@ final class SearchTest extends BaseTestCase
         $this->assertSame(1, $results->getTotalHits());
 
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
-        $this->assertInstanceOf(Document::class, $results->getDocuments()[0]);
+        $this->assertInstanceOf(ElasticaDocument::class, $results->getDocuments()[0]);
         $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
         $this->assertNull($results->getResults()[0]->getModel()->bar);
         $this->assertNotNull($results->getResults()[0]->getModel()->foo);
@@ -121,7 +122,7 @@ final class SearchTest extends BaseTestCase
         $this->assertSame(1, $results->getTotalHits());
 
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
-        $this->assertInstanceOf(Document::class, $results->getDocuments()[0]);
+        $this->assertInstanceOf(ElasticaDocument::class, $results->getDocuments()[0]);
         $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
     }
 

@@ -11,7 +11,7 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-use Elastica\Document;
+use JoliCode\Elastically\Model\Document;
 
 interface DocumentExchangerInterface
 {

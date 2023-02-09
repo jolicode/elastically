@@ -12,8 +12,9 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Bulk;
-use Elastica\Document;
+use Elastica\Document as ElasticaDocument;
 use Elastica\Index;
+use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -39,13 +40,10 @@ class Indexer
         $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
     }
 
-    public function scheduleIndex($index, Document $document)
+    public function scheduleIndex($index, ElasticaDocument $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (\is_object($document->getData())) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
-            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
-        }
+        $this->updateDocumentData($document);
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_INDEX);
 
@@ -54,33 +52,27 @@ class Indexer
 
     public function scheduleDelete($index, string $id)
     {
-        $document = new Document($id, '');
+        $document = new Document($id);
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         $this->getCurrentBulk()->addAction(new Bulk\Action\DeleteDocument($document));
 
         $this->flushIfNeeded();
     }
 
-    public function scheduleUpdate($index, Document $document)
+    public function scheduleUpdate($index, ElasticaDocument $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (\is_object($document->getData())) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
-            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
-        }
+        $this->updateDocumentData($document);
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_UPDATE);
 
         $this->flushIfNeeded();
     }
 
-    public function scheduleCreate($index, Document $document)
+    public function scheduleCreate($index, ElasticaDocument $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
-        if (\is_object($document->getData())) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData()));
-            $document->setData($this->serializer->serialize($document->getData(), 'json', $context));
-        }
+        $this->updateDocumentData($document);
 
         $this->getCurrentBulk()->addDocument($document, Bulk\Action::OP_TYPE_CREATE);
 
@@ -167,6 +159,25 @@ class Indexer
 
         foreach ($this->bulkRequestParams as $key => $value) {
             $this->currentBulk->setRequestParam($key, $value);
+        }
+    }
+
+    private function updateDocumentData(ElasticaDocument $document): void
+    {
+        if ($document instanceof Document && null !== $document->getModel()) {
+            $context = $this->contextBuilder->buildContext(\get_class($document->getModel()));
+            $data = $this->serializer->serialize($document->getModel(), 'json', $context);
+            $document->setData($data);
+
+            return;
+        }
+
+        // This check is added for BC-compatibility with older version
+        // But a deprecation could be added and this could be removed in 2.x versions (?)
+        if (\is_object($document->getData())) { // @phpstan-ignore-line
+            $context = $this->contextBuilder->buildContext(\get_class($document->getData())); // @phpstan-ignore-line
+            $data = $this->serializer->serialize($document->getData(), 'json', $context);
+            $document->setData($data);
         }
     }
 }

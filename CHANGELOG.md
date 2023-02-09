@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `JoliCode\Elastically\Model\Document` class #150
+
+### Fixed
+
+- Get ride of bad typing in `Elastica\Document::getData()` #150
+
 ## [1.6.0] - 2023-01-16
 
 ### Added

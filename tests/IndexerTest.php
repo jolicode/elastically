@@ -14,10 +14,11 @@ declare(strict_types=1);
 namespace JoliCode\Elastically\Tests;
 
 use Elastica\Bulk\ResponseSet;
-use Elastica\Document;
+use Elastica\Document as ElasticaDocument;
 use Elastica\Exception\Bulk\ResponseException;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Indexer;
+use JoliCode\Elastically\Model\Document;
 
 final class IndexerTest extends BaseTestCase
 {
@@ -39,7 +40,7 @@ final class IndexerTest extends BaseTestCase
         $client = $this->getClient();
         $document = $client->getIndex($indexName)->getDocument('f');
 
-        $this->assertInstanceOf(Document::class, $document);
+        $this->assertInstanceOf(ElasticaDocument::class, $document);
         $this->assertSame('f', $document->getId());
     }
 
@@ -182,6 +183,24 @@ final class IndexerTest extends BaseTestCase
         $indexer = $this->getIndexer();
 
         $indexer->scheduleIndex($indexName, new Document(
+            'f',
+            null,
+            json_encode(['foo' => 'I love unicorns.', 'bar' => 'I think PHP is better than butter.'])
+        ));
+
+        $response = $indexer->flush();
+
+        $this->assertInstanceOf(ResponseSet::class, $response);
+        $this->assertFalse($response->hasError());
+    }
+
+    public function testIndexJsonStringWithElasticaDocument(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+
+        $indexer = $this->getIndexer();
+
+        $indexer->scheduleIndex($indexName, new ElasticaDocument(
             'f',
             json_encode(['foo' => 'I love unicorns.', 'bar' => 'I think PHP is better than butter.'])
         ));
