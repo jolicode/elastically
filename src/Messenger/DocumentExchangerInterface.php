@@ -11,9 +11,9 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-use JoliCode\Elastically\Model\Document;
+use Elastica\Document as ElasticaDocument;
 
 interface DocumentExchangerInterface
 {
-    public function fetchDocument(string $className, string $id): ?Document;
+    public function fetchDocument(string $className, string $id): ?ElasticaDocument;
 }
