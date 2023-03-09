@@ -206,6 +206,38 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertCount(0, $operations);
     }
 
+    /** @dataProvider purgeIndexBuilderProvider */
+    public function testDoNotPurgeAndCloseOldIndicesInDryMode(IndexBuilder $indexBuilder): void
+    {
+        $index1 = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index1);
+
+        usleep(1200000); // 1,2 second
+
+        $index2 = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index2);
+
+        usleep(1200000); // 1,2 second
+
+        $index3 = $indexBuilder->createIndex('hop');
+        $indexBuilder->markAsLive($index3, 'hop');
+        $this->assertInstanceOf(Index::class, $index3);
+
+        usleep(1200000); // 1,2 second
+
+        $index4 = $indexBuilder->createIndex('hop');
+        $this->assertInstanceOf(Index::class, $index4);
+
+        $operations = $indexBuilder->purgeOldIndices('hop', true);
+
+        $this->assertCount(2, $operations);
+
+        $this->assertTrue($index1->exists()); // Did not delete indexes in dry mode
+        $this->assertTrue($index2->exists());
+        $this->assertTrue($index3->exists());
+        $this->assertTrue($index4->exists()); // Do not delete indexes in the future of the current one
+    }
+
     public function testSlowDownRefresh(): void
     {
         $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs_analysis');
