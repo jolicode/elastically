@@ -18,7 +18,6 @@ use Elastica\Query;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Result;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -126,8 +125,7 @@ final class SearchTest extends BaseTestCase
     }
 }
 
-// Needed to mock
-abstract class AbstractSearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
+class SearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
 {
     public function denormalize($data, $class, $format = null, array $context = []): mixed
     {
@@ -136,29 +134,13 @@ abstract class AbstractSearchTestDummySerializer implements SerializerInterface,
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
     }
-}
 
-if (6 <= Kernel::MAJOR_VERSION) {
-    class SearchTestDummySerializer extends AbstractSearchTestDummySerializer
+    public function serialize(mixed $data, string $format, array $context = []): string
     {
-        public function serialize(mixed $data, string $format, array $context = []): string
-        {
-        }
-
-        public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed
-        {
-        }
     }
-} else {
-    class SearchTestDummySerializer extends AbstractSearchTestDummySerializer
-    {
-        public function serialize($data, $format, array $context = []): string
-        {
-        }
 
-        public function deserialize($data, $type, $format, array $context = []): mixed
-        {
-        }
+    public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed
+    {
     }
 }
 
