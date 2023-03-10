@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.8.0 - 2023-03-10
+
 ### Added
 
 - Add support for PHP 8.2
+- Add "dry run" mode on the purgeOldIndices method
 
 ## 1.7.1 - 2023-02-21
 
