@@ -48,22 +48,26 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                    # Every lowest supported version
                     - php-version: '8.0'
                       symfony-version: '5.4.*'
                       composer-flags: '--prefer-lowest'
-                      es-version: 7.17.3
-                    - php-version: '8.0'
-                      symfony-version: '6.0.*'
-                      composer-flags: ''
-                      es-version: 7.17.3
+                      es-version: '7.17.3'
+                    # Every lowest supported version && Symfony 6
                     - php-version: '8.1'
-                      symfony-version: '6.0.*'
+                      symfony-version: '6.2.*'
                       composer-flags: ''
-                      es-version: 7.17.3
+                      es-version: '7.17.3'
+                    # PHP 8.1, latest SF 6, ES 7
                     - php-version: '8.1'
-                      symfony-version: '6.0.*'
+                      symfony-version: '6.*'
                       composer-flags: ''
-                      es-version: 8.2.0
+                      es-version: '7.17.3'
+                    # PHP 8.1, latest SF 6, ES 8
+                    - php-version: '8.1'
+                      symfony-version: '6.*'
+                      composer-flags: ''
+                      es-version: '8.2.0'
         steps:
             - name: Checkout
               uses: actions/checkout@v3
@@ -117,12 +121,12 @@ jobs:
             matrix:
                 include:
                     - php-version: '8.1'
-                      symfony-version: '6.0.*'
+                      symfony-version: '6.*'
                       composer-flags: ''
                       os-version: 1.3.6
                       os-image: opensearchproject/opensearch:1.3.6
                     - php-version: '8.1'
-                      symfony-version: '6.0.*'
+                      symfony-version: '6.*'
                       composer-flags: ''
                       os-version: 2.3.0
                       os-image: opensearchproject/opensearch:2.3.0
