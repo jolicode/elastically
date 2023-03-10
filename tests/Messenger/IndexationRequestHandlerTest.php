@@ -272,6 +272,7 @@ class TestDocumentExchanger implements DocumentExchangerInterface
 class FooDTO
 {
     public $foo;
+    public $bar;
 }
 
 class BarDTO

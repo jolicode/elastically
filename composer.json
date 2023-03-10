@@ -27,8 +27,8 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.3.2",
-        "jane-php/json-schema": "^7.2",
-        "jane-php/json-schema-runtime": "^7.2",
+        "jane-php/json-schema": "^7.4.2",
+        "jane-php/json-schema-runtime": "^7.4",
         "phpstan/phpstan": "^1.9",
         "symfony/browser-kit": "^5.4 || ^6.0",
         "symfony/framework-bundle": "^5.4 || ^6.0",
