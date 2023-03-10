@@ -96,7 +96,7 @@ class IndexBuilder
         return $newIndex;
     }
 
-    public function purgeOldIndices(string $indexName): array
+    public function purgeOldIndices(string $indexName, bool $dryRun = false): array
     {
         $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
@@ -149,13 +149,17 @@ class IndexBuilder
 
             if ($livePassed && $afterLiveCounter > 1) {
                 // Remove
-                $index = new \Elastica\Index($this->client, $realIndexName);
-                $index->delete();
+                if (false === $dryRun) {
+                    $index = new \Elastica\Index($this->client, $realIndexName);
+                    $index->delete();
+                }
                 $operations[] = sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
-                $index = new \Elastica\Index($this->client, $realIndexName);
-                $index->close();
+                if (false === $dryRun) {
+                    $index = new \Elastica\Index($this->client, $realIndexName);
+                    $index->close();
+                }
                 $operations[] = sprintf('%s closed.', $realIndexName);
             }
         }
