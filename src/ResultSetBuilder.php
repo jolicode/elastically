@@ -56,7 +56,7 @@ class ResultSetBuilder implements BuilderInterface
 
     public function buildModelFromIndexAndData(string $indexName, $source)
     {
-        return $this->buildModel($indexName, $source, []);
+        return $this->buildModel($source, $indexName, []);
     }
 
     public function buildModelFromDocument(ElasticaDocument $document)
