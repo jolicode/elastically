@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.8.1 - 2023-03-30
+
+### Fixed 
+
+- Fix buildModel argument order when called via buildModelFromIndexAndData 
+
 ## 1.8.0 - 2023-03-10
 
 ### Added
