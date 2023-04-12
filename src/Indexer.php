@@ -13,6 +13,7 @@ namespace JoliCode\Elastically;
 
 use Elastica\Bulk;
 use Elastica\Document as ElasticaDocument;
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
@@ -40,6 +41,9 @@ class Indexer
         $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function scheduleIndex($index, ElasticaDocument $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
@@ -50,6 +54,9 @@ class Indexer
         $this->flushIfNeeded();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function scheduleDelete($index, string $id)
     {
         $document = new Document($id);
@@ -59,6 +66,9 @@ class Indexer
         $this->flushIfNeeded();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function scheduleUpdate($index, ElasticaDocument $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
@@ -69,6 +79,9 @@ class Indexer
         $this->flushIfNeeded();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function scheduleCreate($index, ElasticaDocument $document)
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
@@ -79,6 +92,9 @@ class Indexer
         $this->flushIfNeeded();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function flush(): ?Bulk\ResponseSet
     {
         if (!$this->currentBulk) {
@@ -107,6 +123,9 @@ class Indexer
         return \count($this->currentBulk->getActions());
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function refresh($index)
     {
         $indexName = $index instanceof Index ? $index->getName() : $index;
@@ -144,6 +163,9 @@ class Indexer
         return $this->currentBulk;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     protected function flushIfNeeded(): void
     {
         if ($this->getQueueSize() >= $this->bulkMaxSize) {

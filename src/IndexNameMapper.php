@@ -11,6 +11,7 @@
 
 namespace JoliCode\Elastically;
 
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 
 class IndexNameMapper
@@ -33,6 +34,9 @@ class IndexNameMapper
         return $name;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function getIndexNameFromClass(string $className): string
     {
         $indexName = array_search($className, $this->indexClassMapping, true);
@@ -44,6 +48,9 @@ class IndexNameMapper
         return $this->getPrefixedIndex($indexName);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function getClassFromIndexName(string $indexName): string
     {
         if (!isset($this->indexClassMapping[$indexName])) {
