@@ -11,6 +11,7 @@
 
 namespace JoliCode\Elastically;
 
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use Elastica\Reindex;
 use Elastica\Request;
@@ -32,6 +33,9 @@ class IndexBuilder
         $this->indexNameMapper = $indexNameMapper;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function createIndex(string $indexName, array $context = []): Index
     {
         $mapping = $this->mappingProvider->provideMapping($indexName, $context);
@@ -60,16 +64,25 @@ class IndexBuilder
         return $this->client->request('_aliases', Request::POST, $data);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function slowDownRefresh(Index $index): void
     {
         $index->getSettings()->setRefreshInterval('60s');
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function speedUpRefresh(Index $index): void
     {
         $index->getSettings()->setRefreshInterval('1s');
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function migrate(Index $currentIndex, array $params = [], array $context = []): Index
     {
         $pureIndexName = $this->indexNameMapper->getPureIndexName($currentIndex->getName());
@@ -96,6 +109,9 @@ class IndexBuilder
         return $newIndex;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function purgeOldIndices(string $indexName, bool $dryRun = false): array
     {
         $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);

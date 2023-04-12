@@ -11,6 +11,7 @@
 
 namespace JoliCode\Elastically;
 
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Index as ElasticaIndex;
 use Elastica\ResultSet\BuilderInterface;
 use Elastica\Search;
@@ -26,6 +27,9 @@ class Index extends ElasticaIndex
         $this->resultSetBuilder = $resultSetBuilder;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function getModel($id)
     {
         $document = $this->getDocument($id);

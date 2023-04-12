@@ -11,7 +11,12 @@
 
 namespace JoliCode\Elastically\Mapping;
 
+use Elastica\Exception\ExceptionInterface;
+
 interface MappingProviderInterface
 {
+    /**
+     * @throws ExceptionInterface
+     */
     public function provideMapping(string $indexName, array $context = []): ?array;
 }

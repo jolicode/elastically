@@ -12,6 +12,7 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Document as ElasticaDocument;
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use Elastica\Query;
 use Elastica\Response;
@@ -36,6 +37,9 @@ class ResultSetBuilder implements BuilderInterface
         $this->denormalizer = $denormalizer;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function buildResultSet(Response $response, Query $query): ResultSet
     {
         $data = $response->getData();
@@ -54,11 +58,17 @@ class ResultSetBuilder implements BuilderInterface
         return new ResultSet($response, $query, $results);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function buildModelFromIndexAndData(string $indexName, $source)
     {
         return $this->buildModel($source, $indexName, []);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function buildModelFromDocument(ElasticaDocument $document)
     {
         return $this->buildModel($document->getData(), $document->getIndex(), [
@@ -66,6 +76,9 @@ class ResultSetBuilder implements BuilderInterface
         ]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     private function buildModelFromResult(Result $result)
     {
         if (!$result->getIndex()) {
@@ -77,6 +90,9 @@ class ResultSetBuilder implements BuilderInterface
         ]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     private function buildModel($source, string $indexName, array $context)
     {
         if (!$source) {
