@@ -75,6 +75,5 @@ return static function (ContainerConfigurator $container) {
                 '$client' => abstract_arg('elastically.abstract.client'),
                 '$indexNameMapper' => abstract_arg('elastically.abstract.index_name_mapper'),
             ])
-
     ;
 };
