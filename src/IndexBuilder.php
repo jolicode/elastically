@@ -52,6 +52,9 @@ class IndexBuilder
         return $index;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function markAsLive(Index $index, string $indexName): Response
     {
         $indexPrefixedName = $this->indexNameMapper->getPrefixedIndex($indexName);
