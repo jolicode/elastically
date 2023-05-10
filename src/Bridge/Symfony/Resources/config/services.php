@@ -51,6 +51,7 @@ return static function (ContainerConfigurator $container) {
                 '$resultSetBuilder' => abstract_arg('elastically.abstract.result_set_builder'),
                 '$indexNameMapper' => abstract_arg('elastically.abstract.index_name_mapper'),
             ])
+            ->tag('monolog.logger', ['channel' => 'elastically'])
 
         ->set('elastically.abstract.indexer', Indexer::class)
             ->abstract()
