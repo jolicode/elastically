@@ -87,7 +87,7 @@ class IndexBuilder
         if (!$waitForCompletion) {
             return $newIndex;
         }
-        
+
         $taskId = $response->getData()['task'];
 
         $task = new Task($this->client, $taskId);
