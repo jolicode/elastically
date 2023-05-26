@@ -266,6 +266,9 @@ elastically:
                 # Fill a static context
                 context_mapping:
                     foo:                 bar
+
+            # If you want to add a prefix for your index in elasticsearch (you can still call it by its base name everywhere!)
+            # prefix: '%kernel.environment%'
 ```
 
 Finally, inject one of those service (autowirable) in you code where you need
