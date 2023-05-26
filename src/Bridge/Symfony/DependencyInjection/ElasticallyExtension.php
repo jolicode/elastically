@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class ElasticallyExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration($this->getConfiguration($configs, $container), $configs);
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__) . '/Resources/config'));
@@ -43,7 +43,7 @@ class ElasticallyExtension extends Extension
         }
     }
 
-    private function buildConnection(string $name, array $config, bool $isDefaultConnection, ContainerBuilder $container)
+    private function buildConnection(string $name, array $config, bool $isDefaultConnection, ContainerBuilder $container): void
     {
         $indexNameMapper = new ChildDefinition('elastically.abstract.index_name_mapper');
         $indexNameMapper->replaceArgument('$prefix', $config['prefix']);
