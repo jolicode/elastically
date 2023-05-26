@@ -31,7 +31,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 {
     public function testFrameworkQueue(): void
     {
-        static::bootKernel(['debug' => false]);
+        self::bootKernel(['debug' => false]);
 
         /** @var InMemoryTransport $transport */
         $transport = self::getContainer()->get('messenger.transport.queuing.test');
@@ -40,7 +40,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
     public function testFrameworkKernelTerminateResend(): void
     {
-        static::bootKernel(['debug' => false]);
+        self::bootKernel(['debug' => false]);
 
         /** @var MessageBus $bus */
         $bus = self::getContainer()->get('messenger.default_bus');
@@ -60,7 +60,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
         // Simulate Kernel Response
         $dispatcher->dispatch(
-            new ResponseEvent(static::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
+            new ResponseEvent(self::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
             KernelEvents::RESPONSE
         );
 
@@ -83,7 +83,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
     public function testFrameworkKernelTerminateWithNoMessage(): void
     {
-        static::bootKernel(['debug' => false]);
+        self::bootKernel(['debug' => false]);
 
         /** @var InMemoryTransport $transport */
         $transport = self::getContainer()->get('messenger.transport.queuing.test');
@@ -94,7 +94,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
         // Simulate Kernel Response
         $dispatcher->dispatch(
-            new ResponseEvent(static::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
+            new ResponseEvent(self::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
             KernelEvents::RESPONSE
         );
 

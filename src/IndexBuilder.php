@@ -110,7 +110,7 @@ class IndexBuilder
         $indexes = $indexes['metadata']['indices'];
 
         foreach ($indexes as $realIndexName => &$data) {
-            if (0 !== strpos($realIndexName, $indexName)) {
+            if (!str_starts_with($realIndexName, $indexName)) {
                 unset($indexes[$realIndexName]);
 
                 continue;

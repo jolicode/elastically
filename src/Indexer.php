@@ -29,7 +29,7 @@ class Indexer
 
     private ?Bulk $currentBulk = null;
 
-    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [], ?ContextBuilderInterface $contextBuilder = null)
+    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [], ContextBuilderInterface $contextBuilder = null)
     {
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 

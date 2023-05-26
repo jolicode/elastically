@@ -40,7 +40,7 @@ class HttpClientTransport extends AbstractTransport
      */
     private string $scheme;
 
-    public function __construct(HttpClientInterface $client, string $scheme = 'http', ?Connection $connection = null)
+    public function __construct(HttpClientInterface $client, string $scheme = 'http', Connection $connection = null)
     {
         parent::__construct($connection);
 

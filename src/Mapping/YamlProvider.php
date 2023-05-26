@@ -19,7 +19,7 @@ final class YamlProvider implements MappingProviderInterface
     private string $configurationDirectory;
     private Parser $parser;
 
-    public function __construct(string $configurationDirectory, ?Parser $parser = null)
+    public function __construct(string $configurationDirectory, Parser $parser = null)
     {
         $this->configurationDirectory = $configurationDirectory;
         $this->parser = $parser ?? new Parser();

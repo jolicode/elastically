@@ -22,7 +22,7 @@ final class TestControllerFunctionalTest extends WebTestCase
 {
     public function testControllerWithException(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         $client->request('GET', '/with_exception');
 
         /** @var InMemoryTransport $transport */
@@ -38,7 +38,7 @@ final class TestControllerFunctionalTest extends WebTestCase
 
     public function testControllerWithResponse(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         $client->request('GET', '/with_response');
 
         /** @var InMemoryTransport $transport */
