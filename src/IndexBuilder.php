@@ -70,7 +70,7 @@ class IndexBuilder
         $index->getSettings()->setRefreshInterval('1s');
     }
 
-    public function migrate(Index $currentIndex, array $params = [], array $context = []): Index
+    public function migrate(Index $currentIndex, array $params = [], array $context = [], bool $waitForCompletion = true): Index
     {
         $pureIndexName = $this->indexNameMapper->getPureIndexName($currentIndex->getName());
         $newIndex = $this->createIndex($pureIndexName, $context);
@@ -82,6 +82,10 @@ class IndexBuilder
 
         if (!$response->isOk()) {
             throw new RuntimeException(sprintf('Reindex call failed. %s', $response->getError()));
+        }
+
+        if (!$waitForCompletion) {
+            return $newIndex;
         }
 
         $taskId = $response->getData()['task'];
