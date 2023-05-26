@@ -281,7 +281,7 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertInstanceOf(ElasticaDocument::class, $document);
     }
 
-    private function getIndexBuilder(?string $path = null, array $config = []): IndexBuilder
+    private function getIndexBuilder(string $path = null, array $config = []): IndexBuilder
     {
         return $this->getFactory($path, $config)->buildIndexBuilder();
     }

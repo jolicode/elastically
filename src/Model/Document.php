@@ -18,14 +18,14 @@ class Document extends ElasticaDocument
 {
     private ?object $model;
 
-    public function __construct(?string $id, ?object $model = null, string|array $data = [], Index|string $index = '')
+    public function __construct(?string $id, object $model = null, string|array $data = [], Index|string $index = '')
     {
         parent::__construct($id, $data, $index);
 
         $this->model = $model;
     }
 
-    public static function createFromDocument(ElasticaDocument $document, ?object $model = null): self
+    public static function createFromDocument(ElasticaDocument $document, object $model = null): self
     {
         return new self($document->getId(), $model, $document->getData(), $document->getIndex());
     }

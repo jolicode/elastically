@@ -161,7 +161,7 @@ final class HttpClientTransportTest extends BaseTestCase
 
         $this->assertInstanceOf(ExceptionInterface::class, $nativeException);
         $this->assertInstanceOf(ExceptionInterface::class, $httpClientException);
-        $this->assertInstanceOf(\get_class($httpClientException), $nativeException);
+        $this->assertInstanceOf($httpClientException::class, $nativeException);
     }
 }
 
