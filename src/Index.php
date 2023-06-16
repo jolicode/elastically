@@ -15,6 +15,7 @@ use Elastica\Exception\ExceptionInterface;
 use Elastica\Index as ElasticaIndex;
 use Elastica\ResultSet\BuilderInterface;
 use Elastica\Search;
+use Symfony\Component\Serializer\Exception\ExceptionInterface as SerializerExceptionInterface;
 
 class Index extends ElasticaIndex
 {
@@ -29,6 +30,7 @@ class Index extends ElasticaIndex
 
     /**
      * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     public function getModel($id)
     {

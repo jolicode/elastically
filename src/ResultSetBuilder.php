@@ -19,6 +19,7 @@ use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\BuilderInterface;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface as SerializerExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class ResultSetBuilder implements BuilderInterface
@@ -39,6 +40,7 @@ class ResultSetBuilder implements BuilderInterface
 
     /**
      * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     public function buildResultSet(Response $response, Query $query): ResultSet
     {
@@ -60,6 +62,7 @@ class ResultSetBuilder implements BuilderInterface
 
     /**
      * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     public function buildModelFromIndexAndData(string $indexName, $source)
     {
@@ -68,6 +71,7 @@ class ResultSetBuilder implements BuilderInterface
 
     /**
      * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     public function buildModelFromDocument(ElasticaDocument $document)
     {
@@ -78,6 +82,7 @@ class ResultSetBuilder implements BuilderInterface
 
     /**
      * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     private function buildModelFromResult(Result $result)
     {
@@ -92,6 +97,7 @@ class ResultSetBuilder implements BuilderInterface
 
     /**
      * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     private function buildModel($source, string $indexName, array $context)
     {

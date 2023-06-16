@@ -24,6 +24,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class ElasticallyExtension extends Extension
 {
+    /**
+     * @throws \Exception
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration($this->getConfiguration($configs, $container), $configs);

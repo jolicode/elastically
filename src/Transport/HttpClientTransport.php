@@ -14,6 +14,7 @@ namespace JoliCode\Elastically\Transport;
 use Elastica\Connection;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\ConnectionException;
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use Elastica\JSON;
@@ -24,7 +25,10 @@ use Elastica\Transport\AbstractTransport;
 use Elastica\Util;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Exception\ServerException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -40,14 +44,13 @@ class HttpClientTransport extends AbstractTransport
      */
     private string $scheme;
 
-    public function __construct(HttpClientInterface $client, string $scheme = 'http', Connection $connection = null)
-    {
-        parent::__construct($connection);
-
-        $this->client = $client;
-        $this->scheme = $scheme;
-    }
-
+    /**
+     * @throws ExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     */
     public function exec(Request $request, array $params): Response
     {
         $connection = $this->getConnection();
@@ -110,6 +113,14 @@ class HttpClientTransport extends AbstractTransport
         }
 
         return $elasticaResponse;
+    }
+
+    public function __construct(HttpClientInterface $client, string $scheme = 'http', Connection $connection = null)
+    {
+        parent::__construct($connection);
+
+        $this->client = $client;
+        $this->scheme = $scheme;
     }
 
     protected function _getUri(Request $request, Connection $connection): string

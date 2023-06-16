@@ -133,6 +133,9 @@ class Indexer
         $this->client->getIndex($indexName)->refresh();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function setBulkMaxSize(int $bulkMaxSize): void
     {
         $this->bulkMaxSize = $bulkMaxSize;

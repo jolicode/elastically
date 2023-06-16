@@ -12,6 +12,7 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Client as ElasticaClient;
+use Elastica\Exception\ExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -67,6 +68,9 @@ class Client extends ElasticaClient
         return $this->indexNameMapper->getPrefixedIndex($name);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function getIndexNameFromClass(string $className): string
     {
         trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Use %s::%s() instead.', __METHOD__, IndexNameMapper::class, __FUNCTION__);
@@ -74,6 +78,9 @@ class Client extends ElasticaClient
         return $this->indexNameMapper->getIndexNameFromClass($className);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function getClassFromIndexName(string $indexName): string
     {
         trigger_deprecation('jolicode/elastically', '1.4.0', 'Method %s() is deprecated. Use %s::%s() instead.', __METHOD__, IndexNameMapper::class, __FUNCTION__);

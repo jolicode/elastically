@@ -57,6 +57,7 @@ class IndexationRequestHandler
 
     /**
      * @throws ExceptionInterface
+     * @throws UnrecoverableMessageHandlingException
      */
     public function __invoke(IndexationRequestInterface $message)
     {
@@ -112,6 +113,7 @@ class IndexationRequestHandler
     }
 
     /**
+     * @throws UnrecoverableMessageHandlingException
      * @throws ExceptionInterface
      */
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)

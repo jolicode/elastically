@@ -5,3 +5,10 @@ parameters:
     level: 5
     paths:
         - src
+    exceptions:
+        check:
+            missingCheckedExceptionInThrows: true
+            tooWideThrowType: true
+        implicitThrows: false
+        uncheckedExceptionClasses:
+            - LogicException
