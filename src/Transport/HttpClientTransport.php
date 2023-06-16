@@ -44,6 +44,14 @@ class HttpClientTransport extends AbstractTransport
      */
     private string $scheme;
 
+    public function __construct(HttpClientInterface $client, string $scheme = 'http', Connection $connection = null)
+    {
+        parent::__construct($connection);
+
+        $this->client = $client;
+        $this->scheme = $scheme;
+    }
+
     /**
      * @throws ExceptionInterface
      * @throws TransportExceptionInterface
@@ -113,14 +121,6 @@ class HttpClientTransport extends AbstractTransport
         }
 
         return $elasticaResponse;
-    }
-
-    public function __construct(HttpClientInterface $client, string $scheme = 'http', Connection $connection = null)
-    {
-        parent::__construct($connection);
-
-        $this->client = $client;
-        $this->scheme = $scheme;
     }
 
     protected function _getUri(Request $request, Connection $connection): string
