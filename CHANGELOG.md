@@ -7,9 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.8.4
+
+### Added
+
+- New `@throws` annotations on methods
+
+## 1.8.3
+
 ### Fixed
 
 - Fix deprecation for Symfony 6.3
+- Fix code style
 
 ## 1.8.2 - 2023-05-10
 
