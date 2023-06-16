@@ -12,6 +12,7 @@
 namespace JoliCode\Elastically\Messenger;
 
 use Elastica\Exception\Bulk\ResponseException;
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
@@ -54,6 +55,10 @@ class IndexationRequestHandler
         $this->client->setLogger(new NullLogger());
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws UnrecoverableMessageHandlingException
+     */
     public function __invoke(IndexationRequestInterface $message)
     {
         $messages = [];
@@ -107,6 +112,10 @@ class IndexationRequestHandler
         }
     }
 
+    /**
+     * @throws UnrecoverableMessageHandlingException
+     * @throws ExceptionInterface
+     */
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
     {
         try {

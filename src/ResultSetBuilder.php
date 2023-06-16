@@ -12,12 +12,14 @@
 namespace JoliCode\Elastically;
 
 use Elastica\Document as ElasticaDocument;
+use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\BuilderInterface;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface as SerializerExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class ResultSetBuilder implements BuilderInterface
@@ -36,6 +38,10 @@ class ResultSetBuilder implements BuilderInterface
         $this->denormalizer = $denormalizer;
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
+     */
     public function buildResultSet(Response $response, Query $query): ResultSet
     {
         $data = $response->getData();
@@ -54,11 +60,19 @@ class ResultSetBuilder implements BuilderInterface
         return new ResultSet($response, $query, $results);
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
+     */
     public function buildModelFromIndexAndData(string $indexName, $source)
     {
         return $this->buildModel($source, $indexName, []);
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
+     */
     public function buildModelFromDocument(ElasticaDocument $document)
     {
         return $this->buildModel($document->getData(), $document->getIndex(), [
@@ -66,6 +80,10 @@ class ResultSetBuilder implements BuilderInterface
         ]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
+     */
     private function buildModelFromResult(Result $result)
     {
         if (!$result->getIndex()) {
@@ -77,6 +95,10 @@ class ResultSetBuilder implements BuilderInterface
         ]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws SerializerExceptionInterface
+     */
     private function buildModel($source, string $indexName, array $context)
     {
         if (!$source) {

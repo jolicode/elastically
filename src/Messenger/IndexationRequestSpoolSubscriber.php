@@ -15,6 +15,7 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Exception\TransportException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Contracts\Service\ResetInterface;
@@ -39,6 +40,9 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
         $this->wasExceptionThrown = true;
     }
 
+    /**
+     * @throws TransportException
+     */
     public function onTerminate()
     {
         if ($this->wasExceptionThrown) {
@@ -61,6 +65,9 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
         $this->bus->dispatch($message);
     }
 
+    /**
+     * @throws TransportException
+     */
     public function onResponse(ResponseEvent $event)
     {
         if (method_exists($event, 'isMainRequest')) {

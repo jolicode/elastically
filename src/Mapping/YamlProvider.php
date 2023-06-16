@@ -12,6 +12,7 @@
 namespace JoliCode\Elastically\Mapping;
 
 use Elastica\Exception\InvalidException;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 
 final class YamlProvider implements MappingProviderInterface
@@ -25,6 +26,9 @@ final class YamlProvider implements MappingProviderInterface
         $this->parser = $parser ?? new Parser();
     }
 
+    /**
+     * @throws ParseException
+     */
     public function provideMapping(string $indexName, array $context = []): ?array
     {
         $fileName = $context['filename'] ?? ($indexName . '_mapping.yaml');
