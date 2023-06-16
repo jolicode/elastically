@@ -14,3 +14,13 @@ parameters:
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
 			count: 1
 			path: src/Bridge/Symfony/DependencyInjection/Configuration.php
+
+		- # We need https://github.com/ruflin/Elastica/pull/2176
+			message: "#^Method JoliCode\\\\Elastically\\\\IndexBuilder\\:\\:slowDownRefresh\\(\\) has Elastica\\\\Exception\\\\ExceptionInterface in PHPDoc @throws tag but it's not thrown\\.$#"
+			count: 1
+			path: src/IndexBuilder.php
+
+		- # We need https://github.com/ruflin/Elastica/pull/2176
+			message: "#^Method JoliCode\\\\Elastically\\\\IndexBuilder\\:\\:speedUpRefresh\\(\\) has Elastica\\\\Exception\\\\ExceptionInterface in PHPDoc @throws tag but it's not thrown\\.$#"
+			count: 1
+			path: src/IndexBuilder.php
