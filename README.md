@@ -79,7 +79,7 @@ $dto->bar = 'American Pale Ale';
 $dto->foo = 'Hops from Alsace, France';
 
 // Add a document to the queue
-$indexer->scheduleIndex('beers', new Document('123', $dto));
+$indexer->scheduleIndex($index, new Document('123', $dto));
 $indexer->flush();
 
 // Set parameters on the Bulk
