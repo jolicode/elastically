@@ -127,21 +127,13 @@ final class SearchTest extends BaseTestCase
 
 class SearchTestDummySerializer implements SerializerInterface, DenormalizerInterface
 {
-    public function denormalize($data, $class, $format = null, array $context = []): mixed
-    {
-    }
+    public function denormalize($data, $class, $format = null, array $context = []): mixed {}
 
-    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
-    {
-    }
+    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool {}
 
-    public function serialize(mixed $data, string $format, array $context = []): string
-    {
-    }
+    public function serialize(mixed $data, string $format, array $context = []): string {}
 
-    public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed
-    {
-    }
+    public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed {}
 }
 
 class SearchTestDto

@@ -18,7 +18,7 @@ class Document extends ElasticaDocument
 {
     private ?object $model;
 
-    public function __construct(?string $id, object $model = null, string|array $data = [], Index|string $index = '')
+    public function __construct(?string $id, object $model = null, array|string $data = [], Index|string $index = '')
     {
         parent::__construct($id, $data, $index);
 
