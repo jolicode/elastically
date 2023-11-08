@@ -79,7 +79,7 @@ $dto->bar = 'American Pale Ale';
 $dto->foo = 'Hops from Alsace, France';
 
 // Add a document to the queue
-$indexer->scheduleIndex($index, new Document('123', $dto));
+$indexer->scheduleIndex('beers', new Document('123', $dto));
 $indexer->flush();
 
 // Set parameters on the Bulk
@@ -127,6 +127,10 @@ $newIndex = $indexBuilder->migrate($index);
 $indexBuilder->speedUpRefresh($newIndex);
 $indexBuilder->markAsLive($newIndex, 'beers');
 ```
+
+> [!NOTE]  
+> `scheduleIndex` is here called with `"beers"` index because the index was already created before.
+> If you are creating a new index and want to index documents into it, you should pass the `Index` object directly.
 
 *mappings/beers_mapping.yaml*
 
