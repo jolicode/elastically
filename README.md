@@ -1,7 +1,5 @@
 # Elastically, **Elastica** based framework
 
-![CI](https://github.com/jolicode/elastically/actions/workflows/ci.yml/badge.svg)
-
 Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch / OpenSearch implementations.
 
 Main features:
@@ -128,7 +126,7 @@ $indexBuilder->speedUpRefresh($newIndex);
 $indexBuilder->markAsLive($newIndex, 'beers');
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > `scheduleIndex` is here called with `"beers"` index because the index was already created before.
 > If you are creating a new index and want to index documents into it, you should pass the `Index` object directly.
 
