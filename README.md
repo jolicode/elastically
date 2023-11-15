@@ -16,7 +16,8 @@ Main features:
     - Tested with Symfony 5.4 to 6;
     - Symfony Messenger Handler support (with or without spool);
 
-**Require PHP 8.0+ and Elasticsearch 7+**.
+> [!IMPORTANT]
+> Require PHP 8.0+ and Elasticsearch 7+.
 
 Works with **Elasticsearch 8+** but is not officially supported by Elastica yet. Use with caution.
 
@@ -32,6 +33,7 @@ composer require jolicode/elastically
 
 ## Demo
 
+> [!TIP]
 > If you are using Symfony, you can move to the Symfony [chapter](#usage-in-symfony)
 
 Quick example of what the library do on top of Elastica:
@@ -429,7 +431,8 @@ $factory = new Factory([
 ]);
 ```
 
-_[Not compatible with Jane < 6](https://github.com/jolicode/elastically/issues/12)._
+> [!CAUTION]
+> Elastically is [not compatible with Jane < 6](https://github.com/jolicode/elastically/issues/12).
 
 ## To be done
 
