@@ -13,9 +13,8 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Jane;
 
-use Jane\Component\JsonSchema\Console\Command\GenerateCommand;
-use Jane\Component\JsonSchema\Console\Loader\ConfigLoader;
-use Jane\Component\JsonSchema\Console\Loader\SchemaLoader;
+use Jane\Component\JsonSchemaGenerator\Configuration;
+use Jane\Component\JsonSchemaGenerator\Generator;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
@@ -25,11 +24,9 @@ use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\ResultSetBuilder;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModel;
-use JoliCode\Elastically\Tests\Jane\generated\Model\MyModelIngredientsItemAnyOf;
-use JoliCode\Elastically\Tests\Jane\generated\Normalizer\JaneObjectNormalizer;
+use JoliCode\Elastically\Tests\Jane\generated\Model\MyModelIngredients;
+use JoliCode\Elastically\Tests\Jane\generated\Normalizer\JaneNormalizer;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -41,17 +38,16 @@ class JaneTest extends TestCase
     public function testCreateIndexAndSearchWithJaneObject()
     {
         // Build the models
-        $command = new GenerateCommand(new ConfigLoader(), new SchemaLoader());
-        $inputArray = new ArrayInput([
-            '--config-file' => __DIR__ . '/jane-config.php',
-        ], $command->getDefinition());
-
-        $command->execute($inputArray, new NullOutput());
+        $generator = new Generator(new Configuration(
+            outputDirectory: __DIR__ . '/generated/',
+            baseNamespace: 'JoliCode\\Elastically\\Tests\\Jane\\generated',
+        ));
+        $generator->fromPath(__DIR__ . '/schema.json', 'MyModel');
 
         // Build the Serializer
         $normalizers = [
             new ArrayDenormalizer(),
-            new JaneObjectNormalizer(),
+            new JaneNormalizer(),
         ];
         $encoders = [
             new JsonEncoder(
@@ -81,16 +77,10 @@ class JaneTest extends TestCase
         $indexBuilder->markAsLive($index, 'beers');
 
         // Create a DTO
-        $dto = new MyModel();
-        $dto->setName('La Montreuilloise Smoked Porter');
-        $dto->setPrice(3.20);
-        $ingredient1 = new MyModelIngredientsItemAnyOf();
-        $ingredient1->setName('Water');
-        $ingredient2 = new MyModelIngredientsItemAnyOf();
-        $ingredient2->setName('Malt');
-        $ingredient3 = new MyModelIngredientsItemAnyOf();
-        $ingredient3->setName('Hops');
-        $dto->setIngredients([$ingredient1, $ingredient2, $ingredient3]);
+        $ingredient1 = new MyModelIngredients('Water');
+        $ingredient2 = new MyModelIngredients('Malt');
+        $ingredient3 = new MyModelIngredients('Hops');
+        $dto = new MyModel('La Montreuilloise Smoked Porter', 3.20, [$ingredient1, $ingredient2, $ingredient3]);
 
         // Index the DTO
         $indexer->scheduleIndex('beers', new Document('123', $dto));
