@@ -134,6 +134,8 @@ class SearchTestDummySerializer implements SerializerInterface, DenormalizerInte
     public function serialize(mixed $data, string $format, array $context = []): string {}
 
     public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed {}
+
+    public function getSupportedTypes(?string $format): array {}
 }
 
 class SearchTestDto
