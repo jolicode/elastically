@@ -53,7 +53,7 @@ use JoliCode\Elastically\Model\Document;
 $factory = new Factory([
     // Where to find the mappings
     Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__.'/mappings',
-    // What object to find in each index
+    // What objects to find in each index
     Factory::CONFIG_INDEX_CLASS_MAPPING => [
         'beers' => Beer::class,
     ],
@@ -177,24 +177,24 @@ An array of index name to class FQN.
 
 An instance of `MappingProviderInterface`.
 
-If this option is not defined, the factory will fallback to `YamlProvider` and will use
+If this option is not defined, the factory will fall back to `YamlProvider` and will use
 `Factory::CONFIG_MAPPINGS_DIRECTORY` option.
 
 There are two providers available in Elastically: `YamlProvider` and `PhpProvider`.
 
 ### `Factory::CONFIG_SERIALIZER` (optional)
 
-A `SerializerInterface` compatible object that will by used on indexation.
+A `SerializerInterface` compatible object that will be used on indexation.
 
 _Default to Symfony Serializer with Object Normalizer._
 
-A faster alternative is to use Jane to generate plain PHP Normalizer, see below. Also we recommend [customization to handle things like Date](https://symfony.com/doc/current/components/serializer.html#normalizers).
+A faster alternative is to use Jane to generate plain PHP Normalizer, see below. Also, we recommend [customization to handle things like Date](https://symfony.com/doc/current/components/serializer.html#normalizers).
 
 ### `Factory::CONFIG_DENORMALIZER` (optional)
 
-A `DenormalizerInterface` compatible object that will by used on search results to build your objects back.
+A `DenormalizerInterface` compatible object that will be used on search results to build your objects back.
 
-If this option is not defined, the factory will fallback to
+If this option is not defined, the factory will fall back to
 `Factory::CONFIG_SERIALIZER` option.
 
 ### `Factory::CONFIG_SERIALIZER_CONTEXT_BUILDER` (optional)
@@ -315,7 +315,7 @@ elastically:
         default:
             serializer:
                 context_builder_service: App\Elastically\Serializer\ContextBuilder
-                # Do not defined "context_mapping" option anymore
+                # Do not define "context_mapping" option anymore
 ```
 
 ##### Use a Custom Mapping provider
@@ -326,7 +326,7 @@ elastically:
     connections:
         default:
             mapping_provider_service: App\Elastically\MappingProvider
-            # Do not defined "index_class_mapping" option anymore
+            # Do not define "index_class_mapping" option anymore
 ```
 
 ##### Using HttpClient as Transport
@@ -341,7 +341,7 @@ JoliCode\Elastically\Client:
         $config:
             host: '%env(ELASTICSEARCH_HOST)%'
             transport: 'JoliCode\Elastically\Transport\HttpClientTransport'
-            ...
+            # ...
 ```
 
 #### Reference
@@ -382,7 +382,7 @@ use JoliCode\Elastically\Messenger\IndexationRequestHandler;
 
 $bus->dispatch(new IndexationRequest(Product::class, '1234567890'));
 
-// Third argument is the operation, so for a delete:
+// Third argument is the operation, so for a "delete" add this argument:
 // new IndexationRequest(Product::class, 'ref9999', IndexationRequestHandler::OP_DELETE);
 ```
 
