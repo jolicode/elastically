@@ -60,7 +60,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
         // Simulate Kernel Response
         $dispatcher->dispatch(
-            new ResponseEvent(self::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
+            new ResponseEvent(self::$kernel, new Request(), Kernel::MAIN_REQUEST, new Response()),
             KernelEvents::RESPONSE
         );
 
@@ -94,7 +94,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
         // Simulate Kernel Response
         $dispatcher->dispatch(
-            new ResponseEvent(self::$kernel, new Request(), Kernel::MASTER_REQUEST, new Response()),
+            new ResponseEvent(self::$kernel, new Request(), Kernel::MAIN_REQUEST, new Response()),
             KernelEvents::RESPONSE
         );
 
