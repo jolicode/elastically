@@ -13,7 +13,7 @@ Main features:
 - Symfony HttpClient compatible transport (**optional**);
 - Symfony support (**optional**):
     - See dedicated [chapter](#usage-in-symfony);
-    - Tested with Symfony 5.4 to 6;
+    - Tested with Symfony 5.4 to 7;
     - Symfony Messenger Handler support (with or without spool);
 
 > [!IMPORTANT]

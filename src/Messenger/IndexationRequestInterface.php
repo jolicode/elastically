@@ -11,4 +11,6 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-interface IndexationRequestInterface {}
+interface IndexationRequestInterface
+{
+}
