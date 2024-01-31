@@ -13,4 +13,6 @@ namespace JoliCode\Elastically\Bridge\Symfony;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ElasticallyBundle extends Bundle {}
+class ElasticallyBundle extends Bundle
+{
+}

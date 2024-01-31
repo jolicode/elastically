@@ -12,6 +12,7 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="KERNEL_CLASS" value="JoliCode\Elastically\Tests\Symfony\TestKernel"/>
         <server name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=11"/> <!-- @see https://github.com/janephp/janephp/issues/727 -->
+        <server name="SYMFONY_PHPUNIT_REQUIRE" value="nikic/php-parser:^4" />
     </php>
 
     <listeners>

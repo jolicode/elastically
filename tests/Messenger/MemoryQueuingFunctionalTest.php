@@ -16,7 +16,7 @@ namespace JoliCode\Elastically\Tests\Messenger;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Messenger\MultipleIndexationRequest;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -105,7 +105,7 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
         $this->assertCount(0, $transportBulk->getSent());
     }
 
-    protected static function getContainer(): ContainerInterface
+    protected static function getContainer(): Container
     {
         if (method_exists(KernelTestCase::class, 'getContainer')) {
             return parent::getContainer();
