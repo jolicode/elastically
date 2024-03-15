@@ -2,10 +2,10 @@ name: CI
 
 on:
     push:
-        branches: [ master ]
+        branches: [master]
     pull_request:
     schedule:
-        -   cron: '0 0 * * MON'
+        - cron: "0 0 * * MON"
 
 jobs:
     check-cs:
@@ -13,19 +13,19 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: PHP-CS-Fixer
               uses: docker://oskarstark/php-cs-fixer-ga
               with:
-                args: --config=.php-cs-fixer.php --diff --dry-run
+                  args: --config=.php-cs-fixer.php --diff --dry-run
 
     phpstan:
         name: PHPStan
         runs-on: ubuntu-latest
         steps:
             - name: "Checkout"
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -35,9 +35,9 @@ jobs:
             - name: PHPStan
               uses: docker://oskarstark/phpstan-ga
               env:
-                REQUIRE_DEV: true
+                  REQUIRE_DEV: true
               with:
-                args: analyse
+                  args: analyse
 
     tests_es:
         name: Test PHP ${{ matrix.php-version }} & Symfony ${{ matrix.symfony-version }} ${{ matrix.composer-flags }} & Elasticsearch ${{ matrix.es-version }}
@@ -49,33 +49,33 @@ jobs:
             matrix:
                 include:
                     # Every lowest supported version
-                    - php-version: '8.0'
-                      symfony-version: '5.4.*'
-                      composer-flags: '--prefer-lowest'
-                      es-version: '7.17.3'
+                    - php-version: "8.0"
+                      symfony-version: "5.4.*"
+                      composer-flags: "--prefer-lowest"
+                      es-version: "7.17.3"
                     # Every lowest supported version && Symfony 6
-                    - php-version: '8.1'
-                      symfony-version: '6.2.*'
-                      composer-flags: ''
-                      es-version: '7.17.3'
+                    - php-version: "8.1"
+                      symfony-version: "6.2.*"
+                      composer-flags: ""
+                      es-version: "7.17.3"
                     # PHP 8.1, latest SF 6, ES 7
-                    - php-version: '8.1'
-                      symfony-version: '6.*'
-                      composer-flags: ''
-                      es-version: '7.17.3'
+                    - php-version: "8.1"
+                      symfony-version: "6.*"
+                      composer-flags: ""
+                      es-version: "7.17.3"
                     # PHP 8.2, latest SF 6, ES 8
-                    - php-version: '8.2'
-                      symfony-version: '6.*'
-                      composer-flags: ''
-                      es-version: '8.2.0'
+                    - php-version: "8.2"
+                      symfony-version: "6.*"
+                      composer-flags: ""
+                      es-version: "8.2.0"
                     # PHP 8.3, latest SF 7, ES 8
-                    - php-version: '8.3'
-                      symfony-version: '7.*'
-                      composer-flags: ''
-                      es-version: '8.2.0'
+                    - php-version: "8.3"
+                      symfony-version: "7.*"
+                      composer-flags: ""
+                      es-version: "8.2.0"
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -94,24 +94,24 @@ jobs:
 
             - name: Configure sysctl limits
               run: |
-                sudo swapoff -a
-                sudo sysctl -w vm.swappiness=1
-                sudo sysctl -w fs.file-max=262144
-                sudo sysctl -w vm.max_map_count=262144
+                  sudo swapoff -a
+                  sudo sysctl -w vm.swappiness=1
+                  sudo sysctl -w fs.file-max=262144
+                  sudo sysctl -w vm.max_map_count=262144
 
             - name: Runs Elasticsearch ${{ matrix.es-version }}
               uses: elastic/elastic-github-actions/elasticsearch@master
               with:
-                security-enabled: false
-                stack-version: ${{ matrix.es-version }}
-                port: 9999
+                  security-enabled: false
+                  stack-version: ${{ matrix.es-version }}
+                  port: 9999
 
             - name: Wait for ES to be ready
               run: |
-                while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
-                do
-                  echo "==> Waiting for cluster green status" && sleep 1
-                done
+                  while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
+                  do
+                    echo "==> Waiting for cluster green status" && sleep 1
+                  done
 
             - name: Run Tests
               run: make test
@@ -125,19 +125,19 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - php-version: '8.3'
-                      symfony-version: '6.*'
-                      composer-flags: ''
+                    - php-version: "8.3"
+                      symfony-version: "6.*"
+                      composer-flags: ""
                       os-version: 1.3.6
                       os-image: opensearchproject/opensearch:1.3.6
-                    - php-version: '8.3'
-                      symfony-version: '6.*'
-                      composer-flags: ''
+                    - php-version: "8.3"
+                      symfony-version: "6.*"
+                      composer-flags: ""
                       os-version: 2.3.0
                       os-image: opensearchproject/opensearch:2.3.0
-                    - php-version: '8.3'
-                      symfony-version: '7.*'
-                      composer-flags: ''
+                    - php-version: "8.3"
+                      symfony-version: "7.*"
+                      composer-flags: ""
                       os-version: 2.3.0
                       os-image: opensearchproject/opensearch:2.3.0
         services:
@@ -151,7 +151,7 @@ jobs:
                     http.port: 9999
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -170,17 +170,17 @@ jobs:
 
             - name: Configure sysctl limits
               run: |
-                sudo swapoff -a
-                sudo sysctl -w vm.swappiness=1
-                sudo sysctl -w fs.file-max=262144
-                sudo sysctl -w vm.max_map_count=262144
+                  sudo swapoff -a
+                  sudo sysctl -w vm.swappiness=1
+                  sudo sysctl -w fs.file-max=262144
+                  sudo sysctl -w vm.max_map_count=262144
 
             - name: Wait for OpenSearch to be ready
               run: |
-                while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
-                do
-                  echo "==> Waiting for cluster green status" && sleep 1
-                done
+                  while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
+                  do
+                    echo "==> Waiting for cluster green status" && sleep 1
+                  done
 
             - name: Run Tests
               run: make test
