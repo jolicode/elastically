@@ -24,7 +24,7 @@ abstract class BaseTestCase extends TestCase
         $this->getFactory()->buildClient()->request('*', 'DELETE');
     }
 
-    protected function getFactory(string $path = null, array $config = []): Factory
+    protected function getFactory(?string $path = null, array $config = []): Factory
     {
         return new Factory($config + [
             Factory::CONFIG_MAPPINGS_DIRECTORY => $path ?? __DIR__ . '/configs',
@@ -33,7 +33,7 @@ abstract class BaseTestCase extends TestCase
         ]);
     }
 
-    protected function getClient(string $path = null, array $config = []): Client
+    protected function getClient(?string $path = null, array $config = []): Client
     {
         return $this->getFactory($path, $config)->buildClient();
     }

@@ -31,7 +31,7 @@ class Client extends ElasticaClient
     private ResultSetBuilder $resultSetBuilder;
     private IndexNameMapper $indexNameMapper;
 
-    public function __construct($config = [], callable $callback = null, LoggerInterface $logger = null, ResultSetBuilder $resultSetBuilder = null, IndexNameMapper $indexNameMapper = null)
+    public function __construct($config = [], ?callable $callback = null, ?LoggerInterface $logger = null, ?ResultSetBuilder $resultSetBuilder = null, ?IndexNameMapper $indexNameMapper = null)
     {
         parent::__construct($config, $callback, $logger);
 

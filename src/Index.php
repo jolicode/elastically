@@ -39,7 +39,7 @@ class Index extends ElasticaIndex
         return $this->resultSetBuilder->buildModelFromDocument($document);
     }
 
-    public function createSearch($query = '', $options = null, BuilderInterface $builder = null): Search
+    public function createSearch($query = '', $options = null, ?BuilderInterface $builder = null): Search
     {
         return parent::createSearch($query, $options, $builder ?? $this->resultSetBuilder);
     }
