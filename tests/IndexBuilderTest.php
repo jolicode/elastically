@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastica\Document as ElasticaDocument;
 use Elastica\Exception\InvalidException;
-use Elastica\Exception\ResponseException;
 use Elastica\Index;
 use Elastica\Index\Settings;
 use JoliCode\Elastically\Factory;
@@ -175,7 +175,7 @@ final class IndexBuilderTest extends BaseTestCase
         try {
             $index2->search();
             $this->assertFalse(true, 'Search should throw a "closed index" exception.');
-        } catch (ResponseException $e) {
+        } catch (ClientResponseException $e) {
             $this->assertStringContainsStringIgnoringCase('closed', $e->getMessage());
         }
     }

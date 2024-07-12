@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
+use Elastica\Request;
+use Http\Discovery\Psr17Factory;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Factory;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +23,7 @@ abstract class BaseTestCase extends TestCase
 {
     protected function setUp(): void
     {
-        $this->getFactory()->buildClient()->request('*', 'DELETE');
+        $this->getClient()->sendRequest((new Psr17Factory())->createRequest(Request::DELETE, '*'));
     }
 
     protected function getFactory(?string $path = null, array $config = []): Factory
@@ -29,7 +31,7 @@ abstract class BaseTestCase extends TestCase
         return new Factory($config + [
             Factory::CONFIG_MAPPINGS_DIRECTORY => $path ?? __DIR__ . '/configs',
             'log' => false,
-            'port' => '9999',
+            'hosts' => ['http://127.0.0.1:9999'],
         ]);
     }
 

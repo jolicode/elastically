@@ -65,7 +65,6 @@ final class Factory
         return $this->client ??= new Client(
             $this->config,
             null,
-            null,
             $this->buildBuilder(),
             $this->buildIndexNameMapper()
         );

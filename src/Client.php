@@ -31,9 +31,9 @@ class Client extends ElasticaClient
     private ResultSetBuilder $resultSetBuilder;
     private IndexNameMapper $indexNameMapper;
 
-    public function __construct($config = [], ?callable $callback = null, ?LoggerInterface $logger = null, ?ResultSetBuilder $resultSetBuilder = null, ?IndexNameMapper $indexNameMapper = null)
+    public function __construct($config = [], ?LoggerInterface $logger = null, ?ResultSetBuilder $resultSetBuilder = null, ?IndexNameMapper $indexNameMapper = null)
     {
-        parent::__construct($config, $callback, $logger);
+        parent::__construct($config, $logger);
 
         // BC Layer, to remove in 2.0
         $this->factory = new Factory($config);
