@@ -58,8 +58,9 @@ class IndexationRequestHandler
     /**
      * @throws ExceptionInterface
      * @throws UnrecoverableMessageHandlingException
+     * @throws \Symfony\Component\Messenger\Exception\ExceptionInterface
      */
-    public function __invoke(IndexationRequestInterface $message)
+    public function __invoke(IndexationRequestInterface $message): void
     {
         $messages = [];
         if ($message instanceof MultipleIndexationRequest) {
