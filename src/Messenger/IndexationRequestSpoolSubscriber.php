@@ -15,6 +15,7 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\Exception\TransportException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
@@ -35,15 +36,16 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
         $this->bus = $bus;
     }
 
-    public function onException()
+    public function onException(): void
     {
         $this->wasExceptionThrown = true;
     }
 
     /**
      * @throws TransportException
+     * @throws ExceptionInterface
      */
-    public function onTerminate()
+    public function onTerminate(): void
     {
         if ($this->wasExceptionThrown) {
             return;
@@ -66,15 +68,11 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
     }
 
     /**
-     * @throws TransportException
+     * @throws TransportException|ExceptionInterface
      */
-    public function onResponse(ResponseEvent $event)
+    public function onResponse(ResponseEvent $event): void
     {
-        if (method_exists($event, 'isMainRequest')) {
-            if (!$event->isMainRequest()) {
-                return;
-            }
-        } elseif (!$event->isMasterRequest()) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
