@@ -34,7 +34,7 @@ final class YamlProvider implements MappingProviderInterface
         $fileName = $context['filename'] ?? ($indexName . '_mapping.yaml');
         $mappingFilePath = $this->configurationDirectory . \DIRECTORY_SEPARATOR . $fileName;
         if (!is_file($mappingFilePath)) {
-            throw new InvalidException(sprintf('Mapping file "%s" not found. Please check your configuration.', $mappingFilePath));
+            throw new InvalidException(\sprintf('Mapping file "%s" not found. Please check your configuration.', $mappingFilePath));
         }
 
         $mapping = $this->parser->parseFile($mappingFilePath);

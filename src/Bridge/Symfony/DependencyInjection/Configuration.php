@@ -108,7 +108,7 @@ class Configuration implements ConfigurationInterface
             ->validate()
                 ->ifTrue(fn (array $config): bool => $config['default_connection'] && !\array_key_exists($config['default_connection'], $config['connections']))
                 ->then(function (array $v) {
-                    throw new InvalidConfigurationException(sprintf('The default connection "%s" does not exists. Available connections are: "%s".', $v['default_connection'], implode('", "', array_keys($v['connections']))));
+                    throw new InvalidConfigurationException(\sprintf('The default connection "%s" does not exists. Available connections are: "%s".', $v['default_connection'], implode('", "', array_keys($v['connections']))));
                 })
             ->end()
         ;

@@ -40,11 +40,11 @@ class IndexBuilder
     {
         $mapping = $this->mappingProvider->provideMapping($indexName, $context);
 
-        $realName = sprintf('%s_%s', $indexName, date('Y-m-d-His'));
+        $realName = \sprintf('%s_%s', $indexName, date('Y-m-d-His'));
         $index = $this->client->getIndex($realName);
 
         if ($index->exists()) {
-            throw new RuntimeException(sprintf('Index "%s" is already created, something is wrong.', $index->getName()));
+            throw new RuntimeException(\sprintf('Index "%s" is already created, something is wrong.', $index->getName()));
         }
 
         $index->create($mapping ?? []);
@@ -97,7 +97,7 @@ class IndexBuilder
         $response = $reindex->run();
 
         if (!$response->isOk()) {
-            throw new RuntimeException(sprintf('Reindex call failed. %s', $response->getError()));
+            throw new RuntimeException(\sprintf('Reindex call failed. %s', $response->getError()));
         }
 
         $taskId = $response->getData()['task'];
@@ -172,14 +172,14 @@ class IndexBuilder
                     $index = new \Elastica\Index($this->client, $realIndexName);
                     $index->delete();
                 }
-                $operations[] = sprintf('%s deleted.', $realIndexName);
+                $operations[] = \sprintf('%s deleted.', $realIndexName);
             } elseif ($livePassed && 1 === $afterLiveCounter) {
                 // Close
                 if (false === $dryRun) {
                     $index = new \Elastica\Index($this->client, $realIndexName);
                     $index->close();
                 }
-                $operations[] = sprintf('%s closed.', $realIndexName);
+                $operations[] = \sprintf('%s closed.', $realIndexName);
             }
         }
 

@@ -28,7 +28,7 @@ class IndexNameMapper
     public function getPrefixedIndex(string $name): string
     {
         if ($this->prefix) {
-            return sprintf('%s_%s', $this->prefix, $name);
+            return \sprintf('%s_%s', $this->prefix, $name);
         }
 
         return $name;
@@ -42,7 +42,7 @@ class IndexNameMapper
         $indexName = array_search($className, $this->indexClassMapping, true);
 
         if (!$indexName) {
-            throw new RuntimeException(sprintf('The given type (%s) does not exist in the configuration.', $className));
+            throw new RuntimeException(\sprintf('The given type (%s) does not exist in the configuration.', $className));
         }
 
         return $this->getPrefixedIndex($indexName);
@@ -54,7 +54,7 @@ class IndexNameMapper
     public function getClassFromIndexName(string $indexName): string
     {
         if (!isset($this->indexClassMapping[$indexName])) {
-            throw new RuntimeException(sprintf('Unknown class for index "%s". Please check your configuration.', $indexName));
+            throw new RuntimeException(\sprintf('Unknown class for index "%s". Please check your configuration.', $indexName));
         }
 
         return $this->indexClassMapping[$indexName];
@@ -63,7 +63,7 @@ class IndexNameMapper
     public function getPureIndexName(string $fullIndexName): string
     {
         if ($this->prefix) {
-            $pattern = sprintf('/%s_(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($this->prefix, '/'));
+            $pattern = \sprintf('/%s_(.+)_\d{4}-\d{2}-\d{2}-\d+/i', preg_quote($this->prefix, '/'));
         } else {
             $pattern = '/(.+)_\d{4}-\d{2}-\d{2}-\d+/i';
         }

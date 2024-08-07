@@ -57,10 +57,10 @@ class TestKernel extends Kernel
             $routes->add('/with_response', TestController::class . '::withResponse', 'with_response');
         } else {
             $routeConfigurator = $routes->add('with_exception', '/with_exception');
-            $routeConfigurator->controller(sprintf('%s::withException', TestController::class));
+            $routeConfigurator->controller(\sprintf('%s::withException', TestController::class));
 
             $routeConfigurator = $routes->add('with_response', '/with_response');
-            $routeConfigurator->controller(sprintf('%s::withResponse', TestController::class));
+            $routeConfigurator->controller(\sprintf('%s::withResponse', TestController::class));
         }
     }
 }
