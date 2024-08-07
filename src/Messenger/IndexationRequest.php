@@ -20,7 +20,7 @@ final class IndexationRequest implements IndexationRequestInterface
     public function __construct(string $className, string $id, string $operation = IndexationRequestHandler::OP_INDEX)
     {
         if (!\in_array($operation, IndexationRequestHandler::OPERATIONS, true)) {
-            throw new \InvalidArgumentException(sprintf('Not supported operation "%s" given.', $operation));
+            throw new \InvalidArgumentException(\sprintf('Not supported operation "%s" given.', $operation));
         }
 
         $this->className = $className;

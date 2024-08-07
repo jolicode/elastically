@@ -29,7 +29,7 @@ final class PhpProvider implements MappingProviderInterface
         $fileName = $context['filename'] ?? ($indexName . '_mapping.php');
         $mappingFilePath = $this->configurationDirectory . \DIRECTORY_SEPARATOR . $fileName;
         if (!is_file($mappingFilePath)) {
-            throw new InvalidException(sprintf('Mapping file "%s" not found.', $mappingFilePath));
+            throw new InvalidException(\sprintf('Mapping file "%s" not found.', $mappingFilePath));
         }
 
         $mapping = require $mappingFilePath;
