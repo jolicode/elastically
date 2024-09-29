@@ -14,10 +14,8 @@ namespace JoliCode\Elastically;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use Elastica\Reindex;
-use Elastica\Request;
 use Elastica\Response;
 use Elastica\Task;
-use Elasticsearch\Endpoints\Cluster\State;
 use JoliCode\Elastically\Mapping\MappingProviderInterface;
 
 class IndexBuilder
@@ -64,7 +62,9 @@ class IndexBuilder
         $data['actions'][] = ['remove' => ['index' => $indexPrefixedName . '*', 'alias' => $indexPrefixedName]];
         $data['actions'][] = ['add' => ['index' => $index->getName(), 'alias' => $indexPrefixedName]];
 
-        return $this->client->request('_aliases', Request::POST, $data);
+        return $this->client->toElasticaResponse(
+            $this->client->indices()->updateAliases(['index' => $indexName, 'body' => $data])
+        );
     }
 
     /**
@@ -119,13 +119,11 @@ class IndexBuilder
     {
         $indexName = $this->indexNameMapper->getPrefixedIndex($indexName);
 
-        $stateRequest = new State();
-        $stateRequest->setParams([
+        $state = $this->client->cluster()->state([
             'filter_path' => 'metadata.indices.*.state,metadata.indices.*.aliases',
         ]);
 
-        $indexes = $this->client->requestEndpoint($stateRequest);
-        $indexes = $indexes->getData();
+        $indexes = $this->client->toElasticaResponse($state)->getData();
         $indexes = $indexes['metadata']['indices'];
 
         foreach ($indexes as $realIndexName => &$data) {

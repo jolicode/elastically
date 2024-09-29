@@ -17,11 +17,13 @@
     "require": {
         "php": ">=8.0",
         "ext-json": "*",
+        "nyholm/psr7": "^1.8",
         "phpdocumentor/reflection-docblock": "^4.4|^5.0",
-        "ruflin/elastica": "^7.0",
+        "ruflin/elastica": "^8.0",
         "symfony/deprecation-contracts": "^2.4 || ^3.0",
         "symfony/property-access": "^5.4 || ^6.0 || ^7.0",
         "symfony/property-info": "^5.4 || ^6.0 || ^7.0",
+        "symfony/psr-http-message-bridge": "^7.1",
         "symfony/serializer": "^5.4 || ^6.0 || ^7.0",
         "symfony/yaml": "^5.4 || ^6.0 || ^7.0"
     },

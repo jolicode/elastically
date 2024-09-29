@@ -2,7 +2,7 @@ test: ## Run test suite
 	./vendor/bin/simple-phpunit
 
 start: ## Start testing tools (Elasticsearch)
-	docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch-oss:7.8.0
+	docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "action.destructive_requires_name=false" -it -m 1GB docker.elastic.co/elasticsearch/elasticsearch:8.14.2
 
 start_opensearch: ## Start testing tools (OpenSearch)
 	docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" -e "plugins.security.disabled=true" opensearchproject/opensearch:2.3.0

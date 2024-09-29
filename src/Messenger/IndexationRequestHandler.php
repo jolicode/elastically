@@ -17,7 +17,6 @@ use Elastica\Exception\RuntimeException;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
-use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -50,9 +49,6 @@ class IndexationRequestHandler
         $this->exchanger = $exchanger;
         $this->indexer = $indexer;
         $this->indexNameMapper = $indexNameMapper;
-
-        // Disable the logs for memory concerns
-        $this->client->setLogger(new NullLogger());
     }
 
     /**
