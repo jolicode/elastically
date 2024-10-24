@@ -67,8 +67,8 @@ class ElasticallyExtension extends Extension
         $container->setDefinition("elastically.{$name}.result_set_builder", $resultSetBuilder);
 
         $client = new ChildDefinition('elastically.abstract.client');
-        if (\array_key_exists('client', $config) && \array_key_exists('transport', $config['client'])) {
-            $config['client']['transport'] = new Reference($config['client']['transport']);
+        if ($transportClient = $config['client']['transport_config']['http_client'] ?? null) {
+            $config['client']['transport_config']['http_client'] = new Reference($transportClient);
         }
         $client->replaceArgument('$config', $config['client']);
         $client->replaceArgument('$resultSetBuilder', new Reference("elastically.{$name}.result_set_builder"));

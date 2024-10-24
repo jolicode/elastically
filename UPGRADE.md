@@ -1,5 +1,19 @@
 # Upgrade guide
 
+## From v1.9.0 to v2.0.0
+
+HttpClientTransport has been removed:
+```diff
+    JoliCode\Elastically\Client:
+        arguments:
+            $config:
+                host: '%env(ELASTICSEARCH_HOST)%'
+                port: '%env(ELASTICSEARCH_PORT)%'
+-               transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
++               transport_client:
++                   client: '@my_custom_psr18_client' # An instance of Symfony\Component\HttpClient\Psr18Client (Or any PSR 18 compliant one)
+```
+
 ## From v1.3.0 to v1.4.0
 
 If you're using Symfony, here are the changes to apply:
