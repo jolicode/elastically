@@ -151,7 +151,10 @@ final class IndexerTest extends BaseTestCase
         $dto->bar = 'I like unicorns.';
         $dto->foo = 'Why is the sky blue?';
 
-        $indexer = $this->getIndexer();
+        $factory = $this->getFactory();
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+
         $indexer->setBulkRequestParams([
             'refresh' => 'wait_for',
         ]);
@@ -160,7 +163,8 @@ final class IndexerTest extends BaseTestCase
         $response = $indexer->flush();
 
         $this->assertInstanceOf(ResponseSet::class, $response);
-        $query = $this->getClient()->getLastRequest()->getUri()->getQuery();
+
+        $query = $client->getLastRequest()->getUri()->getQuery();
         $this->assertStringContainsString('refresh=wait_for', $query);
 
         // Test the same with an invalid pipeline
