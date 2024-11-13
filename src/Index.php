@@ -33,8 +33,6 @@ class Index extends ElasticaIndex
     }
 
     /**
-     * @return mixed|string|null
-     *
      * @throws ClientResponseException
      * @throws ExceptionInterface
      * @throws MissingParameterException
