@@ -32,7 +32,6 @@ class Configuration implements ConfigurationInterface
                                 ->info('All options for the Elastica client constructor')
                                 ->example([
                                     'host' => '%env(ELASTICSEARCH_HOST)%',
-                                    'transport' => 'JoliCode\Elastically\Transport\HttpClientTransport',
                                 ])
                                 ->normalizeKeys(false)
                                 ->defaultValue([])

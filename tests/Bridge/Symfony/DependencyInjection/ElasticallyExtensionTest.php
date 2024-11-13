@@ -211,7 +211,9 @@ class ElasticallyExtensionTest extends TestCase
             'connections' => [
                 'default' => [
                     'client' => [
-                        'transport' => HttpClientTransport::class,
+                        'transport_config' => [
+                            'http_client' => '@psr_es_client'
+                        ],
                     ],
                     'mapping_directory' => __DIR__,
                     'index_class_mapping' => ['foobar' => self::class],
@@ -222,7 +224,7 @@ class ElasticallyExtensionTest extends TestCase
         $container->compile();
 
         $configArgument = $container->getDefinition('elastically.default.client')->getArgument('$config');
-        $this->assertInstanceOf(Reference::class, $configArgument['transport']);
+        $this->assertInstanceOf(Reference::class, $configArgument['transport_config']['http_client'] ?? null);
     }
 
     private function buildContainer(): ContainerBuilder

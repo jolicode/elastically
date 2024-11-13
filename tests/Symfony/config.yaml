@@ -16,6 +16,10 @@ framework:
         routing:
             'JoliCode\Elastically\Messenger\MultipleIndexationRequest': async
             'JoliCode\Elastically\Messenger\IndexationRequest': queuing
+    http_client:
+        scoped_clients:
+            elasticsearch.client:
+                base_uri: 'http://localhost:9999'
 
 services:
     _defaults:
@@ -35,6 +39,11 @@ services:
         class: \stdClass
         arguments:
             - '@Symfony\Component\Messenger\MessageBusInterface'
+
+    psr_es_client:
+        class: Symfony\Component\HttpClient\Psr18Client
+        arguments:
+            $client: '@elasticsearch.client'
 
     JoliCode\Elastically\Client:
         arguments:

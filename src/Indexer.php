@@ -156,6 +156,11 @@ class Indexer
         $this->refreshBulkRequestParams();
     }
 
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
     protected function getCurrentBulk(): Bulk
     {
         if (!$this->currentBulk) {

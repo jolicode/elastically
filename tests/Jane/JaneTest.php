@@ -66,8 +66,7 @@ class JaneTest extends TestCase
 
         // Build Elastically Client
         $elastically = new Client(
-            ['port' => '9999'],
-            null,
+            ['hosts' => ['http://127.0.0.1:9999']],
             null,
             $resultSetBuilder,
             $indexNameMapper

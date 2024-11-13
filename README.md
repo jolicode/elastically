@@ -253,7 +253,6 @@ elastically:
             client:
                 host:                '%env(ELASTICSEARCH_HOST)%'
                 # If you want to use the Symfony HttpClient (you MUST create this service)
-                #transport:           'JoliCode\Elastically\Transport\HttpClientTransport'
 
             # Path to the mapping directory (in YAML)
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
