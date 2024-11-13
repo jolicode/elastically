@@ -11,6 +11,10 @@
 
 namespace JoliCode\Elastically;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Transport\Exception\NoNodeAvailableException;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index as ElasticaIndex;
 use Elastica\ResultSet\BuilderInterface;
@@ -29,10 +33,14 @@ class Index extends ElasticaIndex
     }
 
     /**
+     * @throws ClientResponseException
      * @throws ExceptionInterface
+     * @throws MissingParameterException
      * @throws SerializerExceptionInterface
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
      */
-    public function getModel($id)
+    public function getModel($id): mixed
     {
         $document = $this->getDocument($id);
 
@@ -42,13 +50,6 @@ class Index extends ElasticaIndex
     public function createSearch($query = '', $options = null, ?BuilderInterface $builder = null): Search
     {
         return parent::createSearch($query, $options, $builder ?? $this->resultSetBuilder);
-    }
-
-    public function getBuilder(): ResultSetBuilder
-    {
-        trigger_deprecation('jolicode/elastically', '1.3.0', 'Method %s() is deprecated. Use %s::getBuilder() instead', __METHOD__, Client::class);
-
-        return $this->resultSetBuilder;
     }
 
     public function getClient(): Client

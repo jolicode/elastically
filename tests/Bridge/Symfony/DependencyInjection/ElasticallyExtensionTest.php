@@ -16,7 +16,6 @@ use JoliCode\Elastically\Bridge\Symfony\ElasticallyBundle;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
-use JoliCode\Elastically\Transport\HttpClientTransport;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -212,7 +211,7 @@ class ElasticallyExtensionTest extends TestCase
                 'default' => [
                     'client' => [
                         'transport_config' => [
-                            'http_client' => '@psr_es_client'
+                            'http_client' => '@psr_es_client',
                         ],
                     ],
                     'mapping_directory' => __DIR__,

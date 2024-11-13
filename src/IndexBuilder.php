@@ -11,6 +11,11 @@
 
 namespace JoliCode\Elastically;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Transport\Exception\NoNodeAvailableException;
+use Elastica\Exception\ClientException;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use Elastica\Reindex;
@@ -33,6 +38,10 @@ class IndexBuilder
 
     /**
      * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
      */
     public function createIndex(string $indexName, array $context = []): Index
     {
@@ -51,7 +60,9 @@ class IndexBuilder
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
      */
     public function markAsLive(Index $index, string $indexName): Response
     {
@@ -68,7 +79,10 @@ class IndexBuilder
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ClientException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
      */
     public function slowDownRefresh(Index $index): void
     {
@@ -76,7 +90,10 @@ class IndexBuilder
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ClientException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
      */
     public function speedUpRefresh(Index $index): void
     {
@@ -85,6 +102,10 @@ class IndexBuilder
 
     /**
      * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
      */
     public function migrate(Index $currentIndex, array $params = [], array $context = []): Index
     {
@@ -113,7 +134,11 @@ class IndexBuilder
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ClientException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
      */
     public function purgeOldIndices(string $indexName, bool $dryRun = false): array
     {
@@ -133,7 +158,7 @@ class IndexBuilder
                 continue;
             }
 
-            // Check suffix (it must contains a valid date)
+            // Check suffix (it must contain a valid date)
             $indexSuffixName = substr($realIndexName, \strlen($indexName) + 1);
             $date = \DateTime::createFromFormat('Y-m-d-His', $indexSuffixName);
             if (!$date) {
@@ -143,7 +168,7 @@ class IndexBuilder
             }
 
             $data['date'] = $date;
-            $data['is_live'] = false !== array_search($indexName, $data['aliases'], true);
+            $data['is_live'] = \in_array($indexName, $data['aliases'], true);
         }
 
         // Newest first

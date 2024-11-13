@@ -43,7 +43,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
         $indexer = $factory->buildIndexer();
         $indexNameMapper = $factory->buildIndexNameMapper();
 
-        $handler = new IndexationRequestHandler($client, new MessageBus(), new TestDocumentExchanger(), $indexer, $indexNameMapper);
+        $handler = new IndexationRequestHandler(new MessageBus(), new TestDocumentExchanger(), $indexer, $indexNameMapper);
         $handler(new IndexationRequest(TestDTO::class, '1234567890'));
         $handler(new IndexationRequest(TestDTO::class, '1234567890', IndexationRequestHandler::OP_UPDATE));
         $handler(new IndexationRequest(TestDTO::class, 'ref7777', IndexationRequestHandler::OP_CREATE));
@@ -109,7 +109,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
+        $handler = new IndexationRequestHandler($traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         $goodRequest = new IndexationRequest(FooDTO::class, '1234567892');
         $badRequest = new IndexationRequest(BarDTO::class, '1234567892');
@@ -142,7 +142,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
+        $handler = new IndexationRequestHandler($traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         $badRequest1 = new IndexationRequest(BarDTO::class, '1234567892');
         $badRequest2 = new IndexationRequest(BarDTO::class, '1234567892');
@@ -172,7 +172,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
+        $handler = new IndexationRequestHandler($traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         $badRequest = new IndexationRequest(BarDTO::class, '1234567892');
 
@@ -207,7 +207,7 @@ final class IndexationRequestHandlerTest extends BaseTestCase
 
         $traceableBus = new TraceableMessageBus(new MessageBus());
 
-        $handler = new IndexationRequestHandler($client, $traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
+        $handler = new IndexationRequestHandler($traceableBus, new FooBarDocumentExchanger(), $indexer, $indexNameMapper);
 
         // bulk 1
         $request1 = new IndexationRequest(FooDTO::class, 'bulk-1-message-1');
