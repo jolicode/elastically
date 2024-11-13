@@ -11,10 +11,13 @@
 
 namespace JoliCode\Elastically\Messenger;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Transport\Exception\NoNodeAvailableException;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
-use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -36,15 +39,13 @@ class IndexationRequestHandler
         self::OP_CREATE,
     ];
 
-    private Client $client;
     private MessageBusInterface $bus;
     private DocumentExchangerInterface $exchanger;
     private Indexer $indexer;
     private IndexNameMapper $indexNameMapper;
 
-    public function __construct(Client $client, MessageBusInterface $bus, DocumentExchangerInterface $exchanger, Indexer $indexer, IndexNameMapper $indexNameMapper)
+    public function __construct(MessageBusInterface $bus, DocumentExchangerInterface $exchanger, Indexer $indexer, IndexNameMapper $indexNameMapper)
     {
-        $this->client = $client;
         $this->bus = $bus;
         $this->exchanger = $exchanger;
         $this->indexer = $indexer;
@@ -53,7 +54,10 @@ class IndexationRequestHandler
 
     /**
      * @throws ExceptionInterface
-     * @throws UnrecoverableMessageHandlingException
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
      * @throws \Symfony\Component\Messenger\Exception\ExceptionInterface
      */
     public function __invoke(IndexationRequestInterface $message): void
@@ -110,10 +114,14 @@ class IndexationRequestHandler
     }
 
     /**
-     * @throws UnrecoverableMessageHandlingException
+     * @throws ClientResponseException
      * @throws ExceptionInterface
+     * @throws MissingParameterException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
+     * @throws UnrecoverableMessageHandlingException
      */
-    private function schedule(Indexer $indexer, IndexationRequest $indexationRequest)
+    private function schedule(Indexer $indexer, IndexationRequest $indexationRequest): void
     {
         try {
             $indexName = $this->indexNameMapper->getIndexNameFromClass($indexationRequest->getClassName());

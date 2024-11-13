@@ -11,9 +11,14 @@
 
 namespace JoliCode\Elastically;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Transport\Exception\NoNodeAvailableException;
 use Elastica\Bulk;
 use Elastica\Document as ElasticaDocument;
-use Elastica\Exception\ExceptionInterface;
+use Elastica\Exception\Bulk\ResponseException;
+use Elastica\Exception\ClientException;
 use Elastica\Index;
 use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
@@ -42,9 +47,14 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
+     * @throws ResponseException
+     * @throws ClientException
      */
-    public function scheduleIndex($index, ElasticaDocument $document)
+    public function scheduleIndex($index, ElasticaDocument $document): void
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         $this->updateDocumentData($document);
@@ -55,9 +65,14 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
+     * @throws ResponseException
+     * @throws ClientException
      */
-    public function scheduleDelete($index, string $id)
+    public function scheduleDelete($index, string $id): void
     {
         $document = new Document($id);
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
@@ -67,9 +82,14 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
+     * @throws ResponseException
+     * @throws ClientException
      */
-    public function scheduleUpdate($index, ElasticaDocument $document)
+    public function scheduleUpdate($index, ElasticaDocument $document): void
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         $this->updateDocumentData($document);
@@ -80,9 +100,14 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
+     * @throws ResponseException
+     * @throws ClientException
      */
-    public function scheduleCreate($index, ElasticaDocument $document)
+    public function scheduleCreate($index, ElasticaDocument $document): void
     {
         $document->setIndex($index instanceof Index ? $index->getName() : $index);
         $this->updateDocumentData($document);
@@ -93,7 +118,12 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientException
+     * @throws ResponseException
+     * @throws ServerResponseException
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
      */
     public function flush(): ?Bulk\ResponseSet
     {
@@ -114,7 +144,7 @@ class Indexer
         return $response;
     }
 
-    public function getQueueSize()
+    public function getQueueSize(): int
     {
         if (!$this->currentBulk) {
             return 0;
@@ -124,9 +154,13 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientException
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
      */
-    public function refresh($index)
+    public function refresh(Index|string $index): void
     {
         $indexName = $index instanceof Index ? $index->getName() : $index;
 
@@ -134,7 +168,12 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientException
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
+     * @throws NoNodeAvailableException
+     * @throws ResponseException
      */
     public function setBulkMaxSize(int $bulkMaxSize): void
     {
@@ -156,11 +195,6 @@ class Indexer
         $this->refreshBulkRequestParams();
     }
 
-    public function getClient(): Client
-    {
-        return $this->client;
-    }
-
     protected function getCurrentBulk(): Bulk
     {
         if (!$this->currentBulk) {
@@ -172,7 +206,12 @@ class Indexer
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ClientException
+     * @throws ResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
      */
     protected function flushIfNeeded(): void
     {
@@ -181,7 +220,7 @@ class Indexer
         }
     }
 
-    private function refreshBulkRequestParams()
+    private function refreshBulkRequestParams(): void
     {
         if (!$this->currentBulk) {
             return;
@@ -197,16 +236,6 @@ class Indexer
         if ($document instanceof Document && null !== $document->getModel()) {
             $context = $this->contextBuilder->buildContext(\get_class($document->getModel()));
             $data = $this->serializer->serialize($document->getModel(), 'json', $context);
-            $document->setData($data);
-
-            return;
-        }
-
-        // This check is added for BC-compatibility with older version
-        // But a deprecation could be added and this could be removed in 2.x versions (?)
-        if (\is_object($document->getData())) { // @phpstan-ignore-line
-            $context = $this->contextBuilder->buildContext(\get_class($document->getData())); // @phpstan-ignore-line
-            $data = $this->serializer->serialize($document->getData(), 'json', $context);
             $document->setData($data);
         }
     }

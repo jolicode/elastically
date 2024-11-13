@@ -52,27 +52,27 @@ jobs:
                     - php-version: "8.0"
                       symfony-version: "5.4.*"
                       composer-flags: "--prefer-lowest"
-                      es-version: "7.17.3"
+                      es-version: "7.17.25"
                     # Every lowest supported version && Symfony 6
                     - php-version: "8.1"
                       symfony-version: "6.2.*"
                       composer-flags: ""
-                      es-version: "7.17.3"
+                      es-version: "7.17.25"
                     # PHP 8.1, latest SF 6, ES 7
                     - php-version: "8.1"
                       symfony-version: "6.*"
                       composer-flags: ""
-                      es-version: "7.17.3"
+                      es-version: "7.17.25"
                     # PHP 8.2, latest SF 6, ES 8
                     - php-version: "8.2"
                       symfony-version: "6.*"
                       composer-flags: ""
-                      es-version: "8.2.0"
+                      es-version: "8.16.0"
                     # PHP 8.3, latest SF 7, ES 8
                     - php-version: "8.3"
                       symfony-version: "7.*"
                       composer-flags: ""
-                      es-version: "8.2.0"
+                      es-version: "8.16.0"
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -107,75 +107,6 @@ jobs:
                   port: 9999
 
             - name: Wait for ES to be ready
-              run: |
-                  while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
-                  do
-                    echo "==> Waiting for cluster green status" && sleep 1
-                  done
-
-            - name: Run Tests
-              run: make test
-
-    tests_opensearch:
-        name: Test PHP ${{ matrix.php-version }} & Symfony ${{ matrix.symfony-version }} ${{ matrix.composer-flags }} & OpenSearch ${{ matrix.os-version }}
-        runs-on: ubuntu-latest
-        env:
-            SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                    - php-version: "8.3"
-                      symfony-version: "6.*"
-                      composer-flags: ""
-                      os-version: 1.3.6
-                      os-image: opensearchproject/opensearch:1.3.6
-                    - php-version: "8.3"
-                      symfony-version: "6.*"
-                      composer-flags: ""
-                      os-version: 2.3.0
-                      os-image: opensearchproject/opensearch:2.3.0
-                    - php-version: "8.3"
-                      symfony-version: "7.*"
-                      composer-flags: ""
-                      os-version: 2.3.0
-                      os-image: opensearchproject/opensearch:2.3.0
-        services:
-            search-server:
-                image: ${{ matrix.os-image }}
-                ports:
-                    - 9999:9999
-                env:
-                    discovery.type: single-node
-                    plugins.security.disabled: true
-                    http.port: 9999
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Setup PHP, with composer and extensions
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php-version }}
-
-              # We need Flex to enfore Symfony version with `SYMFONY_REQUIRE` env var
-            - name: Install Symfony Flex
-              run: composer global require --no-progress --no-scripts --no-plugins symfony/flex
-
-            - name: Enable Symfony Flex
-              run: composer global config --no-plugins allow-plugins.symfony/flex true
-
-            - name: Install Composer dependencies
-              run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}
-
-            - name: Configure sysctl limits
-              run: |
-                  sudo swapoff -a
-                  sudo sysctl -w vm.swappiness=1
-                  sudo sysctl -w fs.file-max=262144
-                  sudo sysctl -w vm.max_map_count=262144
-
-            - name: Wait for OpenSearch to be ready
               run: |
                   while ! curl -s -X GET http://127.0.0.1:9999/_cluster/health\?wait_for_status\=green\&timeout\=60s | grep -q '"status":"green"'
                   do

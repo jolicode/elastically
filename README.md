@@ -1,6 +1,6 @@
 # Elastically, **Elastica** based framework
 
-Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch / OpenSearch implementations.
+Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch implementations.
 
 Main features:
 
@@ -17,11 +17,11 @@ Main features:
     - Symfony Messenger Handler support (with or without spool);
 
 > [!IMPORTANT]
-> Require PHP 8.0+ and Elasticsearch 7+.
+> Require PHP 8.0+ and Elasticsearch 8+.
 
-Works with **Elasticsearch 8+** but is not officially supported by Elastica yet. Use with caution.
+Works with **Elasticsearch 7** as well but is not officially supported by Elastica 8. Use with caution.
 
-Works with **OpenSearch 1 and 2**.
+Version 2+ does not work with **OpenSearch** anymore due to restrictions added by Elastic on their client.
 
 You can check the [changelog](CHANGELOG.md) and the [upgrade](UPGRADE.md) documents.
 
@@ -252,7 +252,6 @@ elastically:
         default:
             client:
                 host:                '%env(ELASTICSEARCH_HOST)%'
-                # If you want to use the Symfony HttpClient (you MUST create this service)
 
             # Path to the mapping directory (in YAML)
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
@@ -339,9 +338,11 @@ JoliCode\Elastically\Client:
     arguments:
         $config:
             host: '%env(ELASTICSEARCH_HOST)%'
-            transport: 'JoliCode\Elastically\Transport\HttpClientTransport'
-            # ...
+            transport_client:
+                client: '@my_custom_psr18_client' # An instance of Symfony\Component\HttpClient\Psr18Client (Or any PSR 18 compliant one)
 ```
+
+See the [official documentation on how to get a PSR-18 client](https://symfony.com/doc/current/http_client.html#psr-18-and-psr-17).
 
 #### Reference
 

@@ -160,7 +160,7 @@ final class IndexerTest extends BaseTestCase
         $response = $indexer->flush();
 
         $this->assertInstanceOf(ResponseSet::class, $response);
-        $query = $indexer->getClient()->getLastRequest()->getUri()->getQuery();
+        $query = $this->getClient()->getLastRequest()->getUri()->getQuery();
         $this->assertStringContainsString('refresh=wait_for', $query);
 
         // Test the same with an invalid pipeline

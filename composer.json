@@ -32,7 +32,7 @@
         "jane-php/json-schema": "^7.4",
         "jane-php/json-schema-runtime": "^7.4",
         "phpstan/phpstan": "^1.9",
-        "symfony/browser-kit": "^5.4 || ^6.0",
+        "symfony/browser-kit": "^5.4 || ^6.0 || ^7.0",
         "symfony/framework-bundle": "^5.4.17 || ^6.0 || ^7.0",
         "symfony/http-client": "^5.4 || ^6.0 || ^7.0",
         "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
