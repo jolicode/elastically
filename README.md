@@ -251,7 +251,8 @@ elastically:
     connections:
         default:
             client:
-                host:                '%env(ELASTICSEARCH_HOST)%'
+                hosts:
+                    - '127.0.0.1:9200'
 
             # Path to the mapping directory (in YAML)
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
@@ -337,7 +338,8 @@ JoliCode\Elastically\Transport\HttpClientTransport: ~
 JoliCode\Elastically\Client:
     arguments:
         $config:
-            host: '%env(ELASTICSEARCH_HOST)%'
+            hosts:
+                - '127.0.0.1:9200'
             transport_client:
                 client: '@my_custom_psr18_client' # An instance of Symfony\Component\HttpClient\Psr18Client (Or any PSR 18 compliant one)
 ```

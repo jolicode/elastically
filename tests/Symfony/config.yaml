@@ -21,6 +21,20 @@ framework:
             elasticsearch.client:
                 base_uri: 'http://localhost:9999'
 
+elastically:
+    connections:
+        default:
+            client:
+                hosts:
+                    - 'localhost:9999'
+            mapping_directory:       '%kernel.project_dir%/configs_analysis'
+
+            # Size of the bulk sent to Elasticsearch (default to 100)
+            bulk_size:               100
+
+            # Mapping between an index name and a FQCN
+            index_class_mapping:
+                hop: JoliCode\Elastically\Tests\Messenger\TestDTO
 services:
     _defaults:
         public: true
@@ -44,17 +58,6 @@ services:
         class: Symfony\Component\HttpClient\Psr18Client
         arguments:
             $client: '@elasticsearch.client'
-
-    JoliCode\Elastically\Client:
-        arguments:
-            $config:
-                host: 'localhost'
-                port: '9999'
-                elastically_mappings_directory: '%kernel.project_dir%/configs_analysis'
-                elastically_index_class_mapping:
-                    hop: JoliCode\Elastically\Tests\Messenger\TestDTO
-                elastically_bulk_size: 100
-            $logger: '@logger'
 
     JoliCode\Elastically\Messenger\IndexationRequestSpoolSubscriber:
         arguments:
