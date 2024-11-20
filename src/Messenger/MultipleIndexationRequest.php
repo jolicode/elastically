@@ -20,6 +20,7 @@ final class MultipleIndexationRequest implements IndexationRequestInterface
         $this->operations = $operations;
     }
 
+    /** @return array<IndexationRequest> */
     public function getOperations(): array
     {
         return $this->operations;

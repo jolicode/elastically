@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Massive release with added support for Elastica 8 and all deprecated code removed.
 
+### Fixed
+
+- Fix deserialize operations property of `MultipleIndexationRequest`
+
 ### Added
 
 - Upgraded `ruflin/elastica` to v8 (Breaking Change)
