@@ -19,7 +19,7 @@ Main features:
 > [!IMPORTANT]
 > Require PHP 8.0+ and Elasticsearch 8+.
 
-Works with **Elasticsearch 7** as well but is not officially supported by Elastica 8. Use with caution.
+Works with **Elasticsearch 7** as well, but is not officially supported by Elastica 8. Use with caution.
 
 Version 2+ does not work with **OpenSearch** anymore due to restrictions added by Elastic on their client.
 
@@ -249,7 +249,9 @@ Then configure the bundle:
 # config/packages/elastically.yaml
 elastically:
     connections:
+        # You can create multiple clients
         default:
+            # Any Elastica option works here
             client:
                 hosts:
                     - '127.0.0.1:9200'
@@ -272,6 +274,10 @@ elastically:
 
             # If you want to add a prefix for your index in elasticsearch (you can still call it by its base name everywhere!)
             # prefix: '%kernel.environment%'
+
+            # Use HttpClient component
+            transport_config:
+                http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 Finally, inject one of those service (autowirable) in you code where you need
@@ -340,8 +346,8 @@ JoliCode\Elastically\Client:
         $config:
             hosts:
                 - '127.0.0.1:9200'
-            transport_client:
-                client: '@my_custom_psr18_client' # An instance of Symfony\Component\HttpClient\Psr18Client (Or any PSR 18 compliant one)
+            transport_config:
+                http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 See the [official documentation on how to get a PSR-18 client](https://symfony.com/doc/current/http_client.html#psr-18-and-psr-17).
@@ -440,7 +446,6 @@ $factory = new Factory([
 
 - some "todo" in the code
 - optional Doctrine connector
-- better logger - maybe via a processor? extending _log is supposed to be deprecated :(
 - extra commands to monitor, update mapping, reindex... Commonly implemented tasks
 - optional Symfony integration:
   - web debug toolbar!

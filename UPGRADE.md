@@ -2,17 +2,16 @@
 
 ## From v1.9.0 to v2.0.0
 
+> [!WARNING]  
+> All the deprecation from Elastica 7 to Elastica 8 apply to this major version,
+> [see their UPGRADE first](https://github.com/ruflin/Elastica/blob/58042887616eeb63621412c03bc903056bbcee7e/UPGRADE-8.0.md#upgrade-from-73-to-80).
+
 HttpClientTransport has been removed, you must replace it with [a PSR-18 client](https://symfony.com/doc/current/http_client.html#psr-18-and-psr-17):
 
 ```diff
-    JoliCode\Elastically\Client:
-        arguments:
-            $config:
-                host: '%env(ELASTICSEARCH_HOST)%'
-                port: '%env(ELASTICSEARCH_PORT)%'
--               transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
-+               transport_client:
-+                   client: '@my_custom_psr18_client' # An instance of Symfony\Component\HttpClient\Psr18Client (Or any PSR 18 compliant one)
+-    transport: '@JoliCode\Elastically\Transport\HttpClientTransport'
++    transport_config:
++        http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 Code has been cleaned of deprecations:
@@ -37,7 +36,7 @@ Code has been cleaned of deprecations:
 - Removed `\JoliCode\Elastically\Client::getDenormalizer`, use the Factory (`\JoliCode\Elastically\Factory`) or DIC
 - Removed `\JoliCode\Elastically\Client::getSerializerContext`, use the Factory (`\JoliCode\Elastically\Factory`) or DIC
 - Using `\Elastica\Document::setData` to store your DTO will not work anymore, you must use `\JoliCode\Elastically\Model\Document` instead
-- 
+
 ## From v1.3.0 to v1.4.0
 
 If you're using Symfony, here are the changes to apply:
