@@ -35,6 +35,7 @@ elastically:
             # Mapping between an index name and a FQCN
             index_class_mapping:
                 hop: JoliCode\Elastically\Tests\Messenger\TestDTO
+
 services:
     _defaults:
         public: true
