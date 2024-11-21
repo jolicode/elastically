@@ -31,7 +31,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('client')
                                 ->info('All options for the Elastica client constructor')
                                 ->example([
-                                    'host' => '%env(ELASTICSEARCH_HOST)%',
+                                    'hosts' => ['%env(ELASTICSEARCH_HOST)%', 'http://localhost:9200'],
                                 ])
                                 ->normalizeKeys(false)
                                 ->defaultValue([])
