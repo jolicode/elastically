@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Symfony;
 
+use JoliCode\Elastically\Bridge\Symfony\ElasticallyBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -28,6 +29,7 @@ class TestKernel extends Kernel
     {
         return [
             new FrameworkBundle(),
+            new ElasticallyBundle(),
         ];
     }
 

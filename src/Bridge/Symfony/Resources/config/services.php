@@ -46,7 +46,6 @@ return static function (ContainerConfigurator $container) {
             ->abstract()
             ->args([
                 '$config' => abstract_arg('config'),
-                '$callback' => null,
                 '$logger' => service('logger')->nullOnInvalid(),
                 '$resultSetBuilder' => abstract_arg('elastically.abstract.result_set_builder'),
                 '$indexNameMapper' => abstract_arg('elastically.abstract.index_name_mapper'),
