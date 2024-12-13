@@ -15,6 +15,8 @@ namespace JoliCode\Elastically\Tests;
 
 use Elastica\Document as ElasticaDocument;
 use Elastica\Query;
+use Elastica\Script\Script;
+use Elastica\Script\ScriptFields;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Result;
@@ -122,6 +124,43 @@ final class SearchTest extends BaseTestCase
         $this->assertInstanceOf(Result::class, $results->getResults()[0]);
         $this->assertInstanceOf(ElasticaDocument::class, $results->getDocuments()[0]);
         $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
+    }
+
+    public function testSearchWithScriptedField(): void
+    {
+        $indexName = mb_strtolower(__FUNCTION__);
+
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $indexName => SearchTestDto::class,
+            ],
+        ]);
+        $indexer = $factory->buildIndexer();
+        $client = $factory->buildClient();
+
+        $dto = new SearchTestDto();
+        $dto->bar = 'coucou unicorns';
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $indexer->flush();
+
+        $indexer->refresh($indexName);
+
+        $query = Query::create('unicorns');
+        $query->setSource(true);
+
+        $scriptField = new Script('params._source.bar == \'coucou unicorns\'');
+        $scriptFields = new ScriptFields();
+        $scriptFields->addScript('foo', $scriptField);
+        $query->setScriptFields($scriptFields);
+        $results = $client->getIndex($indexName)->search($query);
+
+        $this->assertSame(1, $results->getTotalHits());
+
+        $this->assertInstanceOf(Result::class, $results->getResults()[0]);
+        $this->assertInstanceOf(ElasticaDocument::class, $results->getDocuments()[0]);
+        $this->assertInstanceOf(SearchTestDto::class, $results->getResults()[0]->getModel());
+        $this->assertTrue($results->getResults()[0]->getModel()->foo);
     }
 }
 

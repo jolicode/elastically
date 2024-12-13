@@ -65,6 +65,6 @@ class ResultSetBuilderTest extends TestCase
         ;
 
         $resultSetBuilder = new ResultSetBuilder($indexNameMapper, $contextBuilder, $denormalizer);
-        $resultSetBuilder->buildModelFromIndexAndData('indexName', ['id' => 1234]);
+        $resultSetBuilder->buildModelFromIndexAndData('indexName', ['id' => 1234], []);
     }
 }
