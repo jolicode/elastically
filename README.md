@@ -255,6 +255,9 @@ elastically:
             client:
                 hosts:
                     - '127.0.0.1:9200'
+                # Use HttpClient component
+                transport_config:
+                    http_client: 'Psr\Http\Client\ClientInterface'
 
             # Path to the mapping directory (in YAML)
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
@@ -274,10 +277,6 @@ elastically:
 
             # If you want to add a prefix for your index in elasticsearch (you can still call it by its base name everywhere!)
             # prefix: '%kernel.environment%'
-
-            # Use HttpClient component
-            transport_config:
-                http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 Finally, inject one of those service (autowirable) in you code where you need
