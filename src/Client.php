@@ -20,7 +20,7 @@ class Client extends ElasticaClient
     private IndexNameMapper $indexNameMapper;
 
     /**
-     * @see \JoliCode\Elastically\Factory::buildClient
+     * @see Factory::buildClient
      */
     public function __construct($config = [], ?LoggerInterface $logger = null, ?ResultSetBuilder $resultSetBuilder = null, ?IndexNameMapper $indexNameMapper = null)
     {
