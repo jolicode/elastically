@@ -330,7 +330,7 @@ elastically:
     connections:
         default:
             mapping_provider_service: App\Elastically\MappingProvider
-            # Do not define "index_class_mapping" option anymore
+            # Do not define Factory::CONFIG_MAPPINGS_DIRECTORY option anymore
 ```
 
 ##### Using HttpClient as Transport
