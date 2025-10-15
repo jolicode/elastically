@@ -160,7 +160,12 @@ class IndexBuilder
 
             // Check suffix (it must contain a valid date)
             $indexSuffixName = substr($realIndexName, \strlen($indexName) + 1);
-            $date = \DateTime::createFromFormat('Y-m-d-His', $indexSuffixName);
+            try {
+                $date = \DateTime::createFromFormat('Y-m-d-His', $indexSuffixName);
+            } catch (\ValueError) {
+                $date = null;
+            }
+
             if (!$date) {
                 unset($indexes[$realIndexName]);
 

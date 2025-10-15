@@ -73,6 +73,11 @@ jobs:
                       symfony-version: "7.*"
                       composer-flags: ""
                       es-version: "8.16.0"
+                    # PHP 8.3, latest SF 7, ES 9.1.5
+                    - php-version: "8.3"
+                      symfony-version: "7.*"
+                      composer-flags: ""
+                      es-version: "9.1.5"
         steps:
             - name: Checkout
               uses: actions/checkout@v4
