@@ -4,22 +4,23 @@ Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bo
 
 Main features:
 
-- <abbr title="Data Transfer Object">DTO</abbr> are **first class citizen**, you send PHP object as documents, and get objects back on search results, **like an ODM**;
+- <abbr title="Data Transfer Object">DTO</abbr> are **first-class citizen**, you send PHP object as documents, and get objects back on search results, **like an ODM**;
 - All indexes are versioned and aliased automatically;
 - Mappings are done via YAML files, PHP or custom via `MappingProviderInterface`;
 - Analysis is separated from mappings to ease reuse;
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
 - Mapping migration capabilities with ReIndex;
 - Symfony HttpClient compatible transport (**optional**);
+- Tested with Elasticsearch 7, 8 and 9;
 - Symfony support (**optional**):
     - See dedicated [chapter](#usage-in-symfony);
     - Tested with Symfony 5.4 to 7;
     - Symfony Messenger Handler support (with or without spool);
 
 > [!IMPORTANT]
-> Require PHP 8.0+ and Elasticsearch 8+.
+> Require PHP 8.0+ and Elasticsearch >= 8
 
-Works with **Elasticsearch 7** as well, but is not officially supported by Elastica 8. Use with caution.
+Works with **Elasticsearch 7** as well but is not officially supported by Elastica 8. Use with caution.
 
 Version 2+ does not work with **OpenSearch** anymore due to restrictions added by Elastic on their client.
 
