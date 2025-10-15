@@ -23,6 +23,7 @@ use JoliCode\Elastically\IndexNameMapper;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface as SerializerExceptionInterface;
 
 #[AsMessageHandler]
 class IndexationRequestHandler
@@ -59,6 +60,7 @@ class IndexationRequestHandler
      * @throws ServerResponseException
      * @throws NoNodeAvailableException
      * @throws \Symfony\Component\Messenger\Exception\ExceptionInterface
+     * @throws SerializerExceptionInterface
      */
     public function __invoke(IndexationRequestInterface $message): void
     {
@@ -120,6 +122,7 @@ class IndexationRequestHandler
      * @throws ServerResponseException
      * @throws NoNodeAvailableException
      * @throws UnrecoverableMessageHandlingException
+     * @throws SerializerExceptionInterface
      */
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest): void
     {

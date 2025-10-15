@@ -23,6 +23,7 @@ use Elastica\Index;
 use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class Indexer
@@ -53,6 +54,7 @@ class Indexer
      * @throws NoNodeAvailableException
      * @throws ResponseException
      * @throws ClientException
+     * @throws ExceptionInterface
      */
     public function scheduleIndex($index, ElasticaDocument $document): void
     {
@@ -88,6 +90,7 @@ class Indexer
      * @throws NoNodeAvailableException
      * @throws ResponseException
      * @throws ClientException
+     * @throws ExceptionInterface
      */
     public function scheduleUpdate($index, ElasticaDocument $document): void
     {
@@ -106,6 +109,7 @@ class Indexer
      * @throws NoNodeAvailableException
      * @throws ResponseException
      * @throws ClientException
+     * @throws ExceptionInterface
      */
     public function scheduleCreate($index, ElasticaDocument $document): void
     {
@@ -231,6 +235,9 @@ class Indexer
         }
     }
 
+    /**
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
     private function updateDocumentData(ElasticaDocument $document): void
     {
         if ($document instanceof Document && null !== $document->getModel()) {
