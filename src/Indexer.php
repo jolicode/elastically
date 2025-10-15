@@ -236,7 +236,7 @@ class Indexer
     }
 
     /**
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     private function updateDocumentData(ElasticaDocument $document): void
     {
