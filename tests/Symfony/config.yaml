@@ -27,12 +27,21 @@ elastically:
             client:
                 hosts:
                     - 'localhost:9999'
-            mapping_directory:       '%kernel.project_dir%/configs_analysis'
+            mapping_directory: '%kernel.project_dir%/tests/configs'
 
             # Size of the bulk sent to Elasticsearch (default to 100)
             bulk_size:               100
 
             # Mapping between an index name and a FQCN
+            index_class_mapping:
+                hop: JoliCode\Elastically\Tests\Messenger\TestDTO
+        special:
+            client:
+                hosts:
+                    - 'localhost:9999'
+                transport_config:
+                    http_client: 'Psr\Http\Client\ClientInterface'
+            mapping_directory: '%kernel.project_dir%/tests/configs'
             index_class_mapping:
                 hop: JoliCode\Elastically\Tests\Messenger\TestDTO
 
@@ -66,3 +75,19 @@ services:
             - '@messenger.default_bus'
         tags:
             - { name: kernel.event_subscriber }
+
+    elastically.default.client.test:
+        public: true
+        alias: elastically.default.client
+
+    elastically.default.index_name_mapper.test:
+        public: true
+        alias: elastically.default.index_name_mapper
+
+    elastically.default.mapping.provider.test:
+        public: true
+        alias: elastically.default.mapping.provider
+
+    elastically.special.client.test:
+        public: true
+        alias: elastically.special.client

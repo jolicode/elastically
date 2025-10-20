@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Messenger;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 final class TestControllerFunctionalTest extends WebTestCase
 {
@@ -51,14 +49,5 @@ final class TestControllerFunctionalTest extends WebTestCase
         $this->assertCount(1, $transport->getSent());
 
         $this->assertSame(200, $client->getResponse()->getStatusCode());
-    }
-
-    protected static function getContainer(): Container
-    {
-        if (method_exists(KernelTestCase::class, 'getContainer')) {
-            return parent::getContainer();
-        }
-
-        return self::$container;
     }
 }
