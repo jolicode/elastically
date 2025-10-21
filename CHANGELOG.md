@@ -7,13 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add support for Elasticsearch 9
+- Replaced Makefile by Castor
+- Add tests for the configuration support on Symfony
+
 ## 2.0.0
 
 Massive release with added support for Elastica 8 and all deprecated code removed.
 
 ### Fixed
 
-- Fix deserialize operations property of `MultipleIndexationRequest`
+- Fix deserialize operation property of `MultipleIndexationRequest`
 
 ### Added
 
@@ -23,7 +29,7 @@ Massive release with added support for Elastica 8 and all deprecated code remove
 
 - Dropped OpenSearch support (Breaking Change)
 - Dropped `HttpClientTransport` (Breaking Change)
-- All depreacted code from 1.x, see [UPGRADE.md](UPGRADE.md) for the full list
+- All deprecated code from 1.x, see [UPGRADE.md](UPGRADE.md) for the full list
 
 ## 1.9.1
 
@@ -160,7 +166,7 @@ Massive release with added support for Elastica 8 and all deprecated code remove
 
 ### Deprecated
 
-- Deprecate following methods on `JoliCode\Elastically\Client`:
+- Deprecate the following methods on `JoliCode\Elastically\Client`:
     - `getPrefixedIndex()`: Use `IndexNameMapper` instead
     - `getIndexNameFromClass()`: Use `IndexNameMapper` instead
     - `getClassFromIndexName()`: Use `IndexNameMapper` instead

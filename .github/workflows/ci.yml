@@ -87,7 +87,10 @@ jobs:
               with:
                   php-version: ${{ matrix.php-version }}
 
-              # We need Flex to enfore Symfony version with `SYMFONY_REQUIRE` env var
+            - name: Setup castor
+              uses: castor-php/setup-castor@v0.1.0
+
+            # We need Flex to enforce Symfony version with `SYMFONY_REQUIRE` env var
             - name: Install Symfony Flex
               run: composer global require --no-progress --no-scripts --no-plugins symfony/flex
 
@@ -119,4 +122,4 @@ jobs:
                   done
 
             - name: Run Tests
-              run: make test
+              run: castor test
