@@ -1,4 +1,16 @@
-# Elastically, **Elastica** based framework
+<h1 align="center">
+  <a href="https://github.com/jolicode/elastically"><img src="https://jolicode.com/media/original/oss/headers/elastically.png" alt="Elastically"></a>
+  <br />
+  Elastically, your PHP Elasticsearch companion<br>
+  <sub><em><h6>Opinionated Elastica based framework to bootstrap PHP and Elasticsearch implementations.</h6></em></sub>
+</h1>
+
+<div align="center">
+
+[![PHP Version Require](http://poser.pugx.org/jolicode/elastically/require/php)](https://packagist.org/packages/jolicode/elastically)
+[![Monthly Downloads](http://poser.pugx.org/jolicode/elastically/d/monthly)](https://packagist.org/packages/jolicode/elastically)
+
+</div>
 
 Opinionated [Elastica](https://github.com/ruflin/Elastica) based framework to bootstrap PHP and Elasticsearch implementations.
 
@@ -454,8 +466,6 @@ $factory = new Factory([
   - micro monitoring for cluster / indexes
   - health-check method
 
-## Sponsors
-
-[![JoliCode](https://jolicode.com/images/logo.svg)](https://jolicode.com)
-
-Open Source time sponsored by JoliCode.
+<div align="center">
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v2" alt="JoliCode is sponsoring this project"></a>
+</div>
