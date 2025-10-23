@@ -64,9 +64,9 @@ class ResultSetBuilder implements BuilderInterface
      * @throws ExceptionInterface
      * @throws SerializerExceptionInterface
      */
-    public function buildModelFromIndexAndData(string $indexName, $source)
+    public function buildModelFromIndexAndData(string $indexName, $source, $fields)
     {
-        return $this->buildModel($source, $indexName, []);
+        return $this->buildModel($source, $fields, $indexName, []);
     }
 
     /**
@@ -75,7 +75,7 @@ class ResultSetBuilder implements BuilderInterface
      */
     public function buildModelFromDocument(ElasticaDocument $document)
     {
-        return $this->buildModel($document->getData(), $document->getIndex(), [
+        return $this->buildModel($document->getData(), $document->hasFields() ? $document->getFields() : [], $document->getIndex(), [
             self::DOCUMENT_KEY => $document,
         ]);
     }
@@ -90,7 +90,7 @@ class ResultSetBuilder implements BuilderInterface
             throw new RuntimeException('Returned index is empty. Check your "filter_path".');
         }
 
-        return $this->buildModel($result->getSource(), $result->getIndex(), [
+        return $this->buildModel($result->getSource(), $result->hasFields() ? $result->getFields() : [], $result->getIndex(), [
             self::RESULT_KEY => $result,
         ]);
     }
@@ -99,16 +99,17 @@ class ResultSetBuilder implements BuilderInterface
      * @throws ExceptionInterface
      * @throws SerializerExceptionInterface
      */
-    private function buildModel($source, string $indexName, array $context)
+    private function buildModel($source, $fields, string $indexName, array $context)
     {
-        if (!$source) {
+        if (!$source && !$fields) {
             return null;
         }
 
         $class = $this->indexNameMapper->getClassFromIndexName($this->indexNameMapper->getPureIndexName($indexName));
 
         $context = array_merge($this->contextBuilder->buildContext($class), $context);
+        $fieldsFlat = array_map(fn ($field) => reset($field), $fields);
 
-        return $this->denormalizer->denormalize($source, $class, null, $context);
+        return $this->denormalizer->denormalize(array_merge($source, $fieldsFlat), $class, null, $context);
     }
 }
