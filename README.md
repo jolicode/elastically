@@ -466,6 +466,7 @@ $factory = new Factory([
   - micro monitoring for cluster / indexes
   - health-check method
 
+<br><br>
 <div align="center">
-<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v2" alt="JoliCode is sponsoring this project"></a>
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v3" alt="JoliCode is sponsoring this project"></a>
 </div>
