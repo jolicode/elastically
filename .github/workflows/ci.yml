@@ -109,10 +109,6 @@ jobs:
             - name: Enable Symfony Flex
               run: composer global config --no-plugins allow-plugins.symfony/flex true
 
-            - name: Configure Symfony 8
-              if: matrix.symfony-version == '8.*'
-              run: composer remove friendsofphp/php-cs-fixer --dev --no-update
-
             - name: Configure Elastica
               run: composer require ruflin/elastica ${{ matrix.elastica-version }} --no-update
 

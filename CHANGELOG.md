@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add support for ruflin/elastica 9
 - Add support for Elasticsearch 9
 - Replaced Makefile by Castor
 - Add tests for the configuration support on Symfony
