@@ -420,8 +420,8 @@ $bus->dispatch(new IndexationRequest(Product::class, '1234567890', targetIndex: 
 // Or 
 
 $bus->dispatch(new MultipleIndexationRequest([
-    $bus->dispatch(new IndexationRequest(Product::class, '123', targetIndex: 'custom_index_1')),
-    $bus->dispatch(new IndexationRequest(Product::class, '123', targetIndex: 'custom_index_2')),
+    new IndexationRequest(Product::class, '123', targetIndex: 'custom_index_1'),
+    new IndexationRequest(Product::class, '123', targetIndex: 'custom_index_2'),
 ]));
 
 ```
