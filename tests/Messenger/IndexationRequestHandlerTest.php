@@ -249,6 +249,41 @@ final class IndexationRequestHandlerTest extends BaseTestCase
         $this->assertSame($request7, $redispatched[2]['message']->getOperations()[0]);
         $this->assertSame($request8, $redispatched[2]['message']->getOperations()[1]);
     }
+
+    public function testDocumentAreIndexedWithExplicitTargetIndex(): void
+    {
+        $configIndexName = mb_strtolower(__FUNCTION__);
+        $targetIndexName = mb_strtolower(__FUNCTION__) . '_v2';
+
+        $factory = $this->getFactory(null, [
+            Factory::CONFIG_INDEX_CLASS_MAPPING => [
+                $configIndexName => TestDTO::class,
+                $targetIndexName => TestDTO::class,
+            ],
+        ]);
+        $client = $factory->buildClient();
+        $indexer = $factory->buildIndexer();
+        $indexNameMapper = $factory->buildIndexNameMapper();
+
+        // Create target index explicitly
+        $client->getIndex($targetIndexName)->create();
+
+        $handler = new IndexationRequestHandler(new MessageBus(), new TestDocumentExchanger(), $indexer, $indexNameMapper);
+        $handler(new IndexationRequest(TestDTO::class, '1234567890', IndexationRequestHandler::OP_INDEX, $targetIndexName));
+        $handler(new IndexationRequest(TestDTO::class, '1234567891', IndexationRequestHandler::OP_INDEX, $targetIndexName));
+        $handler(new IndexationRequest(TestDTO::class, '1234567892', IndexationRequestHandler::OP_DELETE, $targetIndexName));
+
+        $targetIndex = $client->getIndex($targetIndexName);
+        $targetIndex->refresh();
+
+        $resultSet = $targetIndex->search();
+
+        $this->assertInstanceOf(ResultSet::class, $resultSet);
+        $this->assertSame(2, $resultSet->getTotalHits());
+
+        $this->assertInstanceOf(TestDTO::class, $targetIndex->getModel('1234567890'));
+        $this->assertInstanceOf(TestDTO::class, $targetIndex->getModel('1234567891'));
+    }
 }
 
 class TestDTO

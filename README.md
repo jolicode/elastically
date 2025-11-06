@@ -406,6 +406,26 @@ $bus->dispatch(new IndexationRequest(Product::class, '1234567890'));
 // new IndexationRequest(Product::class, 'ref9999', IndexationRequestHandler::OP_DELETE);
 ```
 
+#### Specifying index name
+
+If you want to target multiples indexes, or create, populate then mark as live an index, you can specify a custom index 
+name with the fourth argument (example uses named arguments):
+```php
+use JoliCode\Elastically\Messenger\IndexationRequest;
+use JoliCode\Elastically\Messenger\MultipleIndexationRequest;
+use JoliCode\Elastically\Messenger\IndexationRequestHandler;
+
+$bus->dispatch(new IndexationRequest(Product::class, '1234567890', targetIndex: 'products_future_index'));
+
+// Or 
+
+$bus->dispatch(new MultipleIndexationRequest([
+    new IndexationRequest(Product::class, '123', targetIndex: 'custom_index_1'),
+    new IndexationRequest(Product::class, '123', targetIndex: 'custom_index_2'),
+]));
+
+```
+
 And then consume the messages:
 
 ```sh

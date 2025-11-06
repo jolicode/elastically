@@ -126,10 +126,14 @@ class IndexationRequestHandler
      */
     private function schedule(Indexer $indexer, IndexationRequest $indexationRequest): void
     {
-        try {
-            $indexName = $this->indexNameMapper->getIndexNameFromClass($indexationRequest->getClassName());
-        } catch (RuntimeException $e) {
-            throw new UnrecoverableMessageHandlingException('Cannot guess the Index for this request. Dropping the message.', 0, $e);
+        $indexName = $indexationRequest->getTargetIndex();
+
+        if (null === $indexName) {
+            try {
+                $indexName = $this->indexNameMapper->getIndexNameFromClass($indexationRequest->getClassName());
+            } catch (RuntimeException $e) {
+                throw new UnrecoverableMessageHandlingException('Cannot guess the Index for this request. Dropping the message.', 0, $e);
+            }
         }
 
         if (self::OP_DELETE === $indexationRequest->getOperation()) {
