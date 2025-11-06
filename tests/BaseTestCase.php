@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests;
 
-use Elastica\Request;
 use Http\Discovery\Psr17FactoryDiscovery;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Factory;
@@ -25,7 +24,7 @@ abstract class BaseTestCase extends TestCase
     {
         $requestFactory = Psr17FactoryDiscovery::findRequestFactory();
 
-        $this->getClient()->sendRequest($requestFactory->createRequest(Request::DELETE, '*'));
+        $this->getClient()->sendRequest($requestFactory->createRequest('DELETE', '*'));
     }
 
     protected function getFactory(?string $path = null, array $config = []): Factory
