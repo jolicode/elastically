@@ -16,8 +16,9 @@ final class IndexationRequest implements IndexationRequestInterface
     private string $className;
     private string $id;
     private string $operation;
+    private ?string $targetIndex;
 
-    public function __construct(string $className, string $id, string $operation = IndexationRequestHandler::OP_INDEX)
+    public function __construct(string $className, string $id, string $operation = IndexationRequestHandler::OP_INDEX, ?string $targetIndex = null)
     {
         if (!\in_array($operation, IndexationRequestHandler::OPERATIONS, true)) {
             throw new \InvalidArgumentException(\sprintf('Not supported operation "%s" given.', $operation));
@@ -26,6 +27,7 @@ final class IndexationRequest implements IndexationRequestInterface
         $this->className = $className;
         $this->id = $id;
         $this->operation = $operation;
+        $this->targetIndex = $targetIndex;
     }
 
     public function getOperation(): string
@@ -41,5 +43,10 @@ final class IndexationRequest implements IndexationRequestInterface
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getTargetIndex(): ?string
+    {
+        return $this->targetIndex;
     }
 }
