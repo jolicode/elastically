@@ -17,6 +17,8 @@ use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
 use JoliCode\Elastically\Mapping\YamlProvider;
 use JoliCode\Elastically\ResultSetBuilder;
+use JoliCode\Elastically\Serializer\DocumentSerializer;
+use JoliCode\Elastically\Serializer\JsonStreamerAdapter;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 
 return static function (ContainerConfigurator $container) {
@@ -26,6 +28,21 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 '$prefix' => abstract_arg('prefix'),
                 '$indexClassMapping' => abstract_arg('index class mapping'),
+            ])
+
+        ->set('elastically.abstract.document_serializer', DocumentSerializer::class)
+            ->abstract()
+            ->args([
+                '$serializer' => service('serializer'),
+                '$contextBuilder' => abstract_arg('elastically.abstract.static_context_builder'),
+            ])
+
+        ->set('elastically.abstract.document_streamer', JsonStreamerAdapter::class)
+            ->abstract()
+            ->args([
+                '$decorated' => abstract_arg('elastically.abstract.document_serializer'),
+                '$streamWriter' => service('json_streamer.stream_writer')->ignoreOnInvalid(),
+                '$cache' => service('cache.app'),
             ])
 
         ->set('elastically.abstract.static_context_builder', StaticContextBuilder::class)
@@ -56,10 +73,9 @@ return static function (ContainerConfigurator $container) {
             ->abstract()
             ->args([
                 '$client' => service(Client::class),
-                '$serializer' => service('serializer'),
+                '$serializer' => abstract_arg('elastically.abstract.document_serializer'),
                 '$bulkMaxSize' => abstract_arg('bulk size'),
                 '$bulkRequestParams' => [],
-                '$contextBuilder' => abstract_arg('elastically.abstract.static_context_builder'),
             ])
 
         ->set('elastically.abstract.mapping.provider', YamlProvider::class)

@@ -21,22 +21,19 @@ use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\ClientException;
 use Elastica\Index;
 use JoliCode\Elastically\Model\Document;
-use JoliCode\Elastically\Serializer\ContextBuilderInterface;
-use JoliCode\Elastically\Serializer\StaticContextBuilder;
+use JoliCode\Elastically\Serializer\DocumentSerializerInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class Indexer
 {
     private Client $client;
-    private SerializerInterface $serializer;
+    private DocumentSerializerInterface $serializer;
     private int $bulkMaxSize;
     private array $bulkRequestParams;
-    private ContextBuilderInterface $contextBuilder;
 
     private ?Bulk $currentBulk = null;
 
-    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [], ?ContextBuilderInterface $contextBuilder = null)
+    public function __construct(Client $client, DocumentSerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [])
     {
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 
@@ -44,7 +41,6 @@ class Indexer
         $this->serializer = $serializer;
         $this->bulkMaxSize = $bulkMaxSize;
         $this->bulkRequestParams = $bulkRequestParams;
-        $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
     }
 
     /**
@@ -235,14 +231,10 @@ class Indexer
         }
     }
 
-    /**
-     * @throws ExceptionInterface
-     */
     private function updateDocumentData(ElasticaDocument $document): void
     {
         if ($document instanceof Document && null !== $document->getModel()) {
-            $context = $this->contextBuilder->buildContext(\get_class($document->getModel()));
-            $data = $this->serializer->serialize($document->getModel(), 'json', $context);
+            $data = $this->serializer->serialize($document->getModel());
             $document->setData($data);
         }
     }
