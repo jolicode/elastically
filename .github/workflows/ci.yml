@@ -51,8 +51,8 @@ jobs:
                     # Every lowest supported version
                     - php-version: "8.0"
                       symfony-version: "5.4.*"
-                      composer-flags: "-
-                      composer-extra: "-prefer-lowest"
+                      composer-flags: "-prefer-lowest"
+                      composer-extra: ""
                       es-version: "7.17.25"
                       elastica-version: "8.*"
                     # PHP 8.1, latest SF 6, ES 7
