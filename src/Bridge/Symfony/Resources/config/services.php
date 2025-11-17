@@ -18,8 +18,8 @@ use JoliCode\Elastically\IndexNameMapper;
 use JoliCode\Elastically\Mapping\YamlProvider;
 use JoliCode\Elastically\ResultSetBuilder;
 use JoliCode\Elastically\Serializer\DocumentSerializer;
-use JoliCode\Elastically\Serializer\JsonStreamerAdapter;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
+use Symfony\Component\JsonStreamer\StreamWriterInterface;
 
 return static function (ContainerConfigurator $container) {
     $container->services()
@@ -35,14 +35,8 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 '$serializer' => service('serializer'),
                 '$contextBuilder' => abstract_arg('elastically.abstract.static_context_builder'),
-            ])
-
-        ->set('elastically.abstract.document_streamer', JsonStreamerAdapter::class)
-            ->abstract()
-            ->args([
-                '$decorated' => abstract_arg('elastically.abstract.document_serializer'),
-                '$streamWriter' => service('json_streamer.stream_writer')->ignoreOnInvalid(),
-                '$cache' => service('cache.app'),
+                '$streamWriter' => service(StreamWriterInterface::class)->nullOnInvalid(),
+                '$cache' => service('cache.app')->nullOnInvalid(),
             ])
 
         ->set('elastically.abstract.static_context_builder', StaticContextBuilder::class)

@@ -13,21 +13,21 @@ declare(strict_types=1);
 
 namespace JoliCode\Elastically\Tests\Serializer;
 
-use JoliCode\Elastically\Serializer\DocumentSerializerInterface;
-use JoliCode\Elastically\Serializer\JsonStreamerAdapter;
+use JoliCode\Elastically\Serializer\DocumentSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\JsonStreamer\Attribute\JsonStreamable;
 use Symfony\Component\JsonStreamer\StreamWriterInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\TypeInfo\Type;
 use Symfony\Contracts\Cache\CacheInterface;
 
-final class JsonStreamerAdapterTest extends TestCase
+final class DocumentSerializerTest extends TestCase
 {
-    private DocumentSerializerInterface $decoratedSerializer;
+    private SerializerInterface $baseSerializer;
     private StreamWriterInterface $streamWriter;
     private ArrayAdapter $cache;
-    private JsonStreamerAdapter $adapter;
+    private DocumentSerializer $serializer;
 
     protected function setUp(): void
     {
@@ -35,11 +35,12 @@ final class JsonStreamerAdapterTest extends TestCase
             $this->markTestSkipped('Skipping as JsonStreamer is not installed.');
         }
 
-        $this->decoratedSerializer = $this->createMock(DocumentSerializerInterface::class);
+        $this->baseSerializer = $this->createMock(SerializerInterface::class);
         $this->streamWriter = $this->createMock(StreamWriterInterface::class);
         $this->cache = new ArrayAdapter();
-        $this->adapter = new JsonStreamerAdapter(
-            $this->decoratedSerializer,
+        $this->serializer = new DocumentSerializer(
+            $this->baseSerializer,
+            null,
             $this->streamWriter,
             $this->cache
         );
@@ -52,16 +53,16 @@ final class JsonStreamerAdapterTest extends TestCase
         };
 
         $expectedSerialized = '{"name":"test"}';
-        $this->decoratedSerializer
+        $this->baseSerializer
             ->expects($this->once())
             ->method('serialize')
-            ->with($document)
+            ->with($document, 'json', $this->isType('array'))
             ->willReturn($expectedSerialized)
         ;
 
         $this->streamWriter->expects($this->never())->method('write');
 
-        $result = $this->adapter->serialize($document);
+        $result = $this->serializer->serialize($document, 'json');
 
         $this->assertSame($expectedSerialized, $result);
     }
@@ -82,9 +83,9 @@ final class JsonStreamerAdapterTest extends TestCase
             ->willReturn($stringableResult)
         ;
 
-        $this->decoratedSerializer->expects($this->never())->method('serialize');
+        $this->baseSerializer->expects($this->never())->method('serialize');
 
-        $result = $this->adapter->serialize($document);
+        $result = $this->serializer->serialize($document, 'json');
 
         $this->assertSame($expectedSerialized, $result);
     }
@@ -101,7 +102,7 @@ final class JsonStreamerAdapterTest extends TestCase
             ->willReturn($streamWriterResult)
         ;
 
-        $result = $this->adapter->serialize($document);
+        $result = $this->serializer->serialize($document, 'json');
 
         $this->assertSame('{"items":[1,2,3]}', $result);
         $this->assertIsString($result);
@@ -134,8 +135,9 @@ final class JsonStreamerAdapterTest extends TestCase
             })
         ;
 
-        $adapter = new JsonStreamerAdapter(
-            $this->decoratedSerializer,
+        $serializer = new DocumentSerializer(
+            $this->baseSerializer,
+            null,
             $this->streamWriter,
             $cache
         );
@@ -146,8 +148,8 @@ final class JsonStreamerAdapterTest extends TestCase
             ->willReturn(new StringableTraversable('{"items":[]}'))
         ;
 
-        $adapter->serialize($document1);
-        $adapter->serialize($document2);
+        $serializer->serialize($document1, 'json');
+        $serializer->serialize($document2, 'json');
 
         // Verify cache was accessed twice (once per document)
         $this->assertSame(2, $cacheCallCount);
@@ -156,8 +158,9 @@ final class JsonStreamerAdapterTest extends TestCase
     public function testCustomCacheIsUsed(): void
     {
         $customCache = $this->createMock(CacheInterface::class);
-        $adapter = new JsonStreamerAdapter(
-            $this->decoratedSerializer,
+        $serializer = new DocumentSerializer(
+            $this->baseSerializer,
+            null,
             $this->streamWriter,
             $customCache
         );
@@ -166,7 +169,7 @@ final class JsonStreamerAdapterTest extends TestCase
             public string $name = 'test';
         };
 
-        $this->decoratedSerializer
+        $this->baseSerializer
             ->method('serialize')
             ->willReturn('{"name":"test"}')
         ;
@@ -177,13 +180,14 @@ final class JsonStreamerAdapterTest extends TestCase
             ->willReturnCallback(fn ($key, $callback) => $callback())
         ;
 
-        $adapter->serialize($document);
+        $serializer->serialize($document, 'json');
     }
 
     public function testDefaultCacheIsArrayAdapter(): void
     {
-        $adapter = new JsonStreamerAdapter(
-            $this->decoratedSerializer,
+        $serializer = new DocumentSerializer(
+            $this->baseSerializer,
+            null,
             $this->streamWriter
         );
 
@@ -191,13 +195,13 @@ final class JsonStreamerAdapterTest extends TestCase
             public string $name = 'test';
         };
 
-        $this->decoratedSerializer
+        $this->baseSerializer
             ->method('serialize')
             ->willReturn('{"name":"test"}')
         ;
 
         // This should work without errors using the default ArrayAdapter
-        $adapter->serialize($document);
+        $serializer->serialize($document, 'json');
         $this->assertTrue(true);
     }
 
@@ -216,19 +220,19 @@ final class JsonStreamerAdapterTest extends TestCase
         ;
 
         $expectedUnsupported = '{"name":"test"}';
-        $this->decoratedSerializer
+        $this->baseSerializer
             ->expects($this->once())
             ->method('serialize')
-            ->with($unsupportedDocument)
+            ->with($unsupportedDocument, 'json', $this->isType('array'))
             ->willReturn($expectedUnsupported)
         ;
 
         // Serialize supported document using streamWriter
-        $result1 = $this->adapter->serialize($supportedDocument);
+        $result1 = $this->serializer->serialize($supportedDocument, 'json');
         $this->assertSame('{"items":[]}', $result1);
 
         // Serialize unsupported document using decorated serializer
-        $result2 = $this->adapter->serialize($unsupportedDocument);
+        $result2 = $this->serializer->serialize($unsupportedDocument, 'json');
         $this->assertSame($expectedUnsupported, $result2);
     }
 
@@ -241,7 +245,7 @@ final class JsonStreamerAdapterTest extends TestCase
             public string $name = 'test2';
         };
 
-        $this->decoratedSerializer
+        $this->baseSerializer
             ->expects($this->exactly(2))
             ->method('serialize')
             ->willReturnOnConsecutiveCalls(
@@ -252,8 +256,8 @@ final class JsonStreamerAdapterTest extends TestCase
 
         $this->streamWriter->expects($this->never())->method('write');
 
-        $result1 = $this->adapter->serialize($unsupported1);
-        $result2 = $this->adapter->serialize($unsupported2);
+        $result1 = $this->serializer->serialize($unsupported1, 'json');
+        $result2 = $this->serializer->serialize($unsupported2, 'json');
 
         $this->assertSame('{"name":"test1"}', $result1);
         $this->assertSame('{"name":"test2"}', $result2);
@@ -270,11 +274,24 @@ final class JsonStreamerAdapterTest extends TestCase
             ->willReturn($result)
         ;
 
-        $serialized = $this->adapter->serialize($document);
+        $serialized = $this->serializer->serialize($document, 'json');
 
         // Verify the result is converted to string exactly once
         $this->assertIsString($serialized);
         $this->assertSame('{"test":"data"}', $serialized);
+    }
+
+    public function testDeserialize(): void
+    {
+        $this->baseSerializer
+            ->expects($this->once())
+            ->method('deserialize')
+            ->with('{"name":"test"}', 'stdClass', 'json', [])
+            ->willReturn(new \stdClass())
+        ;
+
+        $result = $this->serializer->deserialize('{"name":"test"}', 'stdClass', 'json');
+        $this->assertInstanceOf(\stdClass::class, $result);
     }
 }
 

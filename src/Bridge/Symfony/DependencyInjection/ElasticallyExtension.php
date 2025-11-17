@@ -84,13 +84,6 @@ class ElasticallyExtension extends Extension
         $documentSerializer->replaceArgument('$contextBuilder', new Reference("elastically.{$name}.static_context_builder"));
         $container->setDefinition($documentSerializerId = "elastically.{$name}.document_serializer", $documentSerializer);
 
-        // Add support for JsonStreamer when available
-        if (class_exists(StreamWriterInterface::class)) {
-            $documentStreamer = new ChildDefinition('elastically.abstract.document_streamer');
-            $documentStreamer->replaceArgument('$decorated', new Reference($documentSerializerId));
-            $container->setDefinition($documentSerializerId = "elastically.{$name}.document_streamer", $documentStreamer);
-        }
-
         $indexer = new ChildDefinition('elastically.abstract.indexer');
         $indexer->replaceArgument('$client', new Reference("elastically.{$name}.client"));
         $indexer->replaceArgument('$bulkMaxSize', $config['bulk_size']);

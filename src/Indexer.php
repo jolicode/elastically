@@ -21,19 +21,19 @@ use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\ClientException;
 use Elastica\Index;
 use JoliCode\Elastically\Model\Document;
-use JoliCode\Elastically\Serializer\DocumentSerializerInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class Indexer
 {
     private Client $client;
-    private DocumentSerializerInterface $serializer;
+    private SerializerInterface $serializer;
     private int $bulkMaxSize;
     private array $bulkRequestParams;
 
     private ?Bulk $currentBulk = null;
 
-    public function __construct(Client $client, DocumentSerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [])
+    public function __construct(Client $client, SerializerInterface $serializer, int $bulkMaxSize = 100, array $bulkRequestParams = [])
     {
         // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
 
@@ -231,10 +231,13 @@ class Indexer
         }
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     private function updateDocumentData(ElasticaDocument $document): void
     {
         if ($document instanceof Document && null !== $document->getModel()) {
-            $data = $this->serializer->serialize($document->getModel());
+            $data = $this->serializer->serialize($document->getModel(), 'json');
             $document->setData($data);
         }
     }
