@@ -31,7 +31,7 @@ final class JsonStreamerAdapterTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!class_exists(StreamWriterInterface::class)) {
+        if (!interface_exists(StreamWriterInterface::class)) {
             $this->markTestSkipped('Skipping as JsonStreamer is not installed.');
         }
 
