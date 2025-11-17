@@ -62,8 +62,8 @@ jobs:
                       composer-extra: ""
                       es-version: "7.17.25"
                       elastica-version: "8.*"
-                    # PHP 8.1, latest SF 7, ES 7, JsonStreamer component
-                    - php-version: "8.1"
+                    # PHP 8.2, latest SF 7, ES 7, JsonStreamer component
+                    - php-version: "8.2"
                       symfony-version: "7.*"
                       composer-flags: ""
                       composer-extra: "symfony/json-streamer"
