@@ -51,43 +51,57 @@ jobs:
                     # Every lowest supported version
                     - php-version: "8.0"
                       symfony-version: "5.4.*"
-                      composer-flags: "--prefer-lowest"
+                      composer-flags: "-
+                      composer-extra: "-prefer-lowest"
                       es-version: "7.17.25"
                       elastica-version: "8.*"
                     # PHP 8.1, latest SF 6, ES 7
                     - php-version: "8.1"
                       symfony-version: "6.*"
                       composer-flags: ""
+                      composer-extra: ""
+                      es-version: "7.17.25"
+                      elastica-version: "8.*"
+                    # PHP 8.1, latest SF 7, ES 7, JsonStreamer component
+                    - php-version: "8.1"
+                      symfony-version: "7.*"
+                      composer-flags: ""
+                      composer-extra: "symfony/json-streamer"
                       es-version: "7.17.25"
                       elastica-version: "8.*"
                     # PHP 8.2, latest SF 6, ES 8
                     - php-version: "8.2"
                       symfony-version: "6.*"
                       composer-flags: ""
+                      composer-extra: ""
                       es-version: "8.16.0"
                       elastica-version: "8.*"
                     # PHP 8.3, latest SF 7, ES 8
                     - php-version: "8.3"
                       symfony-version: "7.*"
                       composer-flags: ""
+                      composer-extra: ""
                       es-version: "8.16.0"
                       elastica-version: "8.*"
                     # PHP 8.4, latest SF 7, ES 8
                     - php-version: "8.4"
                       symfony-version: "7.*"
                       composer-flags: ""
+                      composer-extra: ""
                       es-version: "8.16.0"
                       elastica-version: "8.*"
                     # PHP 8.4, latest SF 7, ES 9.1.5, elastica 8
                     - php-version: "8.4"
                       symfony-version: "7.*"
                       composer-flags: ""
+                      composer-extra: ""
                       es-version: "9.1.5"
                       elastica-version: "8.*"
                     # PHP 8.4, latest SF 7, ES 9.1.5, elastica 9
                     - php-version: "8.4"
                       symfony-version: "7.*"
                       composer-flags: ""
+                      composer-extra: ""
                       es-version: "9.1.5"
                       elastica-version: "9.*"
         steps:
@@ -114,6 +128,10 @@ jobs:
 
             - name: Install Composer dependencies
               run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}
+
+            - name: Install Extra Composer dependencies
+              if: ${{ matrix.composer-extra != "" }}
+              run: composer require --no-interaction --no-ansi ${{ matrix.composer-extra }}
 
             - name: Configure sysctl limits
               run: |
