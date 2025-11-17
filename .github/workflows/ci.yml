@@ -130,7 +130,7 @@ jobs:
               run: composer update --prefer-dist --no-interaction --no-ansi ${{ matrix.composer-flags }}
 
             - name: Install Extra Composer dependencies
-              if: ${{ matrix.composer-extra != "" }}
+              if: ${{ matrix.composer-extra != '' }}
               run: composer require --no-interaction --no-ansi ${{ matrix.composer-extra }}
 
             - name: Configure sysctl limits
