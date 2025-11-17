@@ -31,9 +31,10 @@ final class JsonStreamerAdapterTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!\class_exists(StreamWriterInterface::class)) {
+        if (!class_exists(StreamWriterInterface::class)) {
             $this->markTestSkipped('Skipping as JsonStreamer is not installed.');
         }
+
         $this->decoratedSerializer = $this->createMock(DocumentSerializerInterface::class);
         $this->streamWriter = $this->createMock(StreamWriterInterface::class);
         $this->cache = new ArrayAdapter();
