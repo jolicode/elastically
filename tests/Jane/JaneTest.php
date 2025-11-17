@@ -23,6 +23,7 @@ use JoliCode\Elastically\IndexNameMapper;
 use JoliCode\Elastically\Mapping\YamlProvider;
 use JoliCode\Elastically\Model\Document;
 use JoliCode\Elastically\ResultSetBuilder;
+use JoliCode\Elastically\Serializer\DocumentSerializer;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModel;
 use JoliCode\Elastically\Tests\Jane\generated\Model\MyModelIngredientsItemAnyOf;
@@ -73,7 +74,7 @@ class JaneTest extends TestCase
         );
 
         $indexBuilder = new IndexBuilder(new YamlProvider(__DIR__ . '/../configs'), $elastically, $indexNameMapper);
-        $indexer = new Indexer($elastically, $serializer);
+        $indexer = new Indexer($elastically, new DocumentSerializer($serializer));
 
         // Build Index
         $index = $indexBuilder->createIndex('beers');
