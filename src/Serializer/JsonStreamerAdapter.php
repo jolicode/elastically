@@ -47,7 +47,7 @@ class JsonStreamerAdapter implements DocumentSerializerInterface
      */
     private function supports(object $document): bool
     {
-        $key = \sprintf('elastically_supports_%s', md5($document::class));
+        $key = \sprintf('elastically_supports_%s', hash('xxh3', $document::class));
 
         return $this->cache->get($key, fn () => \count((new \ReflectionClass($document))->getAttributes(JsonStreamable::class, \ReflectionAttribute::IS_INSTANCEOF)) > 0);
     }
