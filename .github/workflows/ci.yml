@@ -30,7 +30,10 @@ jobs:
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: 8.1
+                  php-version: 8.2
+
+            - name: Install extra Composer dependencies
+              run: composer require --no-interaction --no-ansi symfony/json-streamer
 
             - name: PHPStan
               uses: docker://oskarstark/phpstan-ga
@@ -51,7 +54,7 @@ jobs:
                     # Every lowest supported version
                     - php-version: "8.0"
                       symfony-version: "5.4.*"
-                      composer-flags: "-prefer-lowest"
+                      composer-flags: "--prefer-lowest"
                       composer-extra: ""
                       es-version: "7.17.25"
                       elastica-version: "8.*"
