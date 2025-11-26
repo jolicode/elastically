@@ -90,6 +90,36 @@ jobs:
                       composer-flags: ""
                       es-version: "9.1.5"
                       elastica-version: "9.*"
+                  # PHP 8.4, latest SF 8, ES 8
+                    - php-version: "8.4"
+                      symfony-version: "8.*"
+                      composer-flags: ""
+                      es-version: "8.16.0"
+                      elastica-version: "8.*"
+                  # PHP 8.5, latest SF 8, ES 8
+                    - php-version: "8.5"
+                      symfony-version: "8.*"
+                      composer-flags: ""
+                      es-version: "8.16.0"
+                      elastica-version: "8.*"
+                  # PHP 8.4, latest SF 8, ES 9.1.5, elastica 8
+                    - php-version: "8.4"
+                      symfony-version: "8.*"
+                      composer-flags: ""
+                      es-version: "9.1.5"
+                      elastica-version: "8.*"
+                  # PHP 8.4, latest SF 8, ES 9.1.5, elastica 9
+                    - php-version: "8.4"
+                      symfony-version: "8.*"
+                      composer-flags: ""
+                      es-version: "9.1.5"
+                      elastica-version: "9.*"
+                  # PHP 8.5, latest SF 8, ES 9.1.5, elastica 9
+                    - php-version: "8.5"
+                      symfony-version: "8.*"
+                      composer-flags: ""
+                      es-version: "9.1.5"
+                      elastica-version: "9.*"
         steps:
             - name: Checkout
               uses: actions/checkout@v5
