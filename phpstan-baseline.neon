@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
-			count: 1
-			path: src/Bridge/Symfony/DependencyInjection/Configuration.php
-
-		-
 			message: "#^Method JoliCode\\\\Elastically\\\\Index\\:\\:getClient\\(\\) should return JoliCode\\\\Elastically\\\\Client but returns Elastica\\\\Client\\.$#"
 			count: 1
 			path: src/Index.php
