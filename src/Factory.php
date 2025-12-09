@@ -14,7 +14,9 @@ namespace JoliCode\Elastically;
 use JoliCode\Elastically\Mapping\MappingProviderInterface;
 use JoliCode\Elastically\Mapping\YamlProvider;
 use JoliCode\Elastically\Serializer\ContextBuilderInterface;
+use JoliCode\Elastically\Serializer\DocumentSerializer;
 use JoliCode\Elastically\Serializer\StaticContextBuilder;
+use Symfony\Component\JsonStreamer\JsonStreamWriter;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -95,10 +97,9 @@ final class Factory
     {
         return $this->indexer ??= new Indexer(
             $this->buildClient(),
-            $this->buildSerializer(),
+            $this->buildDocumentSerializer(),
             $this->config[self::CONFIG_BULK_SIZE] ?? 100,
-            [],
-            $this->buildContextBuilder()
+            []
         );
     }
 
@@ -110,6 +111,17 @@ final class Factory
     public function buildSerializer(): SerializerInterface
     {
         return $this->serializer ??= $this->config[self::CONFIG_SERIALIZER] ?? $this->buildDefaultSerializer();
+    }
+
+    public function buildDocumentSerializer(): SerializerInterface
+    {
+        $streamWriter = class_exists(JsonStreamWriter::class) ? JsonStreamWriter::create() : null;
+
+        return new DocumentSerializer(
+            $this->buildSerializer(),
+            $this->buildContextBuilder(),
+            $streamWriter
+        );
     }
 
     public function buildDenormalizer(): DenormalizerInterface
