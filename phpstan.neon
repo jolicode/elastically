@@ -12,4 +12,3 @@ parameters:
         implicitThrows: false
         uncheckedExceptionClasses:
             - LogicException
-            - RuntimeException

@@ -17,6 +17,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class Configuration implements ConfigurationInterface
 {
+    /**
+     * @throws \RuntimeException
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('elastically');
