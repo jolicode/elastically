@@ -79,10 +79,14 @@ class ElasticallyExtension extends Extension
         }
         $container->registerAliasForArgument($id, Client::class, $name . 'Client');
 
+        $documentSerializer = new ChildDefinition('elastically.abstract.document_serializer');
+        $documentSerializer->replaceArgument('$contextBuilder', new Reference("elastically.{$name}.static_context_builder"));
+        $container->setDefinition($documentSerializerId = "elastically.{$name}.document_serializer", $documentSerializer);
+
         $indexer = new ChildDefinition('elastically.abstract.indexer');
         $indexer->replaceArgument('$client', new Reference("elastically.{$name}.client"));
         $indexer->replaceArgument('$bulkMaxSize', $config['bulk_size']);
-        $indexer->replaceArgument('$contextBuilder', new Reference("elastically.{$name}.static_context_builder"));
+        $indexer->replaceArgument('$serializer', new Reference($documentSerializerId));
         $container->setDefinition($id = "elastically.{$name}.indexer", $indexer);
         if ($isDefaultConnection) {
             $container->setAlias(Indexer::class, $id);
