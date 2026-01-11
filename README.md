@@ -23,6 +23,7 @@ Main features:
 - 100% compatibility with [ruflin/elastica](https://github.com/ruflin/Elastica);
 - Mapping migration capabilities with ReIndex;
 - Symfony HttpClient compatible transport (**optional**);
+- Symfony JsonStreamer support for faster serialization (**optional**);
 - Tested with Elasticsearch 7, 8 and 9;
 - Symfony support (**optional**):
     - See dedicated [chapter](#usage-in-symfony);
@@ -235,6 +236,36 @@ _Default to `[]`._
 When running indexation of lots of documents, this setting allow you to fine-tune the number of document threshold.
 
 _Default to 100._
+
+### Using JsonStreamer for faster serialization (optional)
+
+Elastically supports [Symfony JsonStreamer](https://symfony.com/doc/current/components/json_streamer.html) for faster serialization during indexation. JsonStreamer can significantly speed up the serialization process by streaming JSON directly without building intermediate data structures.
+
+To use JsonStreamer:
+
+1. Install the package:
+
+```
+composer require symfony/json-streamer
+```
+
+2. Add the `#[JsonStreamable]` attribute to your DTO classes:
+
+```php
+use Symfony\Component\JsonStreamer\Attribute\JsonStreamable;
+
+#[JsonStreamable]
+class Beer
+{
+    public string $foo;
+    public string $bar;
+}
+```
+
+That's it! Elastically will automatically detect the JsonStreamer package and use it for any DTO that has the `#[JsonStreamable]` attribute. DTOs without the attribute will continue to use the standard Symfony Serializer.
+
+> [!NOTE]
+> JsonStreamer is only used for serialization during indexation. Deserialization of search results still uses the standard Symfony Serializer denormalizer.
 
 ### `Factory::CONFIG_INDEX_PREFIX` (optional)
 
