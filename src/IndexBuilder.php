@@ -177,7 +177,7 @@ class IndexBuilder
         }
 
         // Newest first
-        uasort($indexes, function ($a, $b) {
+        uasort($indexes, static function ($a, $b) {
             return $b['date'] <=> $a['date'];
         });
 

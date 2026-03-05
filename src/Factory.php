@@ -78,7 +78,8 @@ final class Factory
             return $this->indexNameMapper;
         }
 
-        if (\array_key_exists(self::CONFIG_INDEX_NAME_MAPPER, $this->config)) {
+        if (\array_key_exists(self::CONFIG_INDEX_NAME_MAPPER, $this->config)
+            && $this->config[self::CONFIG_INDEX_NAME_MAPPER] instanceof IndexNameMapper) {
             return $this->indexNameMapper = $this->config[self::CONFIG_INDEX_NAME_MAPPER];
         }
 
@@ -110,7 +111,16 @@ final class Factory
 
     public function buildSerializer(): SerializerInterface
     {
-        return $this->serializer ??= $this->config[self::CONFIG_SERIALIZER] ?? $this->buildDefaultSerializer();
+        if (isset($this->serializer)) {
+            return $this->serializer;
+        }
+
+        $serializer = $this->config[self::CONFIG_SERIALIZER] ?? null;
+        if ($serializer instanceof SerializerInterface) {
+            return $this->serializer = $serializer;
+        }
+
+        return $this->serializer = $this->buildDefaultSerializer();
     }
 
     public function buildDocumentSerializer(): SerializerInterface
@@ -126,12 +136,35 @@ final class Factory
 
     public function buildDenormalizer(): DenormalizerInterface
     {
-        return $this->denormalizer ??= $this->config[self::CONFIG_DENORMALIZER] ?? $this->config[self::CONFIG_SERIALIZER] ?? $this->buildDefaultSerializer();
+        if (isset($this->denormalizer)) {
+            return $this->denormalizer;
+        }
+
+        $denormalizer = $this->config[self::CONFIG_DENORMALIZER] ?? null;
+        if ($denormalizer instanceof DenormalizerInterface) {
+            return $this->denormalizer = $denormalizer;
+        }
+
+        $serializer = $this->config[self::CONFIG_SERIALIZER] ?? null;
+        if ($serializer instanceof DenormalizerInterface) {
+            return $this->denormalizer = $serializer;
+        }
+
+        return $this->denormalizer = $this->buildDefaultSerializer();
     }
 
     public function buildContextBuilder(): ContextBuilderInterface
     {
-        return $this->contextBuilder ??= $this->config[self::CONFIG_SERIALIZER_CONTEXT_BUILDER] ?? new StaticContextBuilder($this->config[self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS] ?? []);
+        if (isset($this->contextBuilder)) {
+            return $this->contextBuilder;
+        }
+
+        $contextBuilder = $this->config[self::CONFIG_SERIALIZER_CONTEXT_BUILDER] ?? null;
+        if ($contextBuilder instanceof ContextBuilderInterface) {
+            return $this->contextBuilder = $contextBuilder;
+        }
+
+        return $this->contextBuilder = new StaticContextBuilder($this->config[self::CONFIG_SERIALIZER_CONTEXT_PER_CLASS] ?? []);
     }
 
     public function buildSerializerContext(string $class): array
@@ -153,6 +186,15 @@ final class Factory
 
     private function buildMappingProvider(): MappingProviderInterface
     {
-        return $this->mappingProvider ??= $this->config[self::CONFIG_MAPPINGS_PROVIDER] ?? new YamlProvider($this->config[self::CONFIG_MAPPINGS_DIRECTORY] ?? '');
+        if (isset($this->mappingProvider)) {
+            return $this->mappingProvider;
+        }
+
+        $mappingProvider = $this->config[self::CONFIG_MAPPINGS_PROVIDER] ?? null;
+        if ($mappingProvider instanceof MappingProviderInterface) {
+            return $this->mappingProvider = $mappingProvider;
+        }
+
+        return $this->mappingProvider = new YamlProvider($this->config[self::CONFIG_MAPPINGS_DIRECTORY] ?? '');
     }
 }
