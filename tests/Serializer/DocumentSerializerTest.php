@@ -78,7 +78,7 @@ final class DocumentSerializerTest extends TestCase
             ->method('write')
             ->with(
                 $document,
-                $this->callback(fn ($type) => $type instanceof Type && JsonStreamableTestDocument::class === $type->getClassName())
+                $this->callback(static fn ($type) => $type instanceof Type && JsonStreamableTestDocument::class === $type->getClassName())
             )
             ->willReturn($stringableResult)
         ;
@@ -121,7 +121,7 @@ final class DocumentSerializerTest extends TestCase
         $cache
             ->expects($this->exactly(2))
             ->method('get')
-            ->willReturnCallback(function ($key, $callback) use (&$cacheCallCount, &$reflectionCallCount) {
+            ->willReturnCallback(static function ($key, $callback) use (&$cacheCallCount, &$reflectionCallCount) {
                 ++$cacheCallCount;
                 // Only increment reflection count on second call if cache returns cached value
                 if (2 === $cacheCallCount) {
@@ -177,7 +177,7 @@ final class DocumentSerializerTest extends TestCase
         $customCache
             ->expects($this->once())
             ->method('get')
-            ->willReturnCallback(fn ($key, $callback) => $callback())
+            ->willReturnCallback(static fn ($key, $callback) => $callback())
         ;
 
         $serializer->serialize($document, 'json');
