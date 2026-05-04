@@ -27,8 +27,7 @@ class ElasticallyExtensionTest extends TestCase
     {
         $container = $this->buildContainer();
 
-        $container->loadFromExtension('elastically', [
-        ]);
+        $container->loadFromExtension('elastically', []);
 
         $container->compile();
 
@@ -153,8 +152,7 @@ class ElasticallyExtensionTest extends TestCase
 
         $container->loadFromExtension('elastically', [
             'connections' => [
-                'foobar' => [
-                ],
+                'foobar' => [],
             ],
         ]);
 

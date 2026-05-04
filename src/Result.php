@@ -23,7 +23,7 @@ class Result extends ElasticaResult
         return $this->model;
     }
 
-    public function setModel(object $model)
+    public function setModel(object $model): void
     {
         $this->model = $model;
     }

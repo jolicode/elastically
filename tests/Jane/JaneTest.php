@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the jolicode/elastically library.
  *
@@ -39,7 +37,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class JaneTest extends TestCase
 {
-    public function testCreateIndexAndSearchWithJaneObject()
+    public function testCreateIndexAndSearchWithJaneObject(): void
     {
         // Build the models
         $command = new GenerateCommand(new ConfigLoader(), new SchemaLoader());
