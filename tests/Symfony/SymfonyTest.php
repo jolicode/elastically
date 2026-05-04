@@ -22,7 +22,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class SymfonyTest extends KernelTestCase
 {
-    public function testBasicConfigurationSameAsFactory()
+    public function testBasicConfigurationSameAsFactory(): void
     {
         $container = self::getContainer();
 
@@ -44,7 +44,7 @@ class SymfonyTest extends KernelTestCase
         $this->assertSame($configFromSymfony['hosts'], $configFromFactory['hosts']);
     }
 
-    public function testMultipleClientOnSymfony()
+    public function testMultipleClientOnSymfony(): void
     {
         $container = self::getContainer();
 
@@ -61,7 +61,7 @@ class SymfonyTest extends KernelTestCase
         $this->assertNotSame($clientFromSymfony->getTransport()->getClient(), $httpClient);
     }
 
-    public function testGettingTheMapping()
+    public function testGettingTheMapping(): void
     {
         $container = self::getContainer();
 

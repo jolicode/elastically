@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the jolicode/elastically library.
  *
@@ -21,7 +19,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class TestController extends AbstractController
 {
-    public function withException(MessageBusInterface $bus)
+    public function withException(MessageBusInterface $bus): void
     {
         $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567890'));
         $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567891'));

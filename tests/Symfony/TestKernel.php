@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the jolicode/elastically library.
  *
@@ -43,7 +41,7 @@ class TestKernel extends Kernel
         return sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'elastically_logs';
     }
 
-    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/config.yaml');
 

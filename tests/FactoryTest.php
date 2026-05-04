@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
-    public function testFactoryWithBadConfig()
+    public function testFactoryWithBadConfig(): void
     {
         // no config?!
         $factory = new Factory();
