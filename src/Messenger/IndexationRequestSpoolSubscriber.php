@@ -53,7 +53,12 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
 
         $operations = [];
 
-        foreach ($this->singleTransport->get() as $envelope) {
+        // Symfony 8.1 added an optional (BC-compatible, not part of the interface
+        // signature) $fetchSize argument to get(), defaulting to 1 message instead
+        // of draining the whole queue. Pass PHP_INT_MAX to keep the previous
+        // behavior of collecting everything the in-memory transport is holding.
+        // @phpstan-ignore-next-line arguments.count
+        foreach ($this->singleTransport->get(\PHP_INT_MAX) as $envelope) {
             $operations[] = $envelope->getMessage();
 
             $this->singleTransport->ack($envelope);
