@@ -18,7 +18,9 @@ use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
 class ElasticallyExtensionTest extends TestCase
@@ -144,6 +146,39 @@ class ElasticallyExtensionTest extends TestCase
         $this->assertSame('elastically.another.index_builder', (string) $container->getAlias(IndexBuilder::class));
         $this->assertTrue($container->hasAlias(Indexer::class));
         $this->assertSame('elastically.another.indexer', (string) $container->getAlias(Indexer::class));
+    }
+
+    public function testUnflushedIndexerListenerChecksInitializedIndexersOnly(): void
+    {
+        $container = $this->buildContainer();
+
+        $container->loadFromExtension('elastically', [
+            'connections' => [
+                'foobar' => [
+                    'mapping_directory' => __DIR__,
+                    'index_class_mapping' => ['foobar' => self::class],
+                ],
+                'another' => [
+                    'mapping_directory' => __DIR__,
+                    'index_class_mapping' => ['foobar' => self::class],
+                ],
+            ],
+        ]);
+
+        $container->compile();
+
+        $listener = $container->getDefinition('elastically.unflushed_indexer_listener');
+        $this->assertTrue($listener->hasTag('kernel.event_subscriber'));
+
+        $indexers = $listener->getArgument('$indexers');
+        $this->assertInstanceOf(IteratorArgument::class, $indexers);
+        $this->assertSame(['foobar', 'another'], array_keys($indexers->getValues()));
+
+        foreach ($indexers->getValues() as $name => $reference) {
+            $this->assertInstanceOf(Reference::class, $reference);
+            $this->assertSame("elastically.{$name}.indexer", (string) $reference);
+            $this->assertSame(ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE, $reference->getInvalidBehavior());
+        }
     }
 
     public function testMissingClassMapping(): void
