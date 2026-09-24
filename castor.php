@@ -23,13 +23,13 @@ function test(#[AsRawTokens] array $rawTokens = []): void
 #[AsTask(description: 'Start testing tools (Elasticsearch 7)')]
 function start_7(): void
 {
-    run('docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.25');
+    run('docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:7.17.29');
 }
 
 #[AsTask(description: 'Start testing tools (Elasticsearch 8)')]
 function start(): void
 {
-    run('docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "action.destructive_requires_name=false" -it -m 1GB docker.elastic.co/elasticsearch/elasticsearch:8.16.0');
+    run('docker run --rm -d --name "elastically_es" -p 9999:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "action.destructive_requires_name=false" -it -m 1GB docker.elastic.co/elasticsearch/elasticsearch:8.19.22');
 }
 
 #[AsTask(description: 'Stop testing tools')]
@@ -41,7 +41,7 @@ function stop(): void
 #[AsTask(description: 'Start debug tools (Kibana)')]
 function kibana(): void
 {
-    run('docker run -e "ELASTICSEARCH_HOSTS=http://127.0.0.1:9999/" --network host docker.elastic.co/kibana/kibana:7.17.25');
+    run('docker run -e "ELASTICSEARCH_HOSTS=http://127.0.0.1:9999/" --network host docker.elastic.co/kibana/kibana:8.19.22');
 }
 
 #[AsTask(description: 'Fix PHP CS')]
