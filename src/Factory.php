@@ -40,8 +40,6 @@ final class Factory
     public const CONFIG_SERIALIZER_CONTEXT_BUILDER = 'elastically_serializer_context_builder';
     public const CONFIG_SERIALIZER_CONTEXT_PER_CLASS = 'elastically_serializer_context_per_class';
 
-    private array $config;
-
     private Client $client;
     private IndexNameMapper $indexNameMapper;
     private IndexBuilder $indexBuilder;
@@ -52,9 +50,9 @@ final class Factory
     private DenormalizerInterface $denormalizer;
     private MappingProviderInterface $mappingProvider;
 
-    public function __construct(array $config = [])
-    {
-        $this->config = $config;
+    public function __construct(
+        private array $config = [],
+    ) {
     }
 
     public function setClient(Client $client): void
@@ -78,9 +76,9 @@ final class Factory
             return $this->indexNameMapper;
         }
 
-        if (\array_key_exists(self::CONFIG_INDEX_NAME_MAPPER, $this->config)
-            && $this->config[self::CONFIG_INDEX_NAME_MAPPER] instanceof IndexNameMapper) {
-            return $this->indexNameMapper = $this->config[self::CONFIG_INDEX_NAME_MAPPER];
+        $indexNameMapper = $this->config[self::CONFIG_INDEX_NAME_MAPPER] ?? null;
+        if ($indexNameMapper instanceof IndexNameMapper) {
+            return $this->indexNameMapper = $indexNameMapper;
         }
 
         $prefix = $this->config[self::CONFIG_INDEX_PREFIX] ?? null;

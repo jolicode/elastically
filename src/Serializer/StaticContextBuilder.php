@@ -11,13 +11,11 @@
 
 namespace JoliCode\Elastically\Serializer;
 
-final class StaticContextBuilder implements ContextBuilderInterface
+final readonly class StaticContextBuilder implements ContextBuilderInterface
 {
-    private array $mapping;
-
-    public function __construct(array $mapping = [])
-    {
-        $this->mapping = $mapping;
+    public function __construct(
+        private array $mapping = [],
+    ) {
     }
 
     public function buildContext(string $class): array

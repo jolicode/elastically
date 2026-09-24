@@ -40,17 +40,12 @@ class IndexationRequestHandler
         self::OP_CREATE,
     ];
 
-    private MessageBusInterface $bus;
-    private DocumentExchangerInterface $exchanger;
-    private Indexer $indexer;
-    private IndexNameMapper $indexNameMapper;
-
-    public function __construct(MessageBusInterface $bus, DocumentExchangerInterface $exchanger, Indexer $indexer, IndexNameMapper $indexNameMapper)
-    {
-        $this->bus = $bus;
-        $this->exchanger = $exchanger;
-        $this->indexer = $indexer;
-        $this->indexNameMapper = $indexNameMapper;
+    public function __construct(
+        private readonly MessageBusInterface $bus,
+        private readonly DocumentExchangerInterface $exchanger,
+        private readonly Indexer $indexer,
+        private readonly IndexNameMapper $indexNameMapper,
+    ) {
     }
 
     /**

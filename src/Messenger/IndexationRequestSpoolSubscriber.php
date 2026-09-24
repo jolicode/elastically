@@ -26,14 +26,12 @@ use Symfony\Contracts\Service\ResetInterface;
  */
 class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, ResetInterface
 {
-    private TransportInterface $singleTransport;
-    private MessageBusInterface $bus;
     private bool $wasExceptionThrown = false;
 
-    public function __construct(TransportInterface $singleTransport, MessageBusInterface $bus)
-    {
-        $this->singleTransport = $singleTransport;
-        $this->bus = $bus;
+    public function __construct(
+        private readonly TransportInterface $singleTransport,
+        private readonly MessageBusInterface $bus,
+    ) {
     }
 
     public function onException(): void

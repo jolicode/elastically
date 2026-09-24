@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add support for symfony/json-streamer (indexation only)
 
+### Changed
+
+- Bump minimum PHP version to 8.2
+- Bump minimum Symfony version to 6.4 (6.4, 7.4 and 8.x are supported)
+- Drop support for phpdocumentor/reflection-docblock 4
+- Remove the unused symfony/deprecation-contracts dependency
+
 ## 2.1.0
 
 ### Added

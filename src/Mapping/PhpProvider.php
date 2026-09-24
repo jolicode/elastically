@@ -13,13 +13,11 @@ namespace JoliCode\Elastically\Mapping;
 
 use Elastica\Exception\InvalidException;
 
-final class PhpProvider implements MappingProviderInterface
+final readonly class PhpProvider implements MappingProviderInterface
 {
-    private string $configurationDirectory;
-
-    public function __construct(string $configurationDirectory)
-    {
-        $this->configurationDirectory = $configurationDirectory;
+    public function __construct(
+        private string $configurationDirectory,
+    ) {
     }
 
     public function provideMapping(string $indexName, array $context = []): ?array

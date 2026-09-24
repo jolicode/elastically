@@ -27,11 +27,11 @@ Main features:
 - Tested with Elasticsearch 7, 8 and 9;
 - Symfony support (**optional**):
     - See dedicated [chapter](#usage-in-symfony);
-    - Tested with Symfony 5.4 to 7;
+    - Tested with Symfony 6.4, 7.4 and 8;
     - Symfony Messenger Handler support (with or without spool);
 
 > [!IMPORTANT]
-> Require PHP 8.0+ and Elasticsearch >= 8
+> Require PHP 8.2+ and Elasticsearch >= 8
 
 Works with **Elasticsearch 7** as well but is not officially supported by Elastica 8. Use with caution.
 

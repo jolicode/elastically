@@ -16,13 +16,10 @@ use Elastica\Exception\RuntimeException;
 
 class IndexNameMapper
 {
-    private ?string $prefix;
-    private array $indexClassMapping;
-
-    public function __construct(?string $prefix, array $indexClassMapping)
-    {
-        $this->prefix = $prefix;
-        $this->indexClassMapping = $indexClassMapping;
+    public function __construct(
+        private readonly ?string $prefix,
+        private readonly array $indexClassMapping,
+    ) {
     }
 
     public function getPrefixedIndex(string $name): string
@@ -72,10 +69,8 @@ class IndexNameMapper
             return $matches[1];
         }
 
-        $prefixLength = $this->prefix ? \strlen($this->prefix) : 0;
-
-        if ($this->prefix && substr($fullIndexName, 0, $prefixLength) === $this->prefix) {
-            return substr($fullIndexName, $prefixLength + 1);
+        if ($this->prefix && str_starts_with($fullIndexName, $this->prefix)) {
+            return substr($fullIndexName, \strlen($this->prefix) + 1);
         }
 
         return $fullIndexName;

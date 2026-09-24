@@ -11,23 +11,17 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-final class IndexationRequest implements IndexationRequestInterface
+final readonly class IndexationRequest implements IndexationRequestInterface
 {
-    private string $className;
-    private string $id;
-    private string $operation;
-    private ?string $targetIndex;
-
-    public function __construct(string $className, string $id, string $operation = IndexationRequestHandler::OP_INDEX, ?string $targetIndex = null)
-    {
+    public function __construct(
+        private string $className,
+        private string $id,
+        private string $operation = IndexationRequestHandler::OP_INDEX,
+        private ?string $targetIndex = null,
+    ) {
         if (!\in_array($operation, IndexationRequestHandler::OPERATIONS, true)) {
             throw new \InvalidArgumentException(\sprintf('Not supported operation "%s" given.', $operation));
         }
-
-        $this->className = $className;
-        $this->id = $id;
-        $this->operation = $operation;
-        $this->targetIndex = $targetIndex;
     }
 
     public function getOperation(): string

@@ -15,14 +15,14 @@ use Elastica\Exception\InvalidException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 
-final class YamlProvider implements MappingProviderInterface
+final readonly class YamlProvider implements MappingProviderInterface
 {
-    private string $configurationDirectory;
     private Parser $parser;
 
-    public function __construct(string $configurationDirectory, ?Parser $parser = null)
-    {
-        $this->configurationDirectory = $configurationDirectory;
+    public function __construct(
+        private string $configurationDirectory,
+        ?Parser $parser = null,
+    ) {
         $this->parser = $parser ?? new Parser();
     }
 

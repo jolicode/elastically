@@ -22,18 +22,16 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class DocumentSerializer implements SerializerInterface
 {
-    private ContextBuilderInterface $contextBuilder;
-    private CacheInterface $cache;
-    private ?StreamWriterInterface $streamWriter;
+    private readonly ContextBuilderInterface $contextBuilder;
+    private readonly CacheInterface $cache;
 
     public function __construct(
-        private SerializerInterface $serializer,
+        private readonly SerializerInterface $serializer,
         ?ContextBuilderInterface $contextBuilder = null,
-        ?StreamWriterInterface $streamWriter = null,
+        private readonly ?StreamWriterInterface $streamWriter = null,
         ?CacheInterface $cache = null,
     ) {
         $this->contextBuilder = $contextBuilder ?? new StaticContextBuilder();
-        $this->streamWriter = $streamWriter;
         $this->cache = $cache ?? new ArrayAdapter();
     }
 
