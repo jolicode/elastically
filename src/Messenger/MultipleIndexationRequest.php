@@ -11,13 +11,11 @@
 
 namespace JoliCode\Elastically\Messenger;
 
-final class MultipleIndexationRequest implements IndexationRequestInterface
+final readonly class MultipleIndexationRequest implements IndexationRequestInterface
 {
-    private array $operations = [];
-
-    public function __construct(array $operations)
-    {
-        $this->operations = $operations;
+    public function __construct(
+        private array $operations,
+    ) {
     }
 
     /** @return array<IndexationRequest> */

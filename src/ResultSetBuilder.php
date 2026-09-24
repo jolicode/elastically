@@ -27,15 +27,11 @@ class ResultSetBuilder implements BuilderInterface
     public const RESULT_KEY = 'elastically_result';
     public const DOCUMENT_KEY = 'elastically_document';
 
-    private IndexNameMapper $indexNameMapper;
-    private ContextBuilderInterface $contextBuilder;
-    private DenormalizerInterface $denormalizer;
-
-    public function __construct(IndexNameMapper $indexNameMapper, ContextBuilderInterface $contextBuilder, DenormalizerInterface $denormalizer)
-    {
-        $this->indexNameMapper = $indexNameMapper;
-        $this->contextBuilder = $contextBuilder;
-        $this->denormalizer = $denormalizer;
+    public function __construct(
+        private readonly IndexNameMapper $indexNameMapper,
+        private readonly ContextBuilderInterface $contextBuilder,
+        private readonly DenormalizerInterface $denormalizer,
+    ) {
     }
 
     /**

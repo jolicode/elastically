@@ -23,13 +23,12 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface as SerializerExcep
 
 class Index extends ElasticaIndex
 {
-    private ResultSetBuilder $resultSetBuilder;
-
-    public function __construct(Client $client, string $name, ResultSetBuilder $resultSetBuilder)
-    {
+    public function __construct(
+        Client $client,
+        string $name,
+        private readonly ResultSetBuilder $resultSetBuilder,
+    ) {
         parent::__construct($client, $name);
-
-        $this->resultSetBuilder = $resultSetBuilder;
     }
 
     /**

@@ -25,15 +25,11 @@ use JoliCode\Elastically\Mapping\MappingProviderInterface;
 
 class IndexBuilder
 {
-    private MappingProviderInterface $mappingProvider;
-    private Client $client;
-    private IndexNameMapper $indexNameMapper;
-
-    public function __construct(MappingProviderInterface $mappingProvider, Client $client, IndexNameMapper $indexNameMapper)
-    {
-        $this->mappingProvider = $mappingProvider;
-        $this->client = $client;
-        $this->indexNameMapper = $indexNameMapper;
+    public function __construct(
+        private readonly MappingProviderInterface $mappingProvider,
+        private readonly Client $client,
+        private readonly IndexNameMapper $indexNameMapper,
+    ) {
     }
 
     /**
@@ -177,9 +173,7 @@ class IndexBuilder
         }
 
         // Newest first
-        uasort($indexes, static function ($a, $b) {
-            return $b['date'] <=> $a['date'];
-        });
+        uasort($indexes, static fn ($a, $b) => $b['date'] <=> $a['date']);
 
         $afterLiveCounter = 0;
         $livePassed = false;
