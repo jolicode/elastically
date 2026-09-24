@@ -18,7 +18,7 @@
         "php": ">=8.2",
         "ext-json": "*",
         "nyholm/psr7": "^1.8",
-        "phpdocumentor/reflection-docblock": "^5.2 || ^6.0",
+        "phpdocumentor/reflection-docblock": "^5.2",
         "ruflin/elastica": "^8.0 || ^9.0",
         "symfony/property-access": "^6.4 || ^7.4 || ^8.0",
         "symfony/property-info": "^6.4 || ^7.4 || ^8.0",
