@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support for symfony/json-streamer (indexation only)
+- Log an error when an Indexer queue was not flushed at the end of a request, a command or a Messenger message (Symfony bundle)
 
 ### Changed
 

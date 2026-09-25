@@ -332,6 +332,11 @@ JoliCode\Elastically\IndexBuilder (elastically.default.index_builder)
 JoliCode\Elastically\Indexer (elastically.default.indexer)
 ```
 
+Operations scheduled on an `Indexer` are only sent to Elasticsearch when
+calling `flush()` (or when the bulk size is reached). If some operations are
+still in the queue at the end of a request, a command, or a Messenger message,
+an error is logged in the `elastically` channel.
+
 #### Advanced Configuration
 
 ##### Multiple Connections and Autowiring

@@ -11,8 +11,10 @@
 
 namespace JoliCode\Elastically\Tests\Symfony;
 
+use JoliCode\Elastically\Bridge\Symfony\EventListener\UnflushedIndexerListener;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Factory;
+use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
 use JoliCode\Elastically\Mapping\MappingProviderInterface;
 use Psr\Http\Client\ClientInterface;
@@ -72,5 +74,22 @@ class SymfonyTest extends KernelTestCase
         /** @var MappingProviderInterface $mappingProvider */
         $mappingProvider = $container->get('elastically.default.mapping.provider.test');
         $this->assertArrayHasKey('mappings', $mappingProvider->provideMapping('beers'));
+    }
+
+    public function testUnflushedIndexerListenerOnlySeesInitializedIndexers(): void
+    {
+        $container = self::getContainer();
+
+        $listener = $container->get('elastically.unflushed_indexer_listener');
+        $this->assertInstanceOf(UnflushedIndexerListener::class, $listener);
+
+        $indexers = (new \ReflectionProperty($listener, 'indexers'))->getValue($listener);
+        // Neither the "default" nor the "special" indexer has been used yet
+        $this->assertSame([], iterator_to_array($indexers));
+
+        $indexer = $container->get('elastically.default.indexer.test');
+        $this->assertInstanceOf(Indexer::class, $indexer);
+
+        $this->assertSame(['default' => $indexer], iterator_to_array($indexers));
     }
 }

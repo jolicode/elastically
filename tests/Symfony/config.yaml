@@ -88,6 +88,10 @@ services:
         public: true
         alias: elastically.default.mapping.provider
 
+    elastically.default.indexer.test:
+        public: true
+        alias: elastically.default.indexer
+
     elastically.special.client.test:
         public: true
         alias: elastically.special.client
