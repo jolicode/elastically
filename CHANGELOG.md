@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support for symfony/json-streamer (indexation only)
+- Flush the `IndexationRequestSpoolSubscriber` spool after each message handled by a Messenger worker
 
 ### Changed
 

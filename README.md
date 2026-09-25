@@ -492,6 +492,8 @@ services:
             - { name: kernel.event_subscriber }
 ```
 
+The spool is flushed at the end of each HTTP request, console command, and message handled by a Messenger worker (`messenger:consume`). When a worker fails to handle a message, the `IndexationRequest` queued meanwhile are discarded.
+
 ## Using Jane to build PHP DTO and fast Normalizers
 
 Install [JanePHP](https://jane.readthedocs.io/) json-schema tools to build your own DTO and Normalizers. All you have to do is setting the Jane-completed Serializer on the Factory:
