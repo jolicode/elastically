@@ -1,0 +1,3 @@
+analyzer:
+    bar_name:
+        tokenizer: standard

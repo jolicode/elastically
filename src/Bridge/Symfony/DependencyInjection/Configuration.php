@@ -41,7 +41,7 @@ class Configuration implements ConfigurationInterface
                                 ->variablePrototype()->end()
                             ->end()
                             ->scalarNode('mapping_directory')
-                                ->info('Path to the mapping directory (in YAML)')
+                                ->info('Path to the mapping directory (in YAML), glob patterns are supported')
                                 ->example('%kernel.project_dir%/config/elasticsearch')
                                 ->cannotBeEmpty()
                             ->end()

@@ -177,6 +177,17 @@ When creating a `foobar` index, a `foobar_mapping.yaml` file is expected.
 
 If an `analyzers.yaml` file is present, **all** the indices will get it.
 
+The directory can also be a glob pattern, to spread the mappings across several
+directories (useful with a DDD / hexagonal architecture):
+
+```php
+Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/src/*/Infrastructure/Elasticsearch/mapping',
+```
+
+Each mapping file must then exist in only one of the matching directories, and
+the `analyzers.yaml` file is read from the directory where the mapping has been
+found.
+
 ### `Factory::CONFIG_INDEX_CLASS_MAPPING` (required)
 
 An array of index name to class FQN.
@@ -303,7 +314,7 @@ elastically:
                 transport_config:
                     http_client: 'Psr\Http\Client\ClientInterface'
 
-            # Path to the mapping directory (in YAML)
+            # Path to the mapping directory (in YAML), glob patterns are supported
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
 
             # Size of the bulk sent to Elasticsearch (default to 100)
