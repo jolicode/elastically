@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drop support for phpdocumentor/reflection-docblock 4
 - Remove the unused symfony/deprecation-contracts dependency
 
+### Fixed
+
+- `IndexBuilder::purgeOldIndices()` no longer fails when closing indices is disabled on the cluster (`cluster.indices.close.enable: false`), the previous index is kept open instead
+
 ## 2.1.0
 
 ### Added
