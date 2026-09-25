@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support for symfony/json-streamer (indexation only)
+- Add `MultipleDocumentExchangerInterface` to fetch all the documents of a `MultipleIndexationRequest` at once
 
 ### Changed
 

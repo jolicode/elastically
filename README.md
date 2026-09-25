@@ -425,6 +425,12 @@ services:
 
 The `IndexationRequestHandler` service depends on an implementation of `JoliCode\Elastically\Messenger\DocumentExchangerInterface`, which isn't provided by this library. You must provide a service that implements this interface, so you can plug your database or any other source of truth.
 
+If your exchanger also implements `JoliCode\Elastically\Messenger\MultipleDocumentExchangerInterface`, the handler will
+call its `fetchDocuments(string $className, array $ids)` method once per class for each message (including all the
+operations of a `MultipleIndexationRequest`), instead of calling `fetchDocument` for each document. This allows you to
+fetch all the documents with a single query. The returned iterable must be indexed by document ID; missing IDs are
+considered deleted.
+
 Then from your code you have to call:
 
 ```php

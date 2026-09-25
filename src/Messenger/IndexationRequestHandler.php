@@ -15,6 +15,7 @@ use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
 use Elastic\Transport\Exception\NoNodeAvailableException;
+use Elastica\Document as ElasticaDocument;
 use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\RuntimeException;
@@ -66,13 +67,15 @@ class IndexationRequestHandler
             $messages = [$message];
         }
 
+        $documents = $this->prefetchDocuments($messages);
+
         $messageOffset = 0;
         $responseOffset = $this->indexer->getQueueSize();
 
         try {
             foreach ($messages as $indexationRequest) {
                 ++$messageOffset;
-                $this->schedule($this->indexer, $indexationRequest);
+                $this->schedule($this->indexer, $indexationRequest, $documents);
 
                 if (0 === $this->indexer->getQueueSize()) {
                     $responseOffset = 0;
@@ -111,6 +114,41 @@ class IndexationRequestHandler
     }
 
     /**
+     * Fetch all the documents at once when the exchanger supports it.
+     *
+     * @param array<IndexationRequest> $messages
+     *
+     * @return array<string, array<string, ElasticaDocument|null>>|null Documents indexed by class name and ID, null if not supported
+     */
+    private function prefetchDocuments(array $messages): ?array
+    {
+        if (!$this->exchanger instanceof MultipleDocumentExchangerInterface) {
+            return null;
+        }
+
+        $idsPerClass = [];
+        foreach ($messages as $indexationRequest) {
+            if (self::OP_DELETE === $indexationRequest->getOperation()) {
+                continue;
+            }
+
+            $idsPerClass[$indexationRequest->getClassName()][$indexationRequest->getId()] = $indexationRequest->getId();
+        }
+
+        $documents = [];
+        foreach ($idsPerClass as $className => $ids) {
+            $documents[$className] = [];
+            foreach ($this->exchanger->fetchDocuments($className, array_values($ids)) as $id => $document) {
+                $documents[$className][(string) $id] = $document;
+            }
+        }
+
+        return $documents;
+    }
+
+    /**
+     * @param array<string, array<string, ElasticaDocument|null>>|null $documents
+     *
      * @throws ClientResponseException
      * @throws ExceptionInterface
      * @throws MissingParameterException
@@ -119,7 +157,7 @@ class IndexationRequestHandler
      * @throws UnrecoverableMessageHandlingException
      * @throws SerializerExceptionInterface
      */
-    private function schedule(Indexer $indexer, IndexationRequest $indexationRequest): void
+    private function schedule(Indexer $indexer, IndexationRequest $indexationRequest, ?array $documents = null): void
     {
         $indexName = $indexationRequest->getTargetIndex();
 
@@ -137,7 +175,13 @@ class IndexationRequestHandler
             return;
         }
 
-        $document = $this->exchanger->fetchDocument($indexationRequest->getClassName(), $indexationRequest->getId());
+        if (null === $documents) {
+            $document = $this->exchanger->fetchDocument($indexationRequest->getClassName(), $indexationRequest->getId());
+        } else {
+            $document = $documents[$indexationRequest->getClassName()][$indexationRequest->getId()] ?? null;
+            // The same document can be scheduled many times (in different indexes for example), and the Indexer mutates it
+            $document = $document ? clone $document : null;
+        }
 
         if (!$document) {
             // ID does not exists, delete
