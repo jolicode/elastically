@@ -16,10 +16,14 @@ use Elastica\Exception\RuntimeException;
 
 class IndexNameMapper
 {
+    private readonly ?string $prefix;
+
     public function __construct(
-        private readonly ?string $prefix,
+        ?string $prefix,
         private readonly array $indexClassMapping,
     ) {
+        // Elasticsearch only accepts lowercase index names
+        $this->prefix = null !== $prefix ? strtolower($prefix) : null;
     }
 
     public function getPrefixedIndex(string $name): string

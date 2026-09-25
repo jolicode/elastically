@@ -269,7 +269,7 @@ That's it! Elastically will automatically detect the JsonStreamer package and us
 
 ### `Factory::CONFIG_INDEX_PREFIX` (optional)
 
-Add a prefix to all indexes and aliases created via Elastically.
+Add a prefix to all indexes and aliases created via Elastically. The prefix is lowercased, as Elasticsearch does not accept uppercase characters in index names.
 
 _Default to `null`._
 
