@@ -354,6 +354,25 @@ them, run:
 bin/console debug:autowiring elastically
 ```
 
+##### Authentication
+
+Authentication options are Elastica client options, so they belong under the
+`client` key:
+
+```yaml
+elastically:
+    connections:
+        default:
+            client:
+                hosts:
+                    - 'https://es.example.com:9200'
+                # Basic authentication
+                username: '%env(ELASTICSEARCH_USERNAME)%'
+                password: '%env(ELASTICSEARCH_PASSWORD)%'
+                # Or an API key (cannot be used with username / password)
+                # api_key: '%env(ELASTICSEARCH_API_KEY)%'
+```
+
 ##### Use a Custom Serializer Context Builder
 
 ```yaml
