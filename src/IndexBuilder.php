@@ -199,7 +199,19 @@ class IndexBuilder
                 // Close
                 if (false === $dryRun) {
                     $index = new \Elastica\Index($this->client, $realIndexName);
-                    $index->close();
+                    try {
+                        $index->close();
+                    } catch (ClientResponseException|ServerResponseException $e) {
+                        // The cluster may forbid closing indices ("cluster.indices.close.enable: false"),
+                        // in that case we keep the index open.
+                        if (!str_contains($e->getMessage(), 'closing indices is disabled')) {
+                            throw $e;
+                        }
+
+                        $operations[] = \sprintf('%s not closed (closing indices is disabled on the cluster).', $realIndexName);
+
+                        continue;
+                    }
                 }
                 $operations[] = \sprintf('%s closed.', $realIndexName);
             }
