@@ -177,6 +177,17 @@ When creating a `foobar` index, a `foobar_mapping.yaml` file is expected.
 
 If an `analyzers.yaml` file is present, **all** the indices will get it.
 
+The directory can also be a glob pattern, to spread the mappings across several
+directories (useful with a DDD / hexagonal architecture):
+
+```php
+Factory::CONFIG_MAPPINGS_DIRECTORY => __DIR__ . '/src/*/Infrastructure/Elasticsearch/mapping',
+```
+
+Each mapping file must then exist in only one of the matching directories, and
+the `analyzers.yaml` file is read from the directory where the mapping has been
+found.
+
 ### `Factory::CONFIG_INDEX_CLASS_MAPPING` (required)
 
 An array of index name to class FQN.
@@ -269,7 +280,7 @@ That's it! Elastically will automatically detect the JsonStreamer package and us
 
 ### `Factory::CONFIG_INDEX_PREFIX` (optional)
 
-Add a prefix to all indexes and aliases created via Elastically.
+Add a prefix to all indexes and aliases created via Elastically. The prefix is lowercased, as Elasticsearch does not accept uppercase characters in index names.
 
 _Default to `null`._
 
@@ -303,7 +314,7 @@ elastically:
                 transport_config:
                     http_client: 'Psr\Http\Client\ClientInterface'
 
-            # Path to the mapping directory (in YAML)
+            # Path to the mapping directory (in YAML), glob patterns are supported
             mapping_directory:       '%kernel.project_dir%/config/elasticsearch'
 
             # Size of the bulk sent to Elasticsearch (default to 100)
@@ -332,6 +343,11 @@ JoliCode\Elastically\IndexBuilder (elastically.default.index_builder)
 JoliCode\Elastically\Indexer (elastically.default.indexer)
 ```
 
+Operations scheduled on an `Indexer` are only sent to Elasticsearch when
+calling `flush()` (or when the bulk size is reached). If some operations are
+still in the queue at the end of a request, a command, or a Messenger message,
+an error is logged in the `elastically` channel.
+
 #### Advanced Configuration
 
 ##### Multiple Connections and Autowiring
@@ -352,6 +368,25 @@ them, run:
 
 ```
 bin/console debug:autowiring elastically
+```
+
+##### Authentication
+
+Authentication options are Elastica client options, so they belong under the
+`client` key:
+
+```yaml
+elastically:
+    connections:
+        default:
+            client:
+                hosts:
+                    - 'https://es.example.com:9200'
+                # Basic authentication
+                username: '%env(ELASTICSEARCH_USERNAME)%'
+                password: '%env(ELASTICSEARCH_PASSWORD)%'
+                # Or an API key (cannot be used with username / password)
+                # api_key: '%env(ELASTICSEARCH_API_KEY)%'
 ```
 
 ##### Use a Custom Serializer Context Builder
@@ -379,18 +414,18 @@ elastically:
 
 ##### Using HttpClient as Transport
 
-You can also use the Symfony HttpClient for all Elastica communications:
+You can also use the Symfony HttpClient for all Elastica communications, by
+passing the ID of a PSR-18 client service:
 
 ```yaml
-JoliCode\Elastically\Transport\HttpClientTransport: ~
-
-JoliCode\Elastically\Client:
-    arguments:
-        $config:
-            hosts:
-                - '127.0.0.1:9200'
-            transport_config:
-                http_client: 'Psr\Http\Client\ClientInterface'
+elastically:
+    connections:
+        default:
+            client:
+                hosts:
+                    - '127.0.0.1:9200'
+                transport_config:
+                    http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 See the [official documentation on how to get a PSR-18 client](https://symfony.com/doc/current/http_client.html#psr-18-and-psr-17).
@@ -497,6 +532,8 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 ```
+
+The spool is flushed at the end of each HTTP request, console command, and message handled by a Messenger worker (`messenger:consume`). When a worker fails to handle a message, the `IndexationRequest` queued meanwhile are discarded.
 
 ## Using Jane to build PHP DTO and fast Normalizers
 

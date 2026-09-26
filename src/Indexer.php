@@ -28,7 +28,6 @@ class Indexer
 {
     private ?Bulk $currentBulk = null;
 
-    // TODO: on the destruct, maybe throw an exception for non empty indexer queues?
     public function __construct(
         private readonly Client $client,
         private readonly SerializerInterface $serializer,

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add support for symfony/json-streamer (indexation only)
 - Add `MultipleDocumentExchangerInterface` to fetch all the documents of a `MultipleIndexationRequest` at once
+- Allow glob patterns in the mapping directory to spread mappings across several directories
+- Flush the `IndexationRequestSpoolSubscriber` spool after each message handled by a Messenger worker
+- Log an error when an Indexer queue was not flushed at the end of a request, a command or a Messenger message (Symfony bundle)
 
 ### Changed
 
@@ -18,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump minimum Symfony version to 6.4 (6.4, 7.4 and 8.x are supported)
 - Drop support for phpdocumentor/reflection-docblock 4
 - Remove the unused symfony/deprecation-contracts dependency
+
+### Fixed
+
+- Lowercase the index prefix, as Elasticsearch rejects index names containing uppercase characters
 
 ## 2.1.0
 
