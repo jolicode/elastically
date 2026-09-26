@@ -83,6 +83,7 @@ class ElasticallyExtension extends Extension
         $client->replaceArgument('$config', $config['client'] ?? []);
         $client->replaceArgument('$resultSetBuilder', new Reference("elastically.{$name}.result_set_builder"));
         $client->replaceArgument('$indexNameMapper', new Reference("elastically.{$name}.index_name_mapper"));
+        $client->addTag('elastically.client', ['connection' => $name]);
         $container->setDefinition($id = "elastically.{$name}.client", $client);
         if ($isDefaultConnection) {
             $container->setAlias(Client::class, $id);
