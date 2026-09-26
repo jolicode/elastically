@@ -11,6 +11,8 @@
 
 namespace JoliCode\Elastically\Tests\Symfony;
 
+use Elastica\Query;
+use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Messenger\IndexationRequest;
 use JoliCode\Elastically\Tests\Messenger\TestDTO;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,5 +35,20 @@ class TestController extends AbstractController
         $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567891'));
 
         return new Response('Everything is fine.', Response::HTTP_OK);
+    }
+
+    public function withSearch(Client $defaultClient): Response
+    {
+        $index = $defaultClient->getIndex('hop');
+        $index->exists();
+        $index->exists();
+
+        try {
+            $index->search(new Query(new Query\MatchAll()));
+        } catch (\Throwable) {
+            // The index does not exist
+        }
+
+        return new Response('Searched.', Response::HTTP_OK);
     }
 }

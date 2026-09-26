@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow glob patterns in the mapping directory to spread mappings across several directories
 - Flush the `IndexationRequestSpoolSubscriber` spool after each message handled by a Messenger worker
 - Log an error when an Indexer queue was not flushed at the end of a request, a command or a Messenger message (Symfony bundle)
+- Add an "Elastically" panel to the Symfony profiler, listing the requests sent to Elasticsearch (Symfony bundle)
 
 ### Changed
 
