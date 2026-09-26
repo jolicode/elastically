@@ -48,6 +48,18 @@ final class IndexNameMapperTest extends BaseTestCase
         $this->assertSame('foo_todo', $indexName);
     }
 
+    public function testIndexPrefixIsLowercased(): void
+    {
+        $mapper = new IndexNameMapper('Dev_SearchPoc', [
+            'todo' => TestDTO::class,
+        ]);
+
+        $this->assertSame('dev_searchpoc_todo', $mapper->getPrefixedIndex('todo'));
+        $this->assertSame('dev_searchpoc_todo', $mapper->getIndexNameFromClass(TestDTO::class));
+        $this->assertSame('todo', $mapper->getPureIndexName('dev_searchpoc_todo_2222-22-22-000001'));
+        $this->assertSame('todo', $mapper->getPureIndexName('dev_searchpoc_todo'));
+    }
+
     public function testPureIndexNameFromIndex(): void
     {
         $mapper = new IndexNameMapper(null, [

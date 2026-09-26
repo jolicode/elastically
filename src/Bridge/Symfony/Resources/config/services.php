@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use JoliCode\Elastically\Bridge\Symfony\EventListener\UnflushedIndexerListener;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
@@ -71,6 +72,14 @@ return static function (ContainerConfigurator $container) {
                 '$bulkMaxSize' => abstract_arg('bulk size'),
                 '$bulkRequestParams' => [],
             ])
+
+        ->set('elastically.unflushed_indexer_listener', UnflushedIndexerListener::class)
+            ->args([
+                '$indexers' => abstract_arg('indexers, keyed by connection name'),
+                '$logger' => service('logger')->nullOnInvalid(),
+            ])
+            ->tag('kernel.event_subscriber')
+            ->tag('monolog.logger', ['channel' => 'elastically'])
 
         ->set('elastically.abstract.mapping.provider', YamlProvider::class)
             ->abstract()
