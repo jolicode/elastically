@@ -384,18 +384,18 @@ elastically:
 
 ##### Using HttpClient as Transport
 
-You can also use the Symfony HttpClient for all Elastica communications:
+You can also use the Symfony HttpClient for all Elastica communications, by
+passing the ID of a PSR-18 client service:
 
 ```yaml
-JoliCode\Elastically\Transport\HttpClientTransport: ~
-
-JoliCode\Elastically\Client:
-    arguments:
-        $config:
-            hosts:
-                - '127.0.0.1:9200'
-            transport_config:
-                http_client: 'Psr\Http\Client\ClientInterface'
+elastically:
+    connections:
+        default:
+            client:
+                hosts:
+                    - '127.0.0.1:9200'
+                transport_config:
+                    http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 See the [official documentation on how to get a PSR-18 client](https://symfony.com/doc/current/http_client.html#psr-18-and-psr-17).
