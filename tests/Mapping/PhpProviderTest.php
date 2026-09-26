@@ -53,4 +53,51 @@ final class PhpProviderTest extends TestCase
             ],
         ], $beerMapping);
     }
+
+    public function testMappingDirectoryCanBeAGlobPattern(): void
+    {
+        $provider = new PhpProvider(__DIR__ . '/../configs_glob/*/mapping');
+
+        self::assertSame([
+            'mappings' => [
+                'properties' => [
+                    'name' => ['type' => 'text'],
+                ],
+            ],
+        ], $provider->provideMapping('foo'));
+
+        // Analyzers are loaded from the directory where the mapping has been found
+        self::assertSame([
+            'mappings' => [
+                'properties' => [
+                    'name' => ['type' => 'keyword'],
+                ],
+            ],
+            'settings' => [
+                'analysis' => [
+                    'analyzer' => [
+                        'bar_name' => [
+                            'tokenizer' => 'standard',
+                        ],
+                    ],
+                ],
+            ],
+        ], $provider->provideMapping('bar'));
+    }
+
+    public function testGlobPatternWithoutMatchingFileThrowsException(): void
+    {
+        $this->expectException(InvalidException::class);
+        $this->expectExceptionMessage('not found');
+        $provider = new PhpProvider(__DIR__ . '/../configs_glob/*/mapping');
+        $provider->provideMapping('unknown');
+    }
+
+    public function testGlobPatternWithSeveralMatchingFilesThrowsException(): void
+    {
+        $this->expectException(InvalidException::class);
+        $this->expectExceptionMessage('found in several directories');
+        $provider = new PhpProvider(__DIR__ . '/../configs_glob/*/mapping');
+        $provider->provideMapping('duplicated');
+    }
 }

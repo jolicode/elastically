@@ -1,0 +1,4 @@
+mappings:
+    properties:
+        name:
+            type: text
