@@ -21,6 +21,8 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
+use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
@@ -99,6 +101,72 @@ final class MemoryQueuingFunctionalTest extends KernelTestCase
 
         /** @var InMemoryTransport $transportBulk */
         $transportBulk = self::getContainer()->get('messenger.transport.async.test');
+        $this->assertCount(0, $transportBulk->getSent());
+    }
+
+    public function testFrameworkWorkerMessageHandledResend(): void
+    {
+        self::bootKernel(['debug' => false]);
+
+        /** @var MessageBus $bus */
+        $bus = self::getContainer()->get('messenger.default_bus');
+
+        $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567890'));
+        $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567891'));
+
+        /** @var InMemoryTransport $transport */
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
+        $this->assertCount(2, $transport->getSent());
+
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = self::getContainer()->get('event_dispatcher');
+
+        // Simulate a message successfully handled by a worker
+        $dispatcher->dispatch(new WorkerMessageHandledEvent(new Envelope(new \stdClass()), 'test_receiver'));
+
+        $this->assertCount(2, $transport->getAcknowledged());
+        $this->assertEmpty($transport->getRejected());
+
+        /** @var InMemoryTransport $transportBulk */
+        $transportBulk = self::getContainer()->get('messenger.transport.async.test');
+        $this->assertCount(1, $transportBulk->getSent());
+
+        $messages = $transportBulk->get();
+        $this->assertCount(1, $messages);
+        /** @var Envelope $message */
+        $message = reset($messages);
+        $this->assertInstanceOf(MultipleIndexationRequest::class, $message->getMessage());
+        $this->assertCount(2, $message->getMessage()->getOperations());
+    }
+
+    public function testFrameworkWorkerMessageFailedDiscard(): void
+    {
+        self::bootKernel(['debug' => false]);
+
+        /** @var MessageBus $bus */
+        $bus = self::getContainer()->get('messenger.default_bus');
+
+        $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567890'));
+        $bus->dispatch(new IndexationRequest(TestDTO::class, '1234567891'));
+
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = self::getContainer()->get('event_dispatcher');
+
+        // Simulate a message that failed in a worker
+        $dispatcher->dispatch(new WorkerMessageFailedEvent(new Envelope(new \stdClass()), 'test_receiver', new \RuntimeException('Boom')));
+
+        /** @var InMemoryTransport $transport */
+        $transport = self::getContainer()->get('messenger.transport.queuing.test');
+        $this->assertEmpty($transport->getAcknowledged());
+        $this->assertCount(2, $transport->getRejected());
+        $this->assertEmpty($transport->get());
+
+        /** @var InMemoryTransport $transportBulk */
+        $transportBulk = self::getContainer()->get('messenger.transport.async.test');
+        $this->assertCount(0, $transportBulk->getSent());
+
+        // The next handled message does not send the discarded requests
+        $dispatcher->dispatch(new WorkerMessageHandledEvent(new Envelope(new \stdClass()), 'test_receiver'));
         $this->assertCount(0, $transportBulk->getSent());
     }
 }
