@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `IndexBuilder::purgeOldIndices()` no longer fails when closing indices is disabled on the cluster (`cluster.indices.close.enable: false`), the previous index is kept open instead
 - Lowercase the index prefix, as Elasticsearch rejects index names containing uppercase characters
 
 ## 2.1.0

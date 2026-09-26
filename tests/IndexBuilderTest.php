@@ -236,6 +236,43 @@ final class IndexBuilderTest extends BaseTestCase
         $this->assertTrue($index4->exists()); // Do not delete indexes in the future of the current one
     }
 
+    public function testPurgeOldIndicesWhenClosingIndicesIsDisabled(): void
+    {
+        $client = $this->getClient();
+        $client->cluster()->putSettings(['body' => ['persistent' => ['cluster.indices.close.enable' => false]]]);
+
+        try {
+            $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs_analysis');
+
+            $index1 = $indexBuilder->createIndex('hop');
+
+            usleep(1200000); // 1,2 second
+
+            $index2 = $indexBuilder->createIndex('hop');
+
+            usleep(1200000); // 1,2 second
+
+            $index3 = $indexBuilder->createIndex('hop');
+            $indexBuilder->markAsLive($index3, 'hop');
+
+            $operations = $indexBuilder->purgeOldIndices('hop');
+
+            $this->assertSame([
+                \sprintf('%s not closed (closing indices is disabled on the cluster).', $index2->getName()),
+                \sprintf('%s deleted.', $index1->getName()),
+            ], $operations);
+
+            $this->assertFalse($index1->exists());
+            $this->assertTrue($index2->exists());
+            $this->assertTrue($index3->exists());
+
+            // The index is still open
+            $index2->search();
+        } finally {
+            $client->cluster()->putSettings(['body' => ['persistent' => ['cluster.indices.close.enable' => null]]]);
+        }
+    }
+
     public function testSlowDownRefresh(): void
     {
         $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs_analysis');
