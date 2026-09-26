@@ -5,11 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 2.3.0
 
 ### Added
 
-- Add support for symfony/json-streamer (indexation only)
 - Add `MultipleDocumentExchangerInterface` to fetch all the documents of a `MultipleIndexationRequest` at once
 - Allow glob patterns in the mapping directory to spread mappings across several directories
 - Flush the `IndexationRequestSpoolSubscriber` spool after each message handled by a Messenger worker
@@ -26,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `IndexBuilder::purgeOldIndices()` no longer fails when closing indices is disabled on the cluster (`cluster.indices.close.enable: false`), the previous index is kept open instead
 - Lowercase the index prefix, as Elasticsearch rejects index names containing uppercase characters
+
+## 2.2.0
+
+### Added
+
+- Add support for symfony/json-streamer (indexation only)
+- Allow symfony 8, and test against PHP 8.5
 
 ## 2.1.0
 
