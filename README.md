@@ -269,7 +269,7 @@ That's it! Elastically will automatically detect the JsonStreamer package and us
 
 ### `Factory::CONFIG_INDEX_PREFIX` (optional)
 
-Add a prefix to all indexes and aliases created via Elastically.
+Add a prefix to all indexes and aliases created via Elastically. The prefix is lowercased, as Elasticsearch does not accept uppercase characters in index names.
 
 _Default to `null`._
 
@@ -332,6 +332,11 @@ JoliCode\Elastically\IndexBuilder (elastically.default.index_builder)
 JoliCode\Elastically\Indexer (elastically.default.indexer)
 ```
 
+Operations scheduled on an `Indexer` are only sent to Elasticsearch when
+calling `flush()` (or when the bulk size is reached). If some operations are
+still in the queue at the end of a request, a command, or a Messenger message,
+an error is logged in the `elastically` channel.
+
 #### Advanced Configuration
 
 ##### Multiple Connections and Autowiring
@@ -379,18 +384,18 @@ elastically:
 
 ##### Using HttpClient as Transport
 
-You can also use the Symfony HttpClient for all Elastica communications:
+You can also use the Symfony HttpClient for all Elastica communications, by
+passing the ID of a PSR-18 client service:
 
 ```yaml
-JoliCode\Elastically\Transport\HttpClientTransport: ~
-
-JoliCode\Elastically\Client:
-    arguments:
-        $config:
-            hosts:
-                - '127.0.0.1:9200'
-            transport_config:
-                http_client: 'Psr\Http\Client\ClientInterface'
+elastically:
+    connections:
+        default:
+            client:
+                hosts:
+                    - '127.0.0.1:9200'
+                transport_config:
+                    http_client: 'Psr\Http\Client\ClientInterface'
 ```
 
 See the [official documentation on how to get a PSR-18 client](https://symfony.com/doc/current/http_client.html#psr-18-and-psr-17).
