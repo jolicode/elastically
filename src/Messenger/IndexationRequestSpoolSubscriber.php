@@ -15,6 +15,8 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
+use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\Exception\TransportException;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -82,6 +84,31 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
         $this->onTerminate();
     }
 
+    /**
+     * Flush the spool once a message has been handled by a Messenger worker,
+     * as the worker process may run for a long time.
+     *
+     * @throws TransportException|ExceptionInterface
+     */
+    public function onWorkerMessageHandled(): void
+    {
+        $this->onTerminate();
+    }
+
+    /**
+     * Discard the IndexationRequest queued while handling a message that failed,
+     * so they are not sent along with the ones of the next handled message.
+     *
+     * @throws TransportException
+     */
+    public function onWorkerMessageFailed(): void
+    {
+        // @phpstan-ignore-next-line arguments.count
+        foreach ($this->singleTransport->get(\PHP_INT_MAX) as $envelope) {
+            $this->singleTransport->reject($envelope);
+        }
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -89,6 +116,8 @@ class IndexationRequestSpoolSubscriber implements EventSubscriberInterface, Rese
             KernelEvents::RESPONSE => ['onResponse', -10],
             ConsoleEvents::ERROR => 'onException',
             ConsoleEvents::TERMINATE => 'onTerminate',
+            WorkerMessageHandledEvent::class => 'onWorkerMessageHandled',
+            WorkerMessageFailedEvent::class => 'onWorkerMessageFailed',
         ];
     }
 

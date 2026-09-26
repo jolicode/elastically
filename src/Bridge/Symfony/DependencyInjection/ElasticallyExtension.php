@@ -16,8 +16,10 @@ use JoliCode\Elastically\IndexBuilder;
 use JoliCode\Elastically\Indexer;
 use JoliCode\Elastically\IndexNameMapper;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -41,9 +43,17 @@ class ElasticallyExtension extends Extension
             $defaultConnectionName = key($config['connections']);
         }
 
+        $indexers = [];
         foreach ($config['connections'] as $name => $connectionConfig) {
             $this->buildConnection($name, $connectionConfig, $name === $defaultConnectionName, $container);
+
+            // Only check the indexers that were actually used
+            $indexers[$name] = new Reference("elastically.{$name}.indexer", ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE);
         }
+
+        $container->getDefinition('elastically.unflushed_indexer_listener')
+            ->replaceArgument('$indexers', new IteratorArgument($indexers))
+        ;
     }
 
     private function buildConnection(string $name, array $config, bool $isDefaultConnection, ContainerBuilder $container): void
