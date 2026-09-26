@@ -535,6 +535,48 @@ services:
 
 The spool is flushed at the end of each HTTP request, console command, and message handled by a Messenger worker (`messenger:consume`). When a worker fails to handle a message, the `IndexationRequest` queued meanwhile are discarded.
 
+## Pagination
+
+Elastically does not ship its own paginator: `JoliCode\Elastically\Index` is a
+regular `Elastica\SearchableInterface`, so you can use the Elastica support of
+your favorite pagination library. Results are hydrated by Elastically, so
+`getModel()` is available on each result.
+
+With [Pagerfanta](https://github.com/BabDev/Pagerfanta) (`pagerfanta/elastica-adapter`,
+which does not support `ruflin/elastica` 9 yet):
+
+```php
+use Elastica\Query;
+use Pagerfanta\Elastica\ElasticaAdapter;
+use Pagerfanta\Pagerfanta;
+
+$pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
+    new ElasticaAdapter($client->getIndex('beers'), new Query(new Query\MatchQuery('name', 'alsace'))),
+    $page,
+    20,
+);
+
+foreach ($pager as $result) {
+    $beer = $result->getModel();
+}
+```
+
+With [KnpPaginator](https://github.com/KnpLabs/KnpPaginatorBundle):
+
+```php
+use Elastica\Query;
+
+$pagination = $paginator->paginate(
+    [$client->getIndex('beers'), new Query(new Query\MatchQuery('name', 'alsace'))],
+    $page,
+    20,
+);
+
+foreach ($pagination as $result) {
+    $beer = $result->getModel();
+}
+```
+
 ## Using Jane to build PHP DTO and fast Normalizers
 
 Install [JanePHP](https://jane.readthedocs.io/) json-schema tools to build your own DTO and Normalizers. All you have to do is setting the Jane-completed Serializer on the Factory:
