@@ -535,6 +535,17 @@ services:
 
 The spool is flushed at the end of each HTTP request, console command, and message handled by a Messenger worker (`messenger:consume`). When a worker fails to handle a message, the `IndexationRequest` queued meanwhile are discarded.
 
+### Profiler
+
+When the Symfony profiler is enabled, Elastically adds an "Elastically" panel to it, and a counter to the web debug toolbar. For each connection, it lists the requests sent to Elasticsearch with:
+
+- their duration and status code;
+- the request body and the response, readable;
+- a "Copy as cURL" button (credentials are not included) and a "Copy for Kibana Dev Tools" button;
+- a warning when the exact same request (method, URL and body) was sent more than once.
+
+There is nothing to configure: the panel is registered only when the `profiler` service exists, usually in the `dev` environment with the WebProfilerBundle installed.
+
 ## Pagination
 
 Elastically does not ship its own paginator: `JoliCode\Elastically\Index` is a
@@ -595,8 +606,6 @@ $factory = new Factory([
 - some "todo" in the code
 - optional Doctrine connector
 - extra commands to monitor, update mapping, reindex... Commonly implemented tasks
-- optional Symfony integration:
-  - web debug toolbar!
 - scripts / commands for common tasks:
   - auto-reindex when the mapping change, handle the aliases and everything
   - micro monitoring for cluster / indexes
