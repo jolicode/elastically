@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump minimum PHP version to 8.2
 - Bump minimum Symfony version to 6.4 (6.4, 7.4 and 8.x are supported)
 - Drop support for phpdocumentor/reflection-docblock 4
+- Allow phpdocumentor/reflection-docblock 6
 - Remove the unused symfony/deprecation-contracts dependency
 
 ### Fixed
