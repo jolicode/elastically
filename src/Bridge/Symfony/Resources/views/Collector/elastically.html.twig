@@ -37,6 +37,8 @@
         .sf-profiler-elastically-requests .request-actions .btn { margin-right: 5px; }
         .sf-profiler-elastically-requests .request-details { margin-top: 10px; }
         .sf-profiler-elastically-requests .request-details h4 { margin: 0 0 5px; }
+        .sf-profiler-elastically-requests .request-indices { margin-top: 5px; }
+        .sf-profiler-elastically-requests .request-models table { margin: 0; }
         .sf-profiler-elastically-requests .badge-duplicated { background: var(--badge-warning-background); color: var(--badge-warning-color); box-shadow: var(--badge-warning-shadow); }
         .sf-profiler-elastically-duplicates { background: var(--badge-warning-background); color: var(--badge-warning-color); border-radius: 6px; margin: 0 0 1em; padding: 10px 15px; }
     </style>
@@ -64,6 +66,10 @@
             <div class="sf-toolbar-info-piece">
                 <b>Request time</b>
                 <span>{{ '%0.2f'|format(collector.duration) }} ms</span>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Hydrated models</b>
+                <span class="sf-toolbar-status">{{ collector.modelCount }}</span>
             </div>
             <div class="sf-toolbar-info-piece">
                 <b>Errors</b>
@@ -107,6 +113,10 @@
                 <span class="label">Request time</span>
             </div>
             <div class="metric">
+                <span class="value">{{ collector.modelCount }}</span>
+                <span class="label">Hydrated models</span>
+            </div>
+            <div class="metric">
                 <span class="value">{{ collector.errorCount }}</span>
                 <span class="label">Errors</span>
             </div>
@@ -131,6 +141,27 @@
 
                     <div class="tab-content">
                         <p class="text-muted">Hosts: {{ connection.hosts|join(', ') }}</p>
+
+                        {% if connection.indices is not empty %}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Index</th>
+                                        <th>Name in Elasticsearch</th>
+                                        <th>Model class</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for index in connection.indices %}
+                                        <tr>
+                                            <td>{{ index.name }}</td>
+                                            <td>{{ index.prefixed_name }}</td>
+                                            <td>{{ index.class|abbr_class }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
 
                         {% if connection.requests is empty %}
                             <div class="empty">
@@ -167,6 +198,17 @@
                                                     <span class="badge badge-duplicated" title="This exact request was sent {{ request.occurrences }} times">Duplicated ×{{ request.occurrences }}</span>
                                                 {% endif %}
 
+                                                {% if request.indices is not empty %}
+                                                    <div class="request-indices text-small">
+                                                        {% for index in request.indices %}
+                                                            <span title="{{ index.name }}">{{ index.pure_name }}</span>
+                                                            {%- if index.pure_name != index.name %} <span class="text-muted">({{ index.name }})</span>{% endif %}
+                                                            {%- if index.class %} → {{ index.class|abbr_class }}{% endif %}
+                                                            {%- if not loop.last %}, {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+
                                                 {% if request.error %}
                                                     <div class="request-error text-danger">{{ request.error|length > 300 ? request.error|slice(0, 300) ~ '…' : request.error }}</div>
                                                 {% endif %}
@@ -175,17 +217,50 @@
                                                     {% if request.request_body is not null %}
                                                         <button type="button" class="btn btn-link text-small sf-toggle" data-toggle-selector="#{{ request_id }}-request" data-toggle-alt-content="Hide request body">View request body</button>
                                                     {% endif %}
+                                                    {% if request.model_count %}
+                                                        <button type="button" class="btn btn-link text-small sf-toggle" data-toggle-selector="#{{ request_id }}-models" data-toggle-alt-content="Hide hydrated models">View hydrated models ({{ request.model_count }})</button>
+                                                    {% endif %}
                                                     {% if request.response_body is not null %}
                                                         <button type="button" class="btn btn-link text-small sf-toggle" data-toggle-selector="#{{ request_id }}-response" data-toggle-alt-content="Hide response">View response</button>
                                                     {% endif %}
                                                     <button type="button" class="btn btn-sm hidden" title="Copy the request as a cURL command (credentials are not included)" data-clipboard-text="{{ request.curl_command }}">Copy as cURL</button>
-                                                    <button type="button" class="btn btn-sm hidden" title="Copy the request for the Kibana Dev Tools console" data-clipboard-text="{{ request.console_command }}">Copy for Kibana Dev Tools</button>
                                                 </div>
 
                                                 {% if request.request_body is not null %}
                                                     <div id="{{ request_id }}-request" class="request-details sf-toggle-content sf-toggle-hidden">
                                                         <h4>Request body</h4>
                                                         {{ profiler_dump(request.request_body, maxDepth: 5) }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if request.model_count %}
+                                                    <div id="{{ request_id }}-models" class="request-details request-models sf-toggle-content sf-toggle-hidden">
+                                                        <h4>Hydrated models</h4>
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-narrow">Index</th>
+                                                                    <th class="col-narrow">ID</th>
+                                                                    <th class="col-narrow">Class</th>
+                                                                    <th>Model</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for model in request.models %}
+                                                                    <tr>
+                                                                        <td class="col-narrow">
+                                                                            {{ model.pure_index ?? 'n/a' }}
+                                                                            {% if model.index != model.pure_index %}<br><span class="text-muted text-small">{{ model.index }}</span>{% endif %}
+                                                                        </td>
+                                                                        <td class="col-narrow">{{ model.id ?? 'n/a' }}</td>
+                                                                        <td class="col-narrow">{{ model.class|abbr_class }}</td>
+                                                                        <td>{{ profiler_dump(model.model, maxDepth: 3) }}</td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                        {% if request.model_count > request.models|length %}
+                                                            <p class="text-muted">{{ request.model_count - request.models|length }} more model(s) are not displayed.</p>
+                                                        {% endif %}
                                                     </div>
                                                 {% endif %}
                                                 {% if request.response_body is not null %}

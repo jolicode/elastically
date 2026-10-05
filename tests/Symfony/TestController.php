@@ -11,6 +11,7 @@
 
 namespace JoliCode\Elastically\Tests\Symfony;
 
+use Elastica\Document;
 use Elastica\Query;
 use JoliCode\Elastically\Client;
 use JoliCode\Elastically\Messenger\IndexationRequest;
@@ -50,5 +51,23 @@ class TestController extends AbstractController
         }
 
         return new Response('Searched.', Response::HTTP_OK);
+    }
+
+    public function withHydration(Client $defaultClient): Response
+    {
+        $index = $defaultClient->getIndex('profiled_beers');
+        $index->create([], ['recreate' => true]);
+
+        try {
+            $index->addDocument(new Document('1', ['name' => 'Kwak']));
+            $index->refresh();
+
+            $index->search(new Query(new Query\MatchAll()));
+            $index->getModel('1');
+        } finally {
+            $index->delete();
+        }
+
+        return new Response('Hydrated.', Response::HTTP_OK);
     }
 }

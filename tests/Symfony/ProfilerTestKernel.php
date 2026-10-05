@@ -40,6 +40,13 @@ class ProfilerTestKernel extends TestKernel
         $c->loadFromExtension('web_profiler', [
             'toolbar' => false,
         ]);
+        $c->loadFromExtension('elastically', [
+            'connections' => [
+                'default' => [
+                    'index_class_mapping' => ['profiled_beers' => ProfiledBeer::class],
+                ],
+            ],
+        ]);
     }
 
     protected function configureRoutes($routes): void
@@ -48,6 +55,9 @@ class ProfilerTestKernel extends TestKernel
 
         $routeConfigurator = $routes->add('with_search', '/with_search');
         $routeConfigurator->controller(\sprintf('%s::withSearch', TestController::class));
+
+        $routeConfigurator = $routes->add('with_hydration', '/with_hydration');
+        $routeConfigurator->controller(\sprintf('%s::withHydration', TestController::class));
 
         $resource = \dirname((new \ReflectionClass(WebProfilerBundle::class))->getFileName()) . '/Resources/config/routing/profiler';
         $routes->import(is_file($resource . '.php') ? $resource . '.php' : $resource . '.xml')->prefix('/_profiler');

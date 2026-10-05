@@ -12,6 +12,7 @@
 namespace JoliCode\Elastically\Tests\Bridge\Symfony\DependencyInjection;
 
 use JoliCode\Elastically\Bridge\Symfony\DataCollector\TraceableClient;
+use JoliCode\Elastically\Bridge\Symfony\DataCollector\TraceableResultSetBuilder;
 use JoliCode\Elastically\Bridge\Symfony\DependencyInjection\ElasticallyExtension;
 use JoliCode\Elastically\Bridge\Symfony\ElasticallyBundle;
 use JoliCode\Elastically\Client;
@@ -277,6 +278,7 @@ class ElasticallyExtensionTest extends TestCase
 
         $this->assertFalse($container->hasDefinition('elastically.data_collector'));
         $this->assertNull($container->getDefinition('elastically.default.client')->getClass());
+        $this->assertNull($container->getDefinition('elastically.default.result_set_builder')->getClass());
     }
 
     public function testDataCollectorIsRegisteredWithProfiler(): void
@@ -306,12 +308,17 @@ class ElasticallyExtensionTest extends TestCase
         $clients = [];
         foreach ($collector->getMethodCalls() as [$method, $arguments]) {
             $this->assertSame('addClient', $method);
-            $clients[$arguments[0]] = (string) $arguments[1];
+            $clients[$arguments[0]] = array_map(strval(...), \array_slice($arguments, 1));
         }
-        $this->assertSame(['foobar' => 'elastically.foobar.client', 'another' => 'elastically.another.client'], $clients);
+        $this->assertSame([
+            'foobar' => ['elastically.foobar.client', 'elastically.foobar.result_set_builder', 'elastically.foobar.index_name_mapper'],
+            'another' => ['elastically.another.client', 'elastically.another.result_set_builder', 'elastically.another.index_name_mapper'],
+        ], $clients);
 
         $this->assertSame(TraceableClient::class, $container->getDefinition('elastically.foobar.client')->getClass());
         $this->assertSame(TraceableClient::class, $container->getDefinition('elastically.another.client')->getClass());
+        $this->assertSame(TraceableResultSetBuilder::class, $container->getDefinition('elastically.foobar.result_set_builder')->getClass());
+        $this->assertSame(TraceableResultSetBuilder::class, $container->getDefinition('elastically.another.result_set_builder')->getClass());
     }
 
     private function buildContainer(): ContainerBuilder

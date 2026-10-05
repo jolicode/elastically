@@ -13,13 +13,14 @@ namespace JoliCode\Elastically\Bridge\Symfony\DependencyInjection\Compiler;
 
 use JoliCode\Elastically\Bridge\Symfony\DataCollector\ElasticallyDataCollector;
 use JoliCode\Elastically\Bridge\Symfony\DataCollector\TraceableClient;
+use JoliCode\Elastically\Bridge\Symfony\DataCollector\TraceableResultSetBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Traces the requests of every connection when the Symfony profiler is enabled.
+ * Traces the requests and the hydrated models of every connection when the Symfony profiler is enabled.
  */
 class DataCollectorPass implements CompilerPassInterface
 {
@@ -41,12 +42,24 @@ class DataCollectorPass implements CompilerPassInterface
         ;
 
         foreach ($clients as $id => $tags) {
+            $connection = $tags[0]['connection'];
+
             $container->getDefinition($id)
                 ->setClass(TraceableClient::class)
                 ->addMethodCall('setStopwatch', [new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)])
             ;
 
-            $collector->addMethodCall('addClient', [$tags[0]['connection'], new Reference($id)]);
+            $container->getDefinition($resultSetBuilderId = "elastically.{$connection}.result_set_builder")
+                ->setClass(TraceableResultSetBuilder::class)
+                ->addMethodCall('setClient', [new Reference($id)])
+            ;
+
+            $collector->addMethodCall('addClient', [
+                $connection,
+                new Reference($id),
+                new Reference($resultSetBuilderId),
+                new Reference("elastically.{$connection}.index_name_mapper"),
+            ]);
         }
     }
 }

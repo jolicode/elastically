@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add an "Elastically" panel to the Symfony profiler, listing the requests sent to Elasticsearch (Symfony bundle)
+- Add an "Elastically" panel to the Symfony profiler, listing the requests sent to Elasticsearch, the indices they target and the models hydrated from their response (Symfony bundle)
 
 ### Changed
 

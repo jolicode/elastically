@@ -537,11 +537,13 @@ The spool is flushed at the end of each HTTP request, console command, and messa
 
 ### Profiler
 
-When the Symfony profiler is enabled, Elastically adds an "Elastically" panel to it, and a counter to the web debug toolbar. For each connection, it lists the requests sent to Elasticsearch with:
+When the Symfony profiler is enabled, Elastically adds an "Elastically" panel to it, and a counter to the web debug toolbar. For each connection, it shows the mapped indices, with their name in Elasticsearch (prefix included) and their model class, then lists the requests sent to Elasticsearch with:
 
 - their duration and status code;
+- the indices they target, and the matching model class;
+- the models hydrated from the response (search results or `Index::getModel()`), with the index and the ID they come from;
 - the request body and the response, readable;
-- a "Copy as cURL" button (credentials are not included) and a "Copy for Kibana Dev Tools" button;
+- a "Copy as cURL" button (credentials are not included), the command can also be pasted in the Kibana Dev Tools console;
 - a warning when the exact same request (method, URL and body) was sent more than once.
 
 There is nothing to configure: the panel is registered only when the `profiler` service exists, usually in the `dev` environment with the WebProfilerBundle installed.
