@@ -11,6 +11,8 @@
 
 namespace JoliCode\Elastically\Tests\Bridge\Symfony\DependencyInjection;
 
+use JoliCode\Elastically\Bridge\Symfony\DataCollector\TraceableClient;
+use JoliCode\Elastically\Bridge\Symfony\DataCollector\TraceableResultSetBuilder;
 use JoliCode\Elastically\Bridge\Symfony\DependencyInjection\ElasticallyExtension;
 use JoliCode\Elastically\Bridge\Symfony\ElasticallyBundle;
 use JoliCode\Elastically\Client;
@@ -257,6 +259,66 @@ class ElasticallyExtensionTest extends TestCase
 
         $configArgument = $container->getDefinition('elastically.default.client')->getArgument('$config');
         $this->assertInstanceOf(Reference::class, $configArgument['transport_config']['http_client'] ?? null);
+    }
+
+    public function testDataCollectorIsNotRegisteredWithoutProfiler(): void
+    {
+        $container = $this->buildContainer();
+
+        $container->loadFromExtension('elastically', [
+            'connections' => [
+                'default' => [
+                    'mapping_directory' => __DIR__,
+                    'index_class_mapping' => ['foobar' => self::class],
+                ],
+            ],
+        ]);
+
+        $container->compile();
+
+        $this->assertFalse($container->hasDefinition('elastically.data_collector'));
+        $this->assertNull($container->getDefinition('elastically.default.client')->getClass());
+        $this->assertNull($container->getDefinition('elastically.default.result_set_builder')->getClass());
+    }
+
+    public function testDataCollectorIsRegisteredWithProfiler(): void
+    {
+        $container = $this->buildContainer();
+        $container->register('profiler', \stdClass::class);
+
+        $container->loadFromExtension('elastically', [
+            'connections' => [
+                'foobar' => [
+                    'mapping_directory' => __DIR__,
+                    'index_class_mapping' => ['foobar' => self::class],
+                ],
+                'another' => [
+                    'mapping_directory' => __DIR__,
+                    'index_class_mapping' => ['foobar' => self::class],
+                ],
+            ],
+        ]);
+
+        $container->compile();
+
+        $this->assertTrue($container->hasDefinition('elastically.data_collector'));
+        $collector = $container->getDefinition('elastically.data_collector');
+        $this->assertSame('elastically', $collector->getTag('data_collector')[0]['id']);
+
+        $clients = [];
+        foreach ($collector->getMethodCalls() as [$method, $arguments]) {
+            $this->assertSame('addClient', $method);
+            $clients[$arguments[0]] = array_map(strval(...), \array_slice($arguments, 1));
+        }
+        $this->assertSame([
+            'foobar' => ['elastically.foobar.client', 'elastically.foobar.result_set_builder', 'elastically.foobar.index_name_mapper'],
+            'another' => ['elastically.another.client', 'elastically.another.result_set_builder', 'elastically.another.index_name_mapper'],
+        ], $clients);
+
+        $this->assertSame(TraceableClient::class, $container->getDefinition('elastically.foobar.client')->getClass());
+        $this->assertSame(TraceableClient::class, $container->getDefinition('elastically.another.client')->getClass());
+        $this->assertSame(TraceableResultSetBuilder::class, $container->getDefinition('elastically.foobar.result_set_builder')->getClass());
+        $this->assertSame(TraceableResultSetBuilder::class, $container->getDefinition('elastically.another.result_set_builder')->getClass());
     }
 
     private function buildContainer(): ContainerBuilder
