@@ -140,7 +140,19 @@ $indexBuilder->purgeOldIndices('beers');
 $newIndex = $indexBuilder->migrate($index);
 $indexBuilder->speedUpRefresh($newIndex);
 $indexBuilder->markAsLive($newIndex, 'beers');
+
+// Or start the reindex without waiting for it, and wait for it later
+$migration = $indexBuilder->startMigration($index);
+// ... do something else, $migration->isCompleted() tells whether the reindex is done
+$indexBuilder->waitForMigration($migration); // Throws if the reindex failed
+$indexBuilder->speedUpRefresh($migration->newIndex);
+$indexBuilder->markAsLive($migration->newIndex, 'beers');
 ```
+
+> [!WARNING]
+> Wait for the migration to complete before calling `markAsLive()` or `purgeOldIndices()`:
+> until then the new index is partial, and the reindex still reads the previous index,
+> which `purgeOldIndices()` would close or delete.
 
 > [!NOTE]
 > `scheduleIndex` is here called with `"beers"` index because the index was already created before.

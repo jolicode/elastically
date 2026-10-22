@@ -105,6 +105,27 @@ class IndexBuilder
      */
     public function migrate(Index $currentIndex, array $params = [], array $context = []): Index
     {
+        $migration = $this->startMigration($currentIndex, $params, $context);
+        $this->waitForMigration($migration);
+
+        return $migration->newIndex;
+    }
+
+    /**
+     * Starts the reindex into a new index without waiting for it to finish.
+     *
+     * The returned Migration must be completed (see waitForMigration()) before calling
+     * markAsLive() or purgeOldIndices(): until then the new index is partial, and the
+     * current index is still read by the reindex.
+     *
+     * @throws ExceptionInterface
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
+     */
+    public function startMigration(Index $currentIndex, array $params = [], array $context = []): Migration
+    {
         $pureIndexName = $this->indexNameMapper->getPureIndexName($currentIndex->getName());
         $newIndex = $this->createIndex($pureIndexName, $context);
 
@@ -117,16 +138,32 @@ class IndexBuilder
             throw new RuntimeException(\sprintf('Reindex call failed. %s', $response->getError()));
         }
 
-        $taskId = $response->getData()['task'];
+        return new Migration($newIndex, new Task($this->client, $response->getData()['task']));
+    }
 
-        $task = new Task($this->client, $taskId);
-
-        while (false === $task->isCompleted()) {
-            sleep(1); // Migrate of an index is not a production critical operation, sleep is ok.
-            $task->refresh();
+    /**
+     * @throws RuntimeException          When the reindex failed
+     * @throws ClientResponseException
+     * @throws ClientException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
+     * @throws NoNodeAvailableException
+     */
+    public function waitForMigration(Migration $migration, int $pollInterval = 1): void
+    {
+        while (false === $migration->isCompleted()) {
+            sleep($pollInterval); // Migrate of an index is not a production critical operation, sleep is ok.
         }
 
-        return $newIndex;
+        $data = $migration->task->getData();
+
+        if (isset($data['error'])) {
+            throw new RuntimeException(\sprintf('Reindex task "%s" failed. %s', $migration->task->getId(), json_encode($data['error'])));
+        }
+
+        if ([] !== ($data['response']['failures'] ?? [])) {
+            throw new RuntimeException(\sprintf('Reindex task "%s" failed. %s', $migration->task->getId(), json_encode($data['response']['failures'])));
+        }
     }
 
     /**
