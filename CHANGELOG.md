@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add an "Elastically" panel to the Symfony profiler, listing the requests sent to Elasticsearch, the indices they target and the models hydrated from their response (Symfony bundle)
+- Add `IndexBuilder::startMigration()` to start a reindex without waiting for it, and `IndexBuilder::waitForMigration()` to wait for it later
 
 ### Changed
 
 - Allow phpdocumentor/reflection-docblock 6
+- `IndexBuilder::migrate()` now throws when the reindex task fails, instead of returning a partial index
 
 ## 2.3.0
 
