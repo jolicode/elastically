@@ -14,10 +14,13 @@ namespace JoliCode\Elastically\Tests;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastica\Document as ElasticaDocument;
 use Elastica\Exception\InvalidException;
+use Elastica\Exception\RuntimeException;
 use Elastica\Index;
 use Elastica\Index\Settings;
+use Elastica\Reindex;
 use JoliCode\Elastically\Factory;
 use JoliCode\Elastically\IndexBuilder;
+use JoliCode\Elastically\Migration;
 use JoliCode\Elastically\Model\Document;
 
 final class IndexBuilderTest extends BaseTestCase
@@ -314,6 +317,60 @@ final class IndexBuilderTest extends BaseTestCase
 
         $document = $newIndex->getDocument('f');
         $this->assertInstanceOf(ElasticaDocument::class, $document);
+    }
+
+    public function testStartMigrationDoesNotWait(): void
+    {
+        $indexName = 'empty';
+
+        $dto = new MigrateDTO();
+        $dto->bar = 'I like unicorns.';
+        $dto->foo = 'Why is the sky blue?';
+
+        $indexer = $this->getFactory()->buildIndexer();
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $indexer->flush();
+        $indexer->refresh($indexName);
+
+        $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs');
+
+        $migration = $indexBuilder->startMigration($this->getClient()->getIndex($indexName));
+        $this->assertInstanceOf(Migration::class, $migration);
+        $this->assertNotEmpty($migration->task->getId());
+
+        $indexBuilder->waitForMigration($migration);
+        $this->assertTrue($migration->isCompleted());
+
+        $indexer->refresh($migration->newIndex);
+
+        $document = $migration->newIndex->getDocument('f');
+        $this->assertInstanceOf(ElasticaDocument::class, $document);
+    }
+
+    public function testWaitForMigrationThrowsWhenTheReindexFails(): void
+    {
+        $indexName = 'empty';
+
+        $dto = new MigrateDTO();
+        $dto->foo = 'Why is the sky blue?';
+
+        $indexer = $this->getFactory()->buildIndexer();
+
+        $indexer->scheduleIndex($indexName, new Document('f', $dto));
+        $indexer->flush();
+        $indexer->refresh($indexName);
+
+        $indexBuilder = $this->getIndexBuilder(__DIR__ . '/configs');
+
+        $migration = $indexBuilder->startMigration($this->getClient()->getIndex($indexName), [
+            Reindex::SCRIPT => ['source' => 'ctx._source.foo = params.missing.length()', 'lang' => 'painless'],
+        ]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(\sprintf('Reindex task "%s" failed.', $migration->task->getId()));
+
+        $indexBuilder->waitForMigration($migration);
     }
 
     private function getIndexBuilder(?string $path = null, array $config = []): IndexBuilder
